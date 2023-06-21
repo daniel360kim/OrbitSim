@@ -1,16 +1,20 @@
 #include <iostream>
 
-#include "objects/Objects.h"
+#include "objects/CentralBody.h"
+#include "objects/OrbitalObject.h"
 
 int main(int argc, char const *argv[])
 {
+    CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
     OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Planet, 7.34767309e22)
         .setSemiMajorAxis(384399)
         .setEccentricity(0.0549)
         .setInclination(5.145)
         .setLongitudeOfAscendingNode(0)
+        .setCentralBody(earth)
         .build();
 
     moon.printInformation();
+
 
 }

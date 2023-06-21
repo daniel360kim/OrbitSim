@@ -1,56 +1,18 @@
 /**
- * @file Objects.h
+ * @file OrbitalObject.h
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
- * @brief Holds basic information about a celestial object (planet, star, satellite, moon)
+ * @brief constants for objects that orbit a centralbody
  * @version 0.1
  * @date 2023-06-21
  * 
- * @copyright Copyright (c) 2023 OrbitOps
  * 
  */
 
-#ifndef OBJECTS_H
-#define OBJECTS_H
+#ifndef ORBITALOBJECT_H
+#define ORBITALOBJECT_H
 
-#include <string>
-
-enum class Type
-{
-    Planet,
-    Star,
-    Satellite,
-    Moon,
-    Nebulae,
-    Cloud,
-    BlackHole,
-    Asteroid,
-    Comet,
-};
-
-/**
- * @brief Basic information about a celestial object (planet, star, satellite, moon)
- * 
- */
-class CelestialObject
-{
-public:
-    CelestialObject(const std::string& name, const Type& type, double mass);
-
-    double getMass() const { return m_mass; }
-    std::string getName() const { return m_name; }
-    Type getType() const { return m_type; }
-
-    void setMass(const double mass) { m_mass = mass;}
-    void setName(const std::string& name) { m_name = name;}
-    void setType(const Type& type) { m_type = type;}
-
-    virtual void printInformation() const = 0;
-
-protected:
-    std::string m_name;
-    Type m_type;
-    double m_mass;
-};
+#include "CentralBody.h"
+#include "CelestialObject.h"
 
 class OrbitalObject; // forward declaration
 
@@ -68,6 +30,7 @@ public:
     OrbitalObjectBuilder& setLongitudeOfAscendingNode(double longitudeOfAscendingNode);
     OrbitalObjectBuilder& setArgumentOfPeriapsis(double argumentOfPeriapsis);
     OrbitalObjectBuilder& setMeanAnomaly(double meanAnomaly);
+    OrbitalObjectBuilder& setCentralBody(CentralBody centralBody);
     OrbitalObject build() const;
 
 private:
@@ -80,10 +43,11 @@ private:
     double m_longitudeOfAscendingNode;
     double m_argumentOfPeriapsis;
     double m_meanAnomaly;
+    CentralBody m_centralBody;
 };
 
 /**
- * @brief Allows for creation of a celestial object that has an orbit
+ * @brief Allows for creation of a celestial object that is in orbit about a central body
  * @attention Use the builder class to create an orbital object. OrbitalObjectBuilder makes sures that all the parameters are set within range
  * 
  */
@@ -93,13 +57,13 @@ public:
     OrbitalObject(const std::string& name, const Type& type, double mass,
                   double semiMajorAxis, double eccentricity, double inclination,
                   double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                  double meanAnomaly) : CelestialObject(name, type, mass),
+                  double meanAnomaly, CentralBody centralBody) : CelestialObject(name, type, mass),
                                         m_semiMajorAxis(semiMajorAxis),
                                         m_eccentricity(eccentricity),
                                         m_inclination(inclination),
                                         m_longitudeOfAscendingNode(longitudeOfAscendingNode),
                                         m_argumentOfPeriapsis(argumentOfPeriapsis),
-                                        m_meanAnomaly(meanAnomaly) {}
+                                        m_meanAnomaly(meanAnomaly), m_centralBody(centralBody) {}
     
     //Getters
     double getSemiMajorAxis() const { return m_semiMajorAxis; }
@@ -130,5 +94,7 @@ protected:
     double m_longitudeOfAscendingNode;
     double m_argumentOfPeriapsis;
     double m_meanAnomaly;   
+    CentralBody m_centralBody;
 };
+
 #endif

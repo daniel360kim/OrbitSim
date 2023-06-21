@@ -1,7 +1,7 @@
 /**
- * @file Objects.cpp
+ * @file OrbitalObject.cpp
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
- * @brief Basic information about a celestial object (planet, star, satellite, moon)
+ * @brief constants for objects that orbit a centralbody
  * @version 0.1
  * @date 2023-06-21
  * 
@@ -10,31 +10,13 @@
 
 #define _USE_MATH_DEFINES
 
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
 #include <cmath>
 
-#include "Objects.h"
+#include "OrbitalObject.h"
 #include "constants.h"
 
-//*********** Start of CelestialObject ***********//
-/**
- * @brief Construct a new Celestial Object:: Celestial Object object
- * 
- * @param name name of the object
- * @param type type of body (planet, star, satellite, moon)
- * @param mass mass of the object in kg
- */
-CelestialObject::CelestialObject(const std::string& name, const Type& type, double mass)
-{
-    m_name = name;
-    m_type = type;
-    m_mass = mass;
-}
-
-//*********** End of CelestialObject ***********//
-
-//*********** Start of OrbitalObjectBuilder ***********//
 /**
  * @brief Construct a new Orbital Object Builder:: Orbital Object Builder object
  * 
@@ -87,9 +69,15 @@ OrbitalObjectBuilder& OrbitalObjectBuilder::setMeanAnomaly(double meanAnomaly)
     return *this;
 }
 
+OrbitalObjectBuilder& OrbitalObjectBuilder::setCentralBody(CentralBody centralBody)
+{
+    m_centralBody = centralBody;
+    return *this;
+}
+
 OrbitalObject OrbitalObjectBuilder::build() const
 {
-    return OrbitalObject(m_name, m_type, m_mass, m_semiMajorAxis, m_eccentricity, m_inclination, m_longitudeOfAscendingNode, m_argumentOfPeriapsis, m_meanAnomaly);
+    return OrbitalObject(m_name, m_type, m_mass, m_semiMajorAxis, m_eccentricity, m_inclination, m_longitudeOfAscendingNode, m_argumentOfPeriapsis, m_meanAnomaly, m_centralBody);
 }
 
 //*********** End of OrbitalObjectBuilder ***********//
@@ -108,7 +96,7 @@ double OrbitalObject::getPerigee() const
 
 double OrbitalObject::getOrbitalPeriod() const
 {
-    return M_PI * 2.0 * std::sqrt(std::pow((m_semiMajorAxis * 1000.0), 3) / (G * (m_mass + EARTH_MASS)));
+    return M_PI * 2.0 * std::sqrt(std::pow((m_semiMajorAxis * 1000.0), 3) / (G * (m_mass + m_centralBody.getMass())));
 }
 
 void OrbitalObject::setEccentricity(double eccentricity)
@@ -133,4 +121,3 @@ void OrbitalObject::printInformation() const
     std::cout << "Perigee: " << getPerigee() << std::endl;
     std::cout << "Orbital period: " << getOrbitalPeriod() << std::endl;
 }
-
