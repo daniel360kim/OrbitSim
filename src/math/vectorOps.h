@@ -30,6 +30,8 @@ public:
     bool operator==(const Vector& other) const;
     bool operator!=(const Vector& other) const;
 
+    double magnitude() const;
+
     static T dot(const Vector& a, const Vector& b);
     static Vector cross(const Vector& a, const Vector& b);
 };
@@ -109,6 +111,17 @@ template <typename T, size_t N>
 bool Vector<T, N>::operator!=(const Vector& other) const
 {
     return !(*this == other);
+}
+
+template <typename T, size_t N>
+double Vector<T, N>::magnitude() const
+{
+    double result = 0;
+    for (size_t i = 0; i < N; i++)
+    {
+        result += elements[i] * elements[i];
+    }
+    return std::sqrt(result);
 }
 
 template <typename T, size_t N>
