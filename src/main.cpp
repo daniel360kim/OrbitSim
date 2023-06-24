@@ -27,12 +27,32 @@ int main(int argc, char const *argv[])
 
 
 */
+#include <iostream>
 
 #include "visualization/Application.h"
+
+class ExampleLayer : public Layer
+{
+public:
+    ExampleLayer() : Layer("Example"){}
+
+    void OnUpdate() override
+    {
+        std::cout << "ExampleLayer::Update" << std::endl;
+    }
+
+    void OnEvent(Event& event) override
+    {
+        std::cout << event << std::endl;
+    }
+
+};
 
 int main(int argc, char const *argv[])
 {
     Application app;
+
+    app.PushLayer(new ExampleLayer());
 
 
     app.run();
