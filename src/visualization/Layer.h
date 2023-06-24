@@ -12,7 +12,6 @@
 #define LAYER_H
 
 #include "Events/Event.h"
-#include "Timestep.h"
 
 //Gets subclassed to make your own layer
 class Layer
