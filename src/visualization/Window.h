@@ -15,7 +15,7 @@
 #include <string>
 #include <functional>
 
-#include "Event.h"
+#include "Events/Event.h"
 
 struct WindowProps
 {

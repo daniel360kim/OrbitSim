@@ -9,9 +9,9 @@
  */
 
 #include "WindowsWindow.h"
-#include "MouseEvent.h"
-#include "KeyEvent.h"
-#include "ApplicationEvent.h"
+#include "Events/MouseEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/ApplicationEvent.h"
 
 
 #include <stdexcept>

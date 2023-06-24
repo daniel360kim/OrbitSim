@@ -14,7 +14,7 @@
 #include <memory>
 
 #include "Window.h"
-#include "ApplicationEvent.h"
+#include "Events/ApplicationEvent.h"
 
 class Application
 {
