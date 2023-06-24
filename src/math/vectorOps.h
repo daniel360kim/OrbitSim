@@ -30,6 +30,9 @@ public:
     bool operator==(const Vector& other) const;
     bool operator!=(const Vector& other) const;
 
+    T& operator[](const size_t index);
+    const T& operator[](const size_t index) const;
+
     double magnitude() const;
 
     static T dot(const Vector& a, const Vector& b);
@@ -111,6 +114,18 @@ template <typename T, size_t N>
 bool Vector<T, N>::operator!=(const Vector& other) const
 {
     return !(*this == other);
+}
+
+template <typename T, size_t N>
+T& Vector<T, N>::operator[](const size_t index)
+{
+    return elements[index];
+}
+
+template <typename T, size_t N>
+const T& Vector<T, N>::operator[](const size_t index) const
+{
+    return elements[index];
 }
 
 template <typename T, size_t N>

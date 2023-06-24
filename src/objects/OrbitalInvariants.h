@@ -18,11 +18,11 @@
 class OrbitalInvariants
 {
 public:
-    OrbitalInvariants(CentralBody& centralBody);
+    OrbitalInvariants(double centralBodyMass) : m_centralBodyMass(centralBodyMass) {}
 
     Vector<double, 3> calculateSpecificAngularMomentum(Vector<double, 3> position, Vector<double, 3> velocity) const;
     double calculateOrbitalEnergy(Vector<double, 3> position, Vector<double, 3> velocity) const;
-    double calculateOrbitalEnergy(OrbitalObject& object) const;
+    double calculateOrbitalEnergy(double semiMajorAxis) const;
     Vector<double, 3> calculateEccentricityVector(Vector<double, 3> position, Vector<double, 3> velocity) const;
     double calculateSemiLateratusRectum(Vector<double, 3> position, Vector<double, 3> velocity) const;
 

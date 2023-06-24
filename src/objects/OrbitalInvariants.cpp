@@ -15,11 +15,6 @@
 #include <cmath>
 #include <stdexcept>
 
-OrbitalInvariants::OrbitalInvariants(CentralBody& centralBody)
-{
-    m_centralBodyMass = centralBody.getMass();
-}
-
 Vector<double, 3> OrbitalInvariants::calculateSpecificAngularMomentum(Vector<double, 3> position, Vector<double, 3> velocity) const
 {
     return Vector<double, 3>::cross(position, velocity);
@@ -33,10 +28,12 @@ double OrbitalInvariants::calculateOrbitalEnergy(Vector<double, 3> position, Vec
     return 0.5 * (speed * speed) - (G * m_centralBodyMass) / radius;
 }
 
-double OrbitalInvariants::calculateOrbitalEnergy(OrbitalObject& object) const
+
+double OrbitalInvariants::calculateOrbitalEnergy(double semiMajorAxis) const
 {
-    return -1.0 * G * m_centralBodyMass / (2.0 * object.getSemiMajorAxis());
+    return -1.0 * G * m_centralBodyMass / (2.0 * semiMajorAxis);
 }
+
 
 Vector<double, 3> OrbitalInvariants::calculateEccentricityVector(Vector<double, 3> position, Vector<double, 3> velocity) const
 {

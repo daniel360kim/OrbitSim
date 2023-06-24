@@ -9,8 +9,8 @@ file(GLOB all_SRCS
     ${PROJECT_SOURCE_DIR}/src/*.h
     ${PROJECT_SOURCE_DIR}/src/objects/*.cpp
     ${PROJECT_SOURCE_DIR}/src/objects/*.h
-    #${PROJECT_SOURCE_DIR}/src/orbit/*.cpp
-    #${PROJECT_SOURCE_DIR}/src/orbit/*.h
+    ${PROJECT_SOURCE_DIR}/src/orbit/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/orbit/*.h
 
 
 )

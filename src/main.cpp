@@ -2,6 +2,7 @@
 
 #include "objects/CentralBody.h"
 #include "objects/OrbitalObject.h"
+#include "orbit/OrbitalPropogator.h"
 
 int main(int argc, char const *argv[])
 {
@@ -14,7 +15,9 @@ int main(int argc, char const *argv[])
         .setCentralBody(earth)
         .build();
 
-    moon.printInformation();
+    OrbitalPropogator propogator(moon, 1);
 
+    propogator.propogateOrbit(2357372.85785691);
 
+    
 }
