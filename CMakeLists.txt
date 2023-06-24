@@ -19,6 +19,8 @@ file(GLOB all_SRCS
     ${PROJECT_SOURCE_DIR}/src/objects/*.h
     ${PROJECT_SOURCE_DIR}/src/orbit/*.cpp
     ${PROJECT_SOURCE_DIR}/src/orbit/*.h
+    ${PROJECT_SOURCE_DIR}/src/visualization/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/visualization/*.h
 )
 
 add_executable(${PROJECT_NAME} ${all_SRCS})
