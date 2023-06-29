@@ -1,2 +1,4 @@
 # CMake Build Files
 build
+ 
+out/*.csv

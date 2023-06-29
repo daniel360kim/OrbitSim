@@ -11,10 +11,13 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 #include "OrbitalPropogator.h"
 #include "../objects/OrbitalInvariants.h"
 #include "../objects/constants.h"
+
+#include "../util/ProgressBar.h"
 
 
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const
@@ -92,13 +95,17 @@ void OrbitalPropogator::propogateOrbit(double duration)
 {
     double currentTime = 0.0;
 
+    ProgressBar progressBar(20);
+
     while(currentTime <= duration)
     {
         runTimeStep(currentTime);
 
+        writeDataToFile(currentTime);
+
+        progressBar.update(static_cast<float>(currentTime / duration));
         currentTime += m_timeStep;
     }
-    
 }
 
 void OrbitalPropogator::printInformation() const
@@ -106,4 +113,9 @@ void OrbitalPropogator::printInformation() const
     std::cout << "True Anomaly: " << m_trueAnomaly << "\n";
     std::cout << "Position: (" << m_position[0] << ", " << m_position[1] << ", " << m_position[2] << ")\n";
     std::cout << "Velocity: (" << m_velocity[0] << ", " << m_velocity[1] << ", " << m_velocity[2] << ")\n";
+}
+
+void OrbitalPropogator::writeDataToFile(double currentTime)
+{
+    m_csvWriter.addRow(currentTime, m_position[0], m_position[1], m_position[2], m_velocity[0], m_velocity[1], m_velocity[2]);
 }

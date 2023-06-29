@@ -20,6 +20,9 @@ public:
     Vector();
     ~Vector();
 
+    //constructor that takes N arguments as the elements of the vector
+    Vector(T arg0, ...);
+
     T elements[N];
 
     Vector operator+(const Vector& other) const;
@@ -51,6 +54,19 @@ Vector<T, N>::Vector()
 template <typename T, size_t N>
 Vector<T, N>::~Vector()
 {
+}
+
+template <typename T, size_t N>
+Vector<T, N>::Vector(T arg0, ...)
+{
+    elements[0] = arg0;
+    va_list args;
+    va_start(args, arg0);
+    for (size_t i = 1; i < N; i++)
+    {
+        elements[i] = va_arg(args, T);
+    }
+    va_end(args);
 }
 
 template <typename T, size_t N>

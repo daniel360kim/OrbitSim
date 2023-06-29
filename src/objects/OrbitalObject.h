@@ -65,7 +65,7 @@ public:
                                         m_longitudeOfAscendingNode(longitudeOfAscendingNode),
                                         m_argumentOfPeriapsis(argumentOfPeriapsis),
                                         m_centralBody(centralBody) {}
-    
+
     //Getters
     double getSemiMajorAxis() const { return m_semiMajorAxis; }
     double getEccentricity() const { return m_eccentricity; }

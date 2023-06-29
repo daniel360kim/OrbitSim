@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <cmath>
+#include <string>
 
 #include "OrbitalObject.h"
 #include "constants.h"
@@ -91,7 +92,7 @@ double OrbitalObject::getPerigee() const
 
 double OrbitalObject::getOrbitalPeriod() const
 {
-    return M_PI * 2.0 * std::sqrt(std::pow((m_semiMajorAxis * 1000.0), 3) / (G * (m_mass + m_centralBody.getMass())));
+    return M_PI * 2.0 * std::sqrt(std::pow((m_semiMajorAxis * 1000.0), 3) / (G * m_centralBody.getMass()));
 }
 
 double OrbitalObject::getMeanMotion() const

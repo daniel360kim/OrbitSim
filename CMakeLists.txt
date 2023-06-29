@@ -4,11 +4,7 @@ project(OrbitOps)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/Dependencies/GLFW/include
-)
 
-link_directories(
-    ${PROJECT_SOURCE_DIR}/Dependencies/GLFW/lib-vc2022
 )
 
 
@@ -19,15 +15,9 @@ file(GLOB all_SRCS
     ${PROJECT_SOURCE_DIR}/src/objects/*.h
     ${PROJECT_SOURCE_DIR}/src/orbit/*.cpp
     ${PROJECT_SOURCE_DIR}/src/orbit/*.h
-    ${PROJECT_SOURCE_DIR}/src/visualization/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/visualization/*.h
-    ${PROJECT_SOURCE_DIR}/src/visualization/Events/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/visualization/Events/*.h
+    ${PROJECT_SOURCE_DIR}/src/util/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/util/*.h
 )
 
 add_executable(${PROJECT_NAME} ${all_SRCS})
 
-target_link_libraries(${PROJECT_NAME}
-    glfw3
-    opengl32
-)
