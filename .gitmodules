@@ -1,0 +1,9 @@
+[submodule "Simulator/Dependencies/glm"]
+	path = Simulator/Dependencies/glm
+	url = https://github.com/g-truc/glm
+[submodule "Simulator/Dependencies/imgui"]
+	path = Simulator/Dependencies/imgui
+	url = https://github.com/TheCherno/imgui
+[submodule "Simulator/Dependencies/walnut"]
+	path = Simulator/Dependencies/walnut
+	url = https://github.com/TheCherno/Walnut.git
