@@ -1,31 +1,37 @@
 import pandas as pd
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import numpy as np
 
 # Read the CSV file
 df = pd.read_csv('../Simulator/out/prop_data46.csv')
 
 # Extract data from the DataFrame
-x = df['Position X'] - df['Position X'].mean()  # Subtract mean to center around (0, 0, 0)
-y = df['Position Y'] - df['Position Y'].mean()  # Subtract mean to center around (0, 0, 0)
-z = df['Position Z'] - df['Position Z'].mean()  # Subtract mean to center around (0, 0, 0)
+time = df['Time']
+true_anomaly = df['True Anomaly']
+x = df['Position X']
+y = df['Position Y']
+z = df['Position Z']
 
 # Create a 3D plot
-fig = go.Figure()
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
-# Plot the Earth
-earth_radius = 6371  # Radius of the Earth in kilometers
-u = df['Time']
-v = df['True Anomaly']
-earth_x = earth_radius * pd.Series([0] * len(u))
-earth_y = earth_radius * pd.Series([0] * len(u))
-earth_z = earth_radius * pd.Series([0] * len(u))
-fig.add_trace(go.Scatter3d(x=earth_x, y=earth_y, z=earth_z, mode='markers', marker=dict(color='blue', size=2), name='Earth'))
+# Create a sphere for the Earth
+radius = 6371
+u = np.linspace(0, 2 * np.pi, 100)
+v = np.linspace(0, np.pi, 50)
+x_earth = radius * np.outer(np.cos(u), np.sin(v))
+y_earth = radius * np.outer(np.sin(u), np.sin(v))
+z_earth = radius * np.outer(np.ones(np.size(u)), np.cos(v))
+ax.plot_surface(x_earth, y_earth, z_earth, cmap=cm.Blues, alpha=0.8)
 
 # Plot the spacecraft's orbit
-fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color='red'), name='Spacecraft Orbit'))
+ax.plot(x, y, z)
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('Spacecraft Orbit')
 
-# Set layout
-fig.update_layout(scene=dict(aspectmode='data', xaxis_title='X', yaxis_title='Y', zaxis_title='Z'), title='Spacecraft Orbit with Earth')
-
-# Show the plot
-fig.show()
+plt.show()

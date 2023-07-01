@@ -22,7 +22,6 @@ int main(int argc, char const *argv[])
     OrbitalPropogator propogator(moon, 1);
 
     propogator.propogateOrbit(2357372.85785691);
-    
 
     return 0;
 
