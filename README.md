@@ -30,7 +30,7 @@ Follow these steps to get the project up and running on your local machine.
 1. Clone the repository and enter the directory
    ```shell
    git clone https://github.com/daniel360kim/OrbitSim.git
-   cd OrbitSim
+   cd OrbitSim/Simulator
    ```
 2. Create a build directory and enter it
    ```shell
