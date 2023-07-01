@@ -3,6 +3,8 @@
 
 #include "Walnut/Image.h"
 
+#include <vulkan/vulkan.h>
+
 class ExampleLayer : public Walnut::Layer
 {
 public:

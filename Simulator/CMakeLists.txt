@@ -4,67 +4,70 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(OrbitSim)
 
-find_package(Vulkan REQUIRED)
-
-
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui
-    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src
 
     # Vulkan
     $ENV{VULKAN_SDK}/Include
 
-    # STB image
-    ${PROJECT_SOURCE_DIR}/Dependencies/stb_image
-)
+    # GLFW
+    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include
 
+    #STB Image
+    ${PROJECT_SOURCE_DIR}/Dependencies/stb_image
+
+    #ImGui
+    ${PROJECT_SOURCE_DIR}/Dependencies/imgui
+
+    #glm
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm
+
+    #Walnut
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut
+)
 
 link_directories(
-    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
     $ENV{VULKAN_SDK}/Lib
-    $ENV{VULKAN_SDK}/Lib32
+    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
 )
 
-file(GLOB_RECURSE all_SRC
+file(GLOB_RECURSE all_SRCS
     ${PROJECT_SOURCE_DIR}/src/*.cpp
     ${PROJECT_SOURCE_DIR}/src/*.h
     ${PROJECT_SOURCE_DIR}/include/*.h
-
-    # GLM
-    ${PROJECT_SOURCE_DIR}/Dependencies/glm/glm/*.inl
-
-    # Walnut
-    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src/*.h
-
-    # Vulkan
-    $ENV{VULKAN_SDK}/Include/vulkan/*.h
-
 )
 
+# glm
+file(GLOB_RECURSE GLM_SRCS
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.inl
+)
+
+# ImGui
 file(GLOB IMGUI_SRCS
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/*.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_glfw.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_glfw.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_vulkan.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_vulkan.h
-    
+    ${PROJECT_SOURCE_DIR}/Dependencies/imgui/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/imgui/*.h
+
+)
+
+# Walnut
+file(GLOB WALNUT_SRCS
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/ImGui/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/ImGui/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/Input/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/Input/*.h
 )
 
 
-add_executable(${PROJECT_NAME} ${all_SRCS} ${IMGUI_SRCS})
 
-target_link_libraries(${PROJECT_NAME}
-    glfw3
-    opengl32
+add_executable(${PROJECT_NAME} ${all_SRCS} ${GLFW_SRCS} ${GLM_SRCS} ${IMGUI_SRCS} ${WALNUT_SRCS})
+
+target_link_libraries(${PROJECT_NAME} 
     vulkan-1
-
-
-
+    glfw3
 )
-
-
