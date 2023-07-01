@@ -1,12 +1,20 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(OrbitOps)
+set(CMAKE_CXX_STANDARD 17)
+
+project(OrbitSim)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
+
+    # GLFW
+    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include
 )
 
+link_directories(
+    ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib
+)
 
 file(GLOB all_SRCS
     ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -21,4 +29,9 @@ file(GLOB all_SRCS
 )
 
 add_executable(${PROJECT_NAME} ${all_SRCS})
+
+target_link_libraries(${PROJECT_NAME}
+    glfw
+    opengl32
+)
 

@@ -30,7 +30,7 @@ public:
         while (fileExists(newFilename))
         {
             newFilename = generateFilenameWithCounter();
-            ++m_counter;
+            m_counter++;
         }
         return newFilename;
     }
