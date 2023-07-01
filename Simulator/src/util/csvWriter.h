@@ -13,8 +13,9 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
+#include <iomanip>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "FileNamer.h"
@@ -23,7 +24,8 @@ template <typename... Args>
 class CSVWriter
 {
 public:
-    explicit CSVWriter(const std::string &filename, const std::vector<std::string>& headers) : m_fileNamer(filename)
+    explicit CSVWriter(const std::string& filename, const std::vector<std::string>& headers)
+        : m_fileNamer(filename)
     {
         openFile();
 
@@ -38,7 +40,6 @@ public:
         }
 
         m_file << ss.str() << '\n';
-
     }
 
     ~CSVWriter()
@@ -46,17 +47,14 @@ public:
         closeFile();
     }
 
-    void addRow(const Args &...values)
+    void addRow(const Args&... values)
     {
-        if (!m_file.is_open())
-        {
-            std::cerr << "File is not open!" << std::endl;
-            return;
-        }
+        std::ostringstream row;
 
-        std::stringstream ss;
-        appendCSV(ss, values...);
-        m_file << ss.str() << '\n';
+        appendCSV(row, values...);
+        row << '\n';
+
+        m_file << row.str();
     }
 
 private:
@@ -64,35 +62,36 @@ private:
     std::ofstream m_file;
 
     // Base case for the variadic template recursion
-    void appendCSV(std::stringstream &ss) {}
+    void appendCSV(std::ostringstream&) {}
 
-    // Recursive function to append the values to the CSV string
+    // Recursive function to append the values to the CSV row
     template <typename T, typename... Rest>
-    void appendCSV(std::stringstream &ss, const T &value, const Rest &...rest)
+    void appendCSV(std::ostringstream& row, const T& value, const Rest&... rest)
     {
         if constexpr (std::is_floating_point_v<T>)
         {
-            ss << std::fixed << std::setprecision(5) << value;
+            row << std::fixed << std::setprecision(5) << value;
         }
         else
         {
-            ss << value;
+            row << value;
         }
-        if (sizeof...(rest) > 0)
+        if constexpr (sizeof...(rest) > 0)
         {
-            ss << ',';
+            row << ',';
         }
-        appendCSV(ss, rest...);
+        appendCSV(row, rest...);
     }
 
     void openFile()
     {
         std::string newFilename = m_fileNamer.getAvailableFilename();
-        m_file.open(newFilename);
+        m_file.open(newFilename, std::ios_base::out | std::ios_base::binary);
         if (!m_file.is_open())
         {
             std::cerr << "Failed to open file: " << newFilename << std::endl;
         }
+        m_file.rdbuf()->pubsetbuf(nullptr, 0);  // Enable buffering
     }
 
     void closeFile()
@@ -105,3 +104,4 @@ private:
 };
 
 #endif
+
