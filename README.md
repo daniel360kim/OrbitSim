@@ -51,6 +51,14 @@ Follow these steps to get the project up and running on your local machine.
 This command will invoke the build system to compile the source files and generate the executable.
 
 5. Once the build process completes successfully, you can find the executable in the build directory.
+An example of the moon is already loaded. You can run the executable or run the project. 
+
+6. A csv file will be generated in the build directory. This file contains the position and velocity of the object at each time step. You can use this file to plot the orbit of the object using the Python visualization.
+
+7. Within visualization.py, specify the path to the csv file. Then run the script.
+    ```shell
+    python visualization.py
+    ```
 
 ## Project Structure
 
