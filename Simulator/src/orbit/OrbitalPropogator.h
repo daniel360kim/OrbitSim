@@ -46,11 +46,22 @@ private:
 
     double calculateRadius(double trueAnomaly) const;
 
-    Vector<double, 3> calculatePosition(double trueAnomaly) const;
-    Vector<double, 3> calculateVelocity(double trueAnomaly) const;
+    void calculateKinematicParameters(double trueAnomaly);
+    Vector<double, 3> calculatePosition(double trueAnomaly);
+    Vector<double, 3> calculateVelocity(double trueAnomaly);
     double m_timeStep;
 
     double m_trueAnomaly;
+    double m_radius;
+    double m_cosTrueAnomaly;
+    double m_sinTrueAnomaly;
+    double m_cosArgPeriapsis;
+    double m_sinArgPeriapsis;
+    double m_cosLongAscNode;
+    double m_sinLongAscNode;
+    double m_cosInclination;
+    double m_sinInclination;
+
     Vector<double, 3> m_position;
     Vector<double, 3> m_velocity;
 

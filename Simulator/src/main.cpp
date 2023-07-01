@@ -1,6 +1,7 @@
 
 
 #include <iostream>
+#include <iomanip>
 
 #include "objects/CentralBody.h"
 #include "objects/OrbitalObject.h"
@@ -21,7 +22,11 @@ int main(int argc, char const *argv[])
 
     OrbitalPropogator propogator(moon, 1);
 
-    propogator.propogateOrbit(2357372.85785691);
+    double period = propogator.getOrbitalPeriod();
+
+    std::cout <<std::setprecision(10) << "Orbital Period: " << period << std::endl;
+
+    propogator.propogateOrbit(period);
 
     return 0;
 

@@ -17,14 +17,12 @@
 #include <string>
 #include <chrono>
 
-
 #include "OrbitalPropogator.h"
 #include "../objects/OrbitalInvariants.h"
 #include "../objects/constants.h"
 #include "../util/FileNamer.h"
 #include "csv2.h"
 #include "../util/ProgressBar.h"
-
 
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const
 {
@@ -53,7 +51,6 @@ double OrbitalPropogator::calculateEccentricAnomaly(double meanAnomaly) const
     return eccentricAnomaly;
 }
 
-
 double OrbitalPropogator::calculateTrueAnomaly(double eccentricAnomaly) const
 {
     return 2 * std::atan(std::sqrt((1 + m_eccentricity) / (1 - m_eccentricity)) * std::tan(eccentricAnomaly / 2));
@@ -64,52 +61,64 @@ double OrbitalPropogator::calculateRadius(double trueAnomaly) const
     return m_semiMajorAxis * (1 - m_eccentricity * m_eccentricity) / (1 + m_eccentricity * std::cos(trueAnomaly));
 }
 
-Vector<double, 3> OrbitalPropogator::calculatePosition(double trueAnomaly) const
+void OrbitalPropogator::calculateKinematicParameters(double trueAnomaly)
 {
-    const double radius = calculateRadius(trueAnomaly);
-    const double cosTrueAnomaly = std::cos(trueAnomaly);
-    const double sinTrueAnomaly = std::sin(trueAnomaly);
-    const double cosArgPeriapsis = std::cos(m_argumentOfPeriapsis);
-    const double sinArgPeriapsis = std::sin(m_argumentOfPeriapsis);
-    const double cosLongAscNode = std::cos(m_longitudeOfAscendingNode);
-    const double sinLongAscNode = std::sin(m_longitudeOfAscendingNode);
-    const double cosInclination = std::cos(m_inclination);
-    const double sinInclination = std::sin(m_inclination);
+    m_radius = calculateRadius(trueAnomaly);
+    m_cosTrueAnomaly = std::cos(trueAnomaly);
+    m_sinTrueAnomaly = std::sin(trueAnomaly);
+    m_cosArgPeriapsis = std::cos(m_argumentOfPeriapsis);
+    m_sinArgPeriapsis = std::sin(m_argumentOfPeriapsis);
+    m_cosLongAscNode = std::cos(m_longitudeOfAscendingNode);
+    m_sinLongAscNode = std::sin(m_longitudeOfAscendingNode);
+    m_cosInclination = std::cos(m_inclination);
+    m_sinInclination = std::sin(m_inclination);
+}
 
+/**
+ * @brief Calculates the position of the satellite in ECI coordinates
+ *
+ * @warning calculateKinematicParameters() must be called before this function
+ * @param trueAnomaly true anomaly of the satellite
+ * @return Vector<double, 3> x, y, z coordinates of the satellite
+ */
+Vector<double, 3> OrbitalPropogator::calculatePosition(double trueAnomaly)
+{
+    // Perifocal coordinates
+    double x_per = m_radius * m_cosTrueAnomaly;
+    double y_per = m_radius * m_sinTrueAnomaly;
+
+    // Convert to ECI
     Vector<double, 3> position;
-
-    position[0] = radius * (cosArgPeriapsis * cosTrueAnomaly * cosLongAscNode - sinArgPeriapsis * sinTrueAnomaly * sinLongAscNode * cosInclination);
-    position[1] = radius * (cosArgPeriapsis * cosTrueAnomaly * sinLongAscNode + sinArgPeriapsis * sinTrueAnomaly * cosLongAscNode * cosInclination);
-    position[2] = radius * (sinArgPeriapsis * cosTrueAnomaly * sinInclination);
+    // Perifocal to ECI
+    position[0] = x_per * (-m_sinLongAscNode * m_cosInclination * m_sinArgPeriapsis + m_cosLongAscNode * m_cosArgPeriapsis) - y_per * (m_sinLongAscNode * m_cosInclination * m_cosArgPeriapsis + m_cosLongAscNode * m_sinArgPeriapsis);
+    position[1] = x_per * (m_cosLongAscNode * m_cosInclination * m_sinArgPeriapsis + m_sinLongAscNode * m_cosArgPeriapsis) + y_per * (m_cosLongAscNode * m_cosInclination * m_cosArgPeriapsis - m_sinLongAscNode * m_sinArgPeriapsis);
+    position[2] = x_per * (m_sinInclination * m_sinArgPeriapsis) + y_per * (m_sinInclination * m_cosArgPeriapsis);
 
     return position;
 }
 
-
-Vector<double, 3> OrbitalPropogator::calculateVelocity(double trueAnomaly) const
+/**
+ * @brief Calculates the velocity of the satellite in ECI coordinates
+ *
+ * @warning calculateKinematicParameters() must be called before this function
+ * @param trueAnomaly true anomaly of the satellite
+ * @return Vector<double, 3> x, y, z coordinates of the satellite
+ */
+Vector<double, 3> OrbitalPropogator::calculateVelocity(double trueAnomaly)
 {
+    double angular_momentum = std::sqrt(m_semiMajorAxis * m_centralBody.getGravitationalParameter() * (1.0 - m_eccentricity * m_eccentricity));
+    double scale = m_centralBody.getGravitationalParameter() / angular_momentum;
+
+    double v_x = -scale * m_sinTrueAnomaly;
+    double v_y = scale * (m_eccentricity + m_cosTrueAnomaly);
+
     Vector<double, 3> velocity;
-
-    OrbitalInvariants invariants(m_centralBody.getMass());
-
-    const double cosLongAscNode = std::cos(m_longitudeOfAscendingNode);
-    const double sinArgPeriapsisTrueAnomaly = std::sin(m_argumentOfPeriapsis + trueAnomaly);
-    const double cosArgPeriapsisTrueAnomaly = std::cos(m_argumentOfPeriapsis + trueAnomaly);
-    const double cosInclination = std::cos(m_inclination);
-    const double sinInclination = std::sin(m_inclination);
-
-    // Calculate magnitude of the velocity using invariants
-    double specific_energy = invariants.calculateOrbitalEnergy(m_semiMajorAxis);
-    double mag_velocity = std::sqrt(2.0 * specific_energy + 2 * m_centralBody.getGravitationalParameter() / calculateRadius(trueAnomaly));
-
-    // Calculate the velocity vector
-    velocity[0] = -mag_velocity * (cosLongAscNode * sinArgPeriapsisTrueAnomaly + std::sin(m_longitudeOfAscendingNode) * cosArgPeriapsisTrueAnomaly * cosInclination);
-    velocity[1] = mag_velocity * (std::sin(m_longitudeOfAscendingNode) * sinArgPeriapsisTrueAnomaly - cosLongAscNode * cosArgPeriapsisTrueAnomaly * cosInclination);
-    velocity[2] = mag_velocity * (sinArgPeriapsisTrueAnomaly * sinInclination);
+    velocity[0] = v_x * (-m_sinLongAscNode * m_cosInclination * m_sinArgPeriapsis + m_cosLongAscNode * m_cosArgPeriapsis) - v_y * (m_sinLongAscNode * m_cosInclination * m_cosArgPeriapsis + m_cosLongAscNode * m_sinArgPeriapsis);
+    velocity[1] = v_x * (m_cosLongAscNode * m_cosInclination * m_sinArgPeriapsis + m_sinLongAscNode * m_cosArgPeriapsis) + v_y * (m_cosLongAscNode * m_cosInclination * m_cosArgPeriapsis - m_sinLongAscNode * m_sinArgPeriapsis);
+    velocity[2] = v_x * (m_sinInclination * m_sinArgPeriapsis) + v_y * (m_sinInclination * m_cosArgPeriapsis);
 
     return velocity;
 }
-
 
 void OrbitalPropogator::runTimeStep(double currentTimeStep)
 {
@@ -119,10 +128,9 @@ void OrbitalPropogator::runTimeStep(double currentTimeStep)
 
     m_trueAnomaly = calculateTrueAnomaly(eccentricAnomaly);
 
-
+    calculateKinematicParameters(m_trueAnomaly);
     m_position = calculatePosition(m_trueAnomaly);
     m_velocity = calculateVelocity(m_trueAnomaly);
-
 }
 
 void OrbitalPropogator::propogateOrbit(double duration)
@@ -131,33 +139,24 @@ void OrbitalPropogator::propogateOrbit(double duration)
     csv2::Writer<csv2::delimiter<','>> csvWriter(logFile);
 
     double currentTime = 0.0;
-    double averageTimeStep = 0.0;
 
     ProgressBar progressBar(20);
 
-    while(currentTime <= duration)
+    while (currentTime <= duration)
     {
         runTimeStep(currentTime);
-        //progressBar.update(static_cast<float>(currentTime / duration));
-
-        auto start = std::chrono::high_resolution_clock::now();
         logData(csvWriter, currentTime);
-        auto end = std::chrono::high_resolution_clock::now();
 
-        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-        averageTimeStep += elapsed.count();
-
-        //update progress bar every 1000 steps
+        // update progress bar every 1000 steps
         if (static_cast<int>(currentTime) % 1000 == 0)
         {
             progressBar.update(static_cast<float>(currentTime / duration));
         }
-        
+
         currentTime += m_timeStep;
     }
 
-    std::cout << "\nAverage Time Step: " << averageTimeStep / duration << "\n";
+    logFile.close();
 }
 
 void OrbitalPropogator::printInformation() const
@@ -170,14 +169,18 @@ void OrbitalPropogator::printInformation() const
 std::ofstream OrbitalPropogator::generateLogFile() const
 {
     FileNamer fileNamer("../../out/prop_data.csv");
-    std::ofstream logFile(fileNamer.getAvailableFilename());
+
+    std::string filename = fileNamer.getAvailableFilename();
+    std::ofstream logFile(filename);
+
+    std::cout << "Writing data to " << filename << "\n";
 
     logFile << "Time,True Anomaly,Position X,Position Y,Position Z,Velocity X,Velocity Y,Velocity Z\n";
 
     return logFile;
 }
 
-void OrbitalPropogator::logData(csv2::Writer<csv2::delimiter<','>>& writer, double time) const
+void OrbitalPropogator::logData(csv2::Writer<csv2::delimiter<','>> &writer, double time) const
 {
     // Reserve memory for the row vector to avoid reallocations
     std::vector<std::string> row;
