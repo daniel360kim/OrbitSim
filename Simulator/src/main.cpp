@@ -1,39 +1,38 @@
-#include <GLFW/glfw3.h>
+#include "Walnut/Application.h"
+#include "Walnut/EntryPoint.h"
 
-#include "backends/imgui_impl_glfw.h"
+#include "Walnut/Image.h"
 
-int main(void)
+class ExampleLayer : public Walnut::Layer
 {
-    GLFWwindow* window;
+public:
+	virtual void OnUIRender() override
+	{
+		ImGui::Begin("Hello");
+		ImGui::Button("Button");
+		ImGui::End();
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+		ImGui::ShowDemoWindow();
+	}
+};
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
+Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
+{
+	Walnut::ApplicationSpecification spec;
+	spec.Name = "Walnut Example";
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
+	Walnut::Application* app = new Walnut::Application(spec);
+	app->PushLayer<ExampleLayer>();
+	app->SetMenubarCallback([app]()
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit"))
+			{
+				app->Close();
+			}
+			ImGui::EndMenu();
+		}
+	});
+	return app;
 }

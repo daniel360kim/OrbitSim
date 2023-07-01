@@ -6,18 +6,29 @@ project(OrbitSim)
 
 find_package(Vulkan REQUIRED)
 
+
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui
+    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src
+
+    # Vulkan
+    $ENV{VULKAN_SDK}/Include
+
+    # STB image
+    ${PROJECT_SOURCE_DIR}/Dependencies/stb_image
 )
+
 
 link_directories(
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
+    $ENV{VULKAN_SDK}/Lib
+    $ENV{VULKAN_SDK}/Lib32
 )
 
-file(GLOB_RECURSE all_SRCS
+file(GLOB_RECURSE all_SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
     ${PROJECT_SOURCE_DIR}/src/*.h
     ${PROJECT_SOURCE_DIR}/include/*.h
@@ -25,28 +36,35 @@ file(GLOB_RECURSE all_SRCS
     # GLM
     ${PROJECT_SOURCE_DIR}/Dependencies/glm/glm/*.inl
 
+    # Walnut
+    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src/*.h
+
+    # Vulkan
+    $ENV{VULKAN_SDK}/Include/vulkan/*.h
+
 )
 
 file(GLOB IMGUI_SRCS
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/*.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/backends/imgui_impl_glfw.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/backends/imgui_impl_glfw.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/backends/imgui_impl_vulkan.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/dimgui/backends/imgui_impl_vulkan.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_glfw.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_glfw.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_vulkan.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_vulkan.h
+    
 )
 
 
 add_executable(${PROJECT_NAME} ${all_SRCS} ${IMGUI_SRCS})
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-    ${Vulkan_INCLUDE_DIRS}
-)
-
 target_link_libraries(${PROJECT_NAME}
     glfw3
     opengl32
-    ${Vulkan_LIBRARIES}
+    vulkan-1
+
+
+
 )
 
 
