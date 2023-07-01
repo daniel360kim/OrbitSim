@@ -14,6 +14,12 @@
 #include "CentralBody.h"
 #include "constants.h"
 
+CentralBody::CentralBody(const std::string &name, const Type& type, double mass, double radius, double rotationalPeriod) 
+                : CelestialObject(name, type, mass), m_radius(radius), m_rotationPeriod(rotationalPeriod)
+{
+    m_gravitationalParameter = G * m_mass;
+}
+
 double CentralBody::getGravityAcceleration(double distanceFromCenter)
 {
     return (G * m_mass) / (distanceFromCenter * distanceFromCenter);

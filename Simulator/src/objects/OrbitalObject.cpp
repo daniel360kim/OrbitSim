@@ -80,6 +80,21 @@ OrbitalObject OrbitalObjectBuilder::build() const
 
 //*********** Start of OrbitalObject ***********//
 
+OrbitalObject::OrbitalObject(const std::string& name, const Type& type, double mass,
+                  double semiMajorAxis, double eccentricity, double inclination,
+                  double longitudeOfAscendingNode, double argumentOfPeriapsis,
+                  CentralBody centralBody) : CelestialObject(name, type, mass),
+                                        m_semiMajorAxis(semiMajorAxis),
+                                        m_eccentricity(eccentricity),
+                                        m_inclination(inclination),
+                                        m_longitudeOfAscendingNode(longitudeOfAscendingNode),
+                                        m_argumentOfPeriapsis(argumentOfPeriapsis),
+                                        m_centralBody(centralBody)
+{
+    m_meanMotion = calculateMeanMotion();
+    m_orbitalPeriod = calculateOrbitalPeriod();
+}
+
 double OrbitalObject::getApogee() const
 {
     return m_semiMajorAxis * (1 + m_eccentricity);
@@ -90,14 +105,14 @@ double OrbitalObject::getPerigee() const
     return m_semiMajorAxis * (1 - m_eccentricity);
 }
 
-double OrbitalObject::getOrbitalPeriod() const
+double OrbitalObject::calculateOrbitalPeriod() const
 {
     return M_PI * 2.0 * std::sqrt(std::pow((m_semiMajorAxis * 1000.0), 3) / (G * m_centralBody.getMass()));
 }
 
-double OrbitalObject::getMeanMotion() const
+double OrbitalObject::calculateMeanMotion() const
 {
-    return 2.0 * M_PI / getOrbitalPeriod();
+    return 2.0 * M_PI / calculateOrbitalPeriod();
 }
 
 double OrbitalObject::getTrueAnomalyOfAscendingNode() const
@@ -123,5 +138,5 @@ void OrbitalObject::printInformation() const
     std::cout << "Longitude of ascending node: " << m_longitudeOfAscendingNode << std::endl;
     std::cout << "Apogee: " << getApogee() << std::endl;
     std::cout << "Perigee: " << getPerigee() << std::endl;
-    std::cout << "Orbital period: " << std::setprecision(15) << getOrbitalPeriod() << std::setprecision(6) << std::endl;
+    std::cout << "Orbital period: " << std::setprecision(15) << calculateOrbitalPeriod() << std::setprecision(6) << std::endl;
 }

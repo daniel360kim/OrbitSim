@@ -18,7 +18,7 @@
 #include "../math/vectorOps.h"
 #include "../util/csvWriter.h"
 
-const std::vector<std::string> headers = {"Time", "X", "Y", "Z", "VX", "VY", "VZ"};
+const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z", "VX", "VY", "VZ"};
 
 class OrbitalPropogator : public OrbitalObject
 {
@@ -55,7 +55,7 @@ private:
     Vector<double, 3> m_position;
     Vector<double, 3> m_velocity;
 
-    CSVWriter<double, double, double, double, double, double, double> m_csvWriter;
+    CSVWriter<double, double, double, double, double, double, double, double> m_csvWriter;
 
     void writeDataToFile(double currentTime);
 

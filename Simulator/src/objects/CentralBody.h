@@ -24,13 +24,13 @@ class CentralBody : public CelestialObject
 {
 public:
     CentralBody() {}
-    CentralBody(const std::string &name, const Type& type, double mass, double radius, double rotationalPeriod) 
-                : CelestialObject(name, type, mass), m_radius(radius), m_rotationPeriod(rotationalPeriod) {}
+    CentralBody(const std::string &name, const Type& type, double mass, double radius, double rotationalPeriod);
 
     
     //getters
     double getRadius() const { return m_radius; }
     double getRotationalPeriod() const { return m_rotationPeriod; }
+    double getGravitationalParameter() const { return m_gravitationalParameter; }
     double getGravityAcceleration(double distanceFromCenter);
     double getEscapeVelocity(double distanceFromCenter) const;
 
@@ -39,6 +39,7 @@ public:
 private:
     double m_radius;
     double m_rotationPeriod;
+    double m_gravitationalParameter;
 };
 
 

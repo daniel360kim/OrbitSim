@@ -58,13 +58,7 @@ public:
     OrbitalObject(const std::string& name, const Type& type, double mass,
                   double semiMajorAxis, double eccentricity, double inclination,
                   double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                  CentralBody centralBody) : CelestialObject(name, type, mass),
-                                        m_semiMajorAxis(semiMajorAxis),
-                                        m_eccentricity(eccentricity),
-                                        m_inclination(inclination),
-                                        m_longitudeOfAscendingNode(longitudeOfAscendingNode),
-                                        m_argumentOfPeriapsis(argumentOfPeriapsis),
-                                        m_centralBody(centralBody) {}
+                  CentralBody centralBody);
 
     //Getters
     double getSemiMajorAxis() const { return m_semiMajorAxis; }
@@ -72,12 +66,15 @@ public:
     double getInclination() const { return m_inclination; }
     double getLongitudeOfAscendingNode() const { return m_longitudeOfAscendingNode; }
     double getArgumentOfPeriapsis() const { return m_argumentOfPeriapsis; }
+    double getOrbitalPeriod() const { return m_orbitalPeriod; }
+    double getMeanMotion() const { return m_meanMotion; }
 
     double getApogee() const;
     double getPerigee() const;
-    double getOrbitalPeriod() const;
-    double getMeanMotion() const;
     double getTrueAnomalyOfAscendingNode() const;
+
+    double calculateOrbitalPeriod() const;
+    double calculateMeanMotion() const;
 
     //Setters
     void setSemiMajorAxis(double semiMajorAxis) { m_semiMajorAxis = semiMajorAxis; }
@@ -93,7 +90,10 @@ protected:
     double m_inclination;
     double m_longitudeOfAscendingNode;
     double m_argumentOfPeriapsis;
+    double m_meanMotion;
+    double m_orbitalPeriod;
     CentralBody m_centralBody;
+
 };
 
 #endif

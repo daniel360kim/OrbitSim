@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
         .setCentralBody(earth)
         .build();
 
-    OrbitalPropogator propogator(moon, 100);
+    OrbitalPropogator propogator(moon, 1);
 
     propogator.propogateOrbit(2357372.85785691);
     
