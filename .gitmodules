@@ -5,3 +5,9 @@
 [submodule "Simulator/Dependencies/dimgui"]
 	path = Simulator/Dependencies/dimgui
 	url = https://github.com/ocornut/imgui
+[submodule "Simulator/Dependencies/dwalnut"]
+	path = Simulator/Dependencies/dwalnut
+	url = https://github.com/TheCherno/Walnut.git
+[submodule "Simulator/Dependencies/chernoimgui"]
+	path = Simulator/Dependencies/chernoimgui
+	url = https://github.com/TheCherno/imgui.git
