@@ -1,11 +1,4 @@
-[submodule "Simulator/Dependencies/glm"]
-	path = Simulator/Dependencies/glm
-	url = https://github.com/g-truc/glm
 
-[submodule "Simulator/Dependencies/dwalnut"]
-	path = Simulator/Dependencies/dwalnut
-	url = https://github.com/TheCherno/Walnut.git
-[submodule "Simulator/Dependencies/dockimgui"]
-	path = Simulator/Dependencies/dockimgui
-	url = https://github.com/TheCherno/imgui.git
-	branch = docking
+[submodule "Simulator/Dependencies/glmsm"]
+	path = Simulator/Dependencies/glmsm
+	url = https://github.com/g-truc/glm.git
