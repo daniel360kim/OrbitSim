@@ -13,10 +13,11 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include "../objects/OrbitalObject.h"
 #include "../math/vectorOps.h"
-#include "../util/csvWriter.h"
+#include "csv2.h"
 
 const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z", "VX", "VY", "VZ"};
 
@@ -27,13 +28,11 @@ public:
                       double semiMajorAxis, double eccentricity, double inclination,
                       double longitudeOfAscendingNode, double argumentOfPeriapsis,
                       CentralBody centralBody, double timeStep) : OrbitalObject(name, type, mass, semiMajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, centralBody),
-                                                                  m_timeStep(timeStep),
-                                                                  m_csvWriter("prop_data.csv", headers) {}
+                                                                  m_timeStep(timeStep) {}
                                                                   
 
     OrbitalPropogator(const OrbitalObject &orbitalObject, double timeStep) : OrbitalObject(orbitalObject),
-                                                                             m_timeStep(timeStep),
-                                                                             m_csvWriter("../../out/prop_data.csv", headers) {}
+                                                                             m_timeStep(timeStep) {}
 
     void runTimeStep(double currentTimeStep);
     void propogateOrbit(double duration);
@@ -55,9 +54,9 @@ private:
     Vector<double, 3> m_position;
     Vector<double, 3> m_velocity;
 
-    CSVWriter<double, double, double, double, double, double, double, double> m_csvWriter;
+    std::ofstream generateLogFile() const;
+    void logData(csv2::Writer<csv2::delimiter<','>> &writer, double time) const;
 
-    void writeDataToFile(double currentTime);
 
 };
 

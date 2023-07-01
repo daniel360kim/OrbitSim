@@ -12,12 +12,17 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <fstream>
+#include <string>
 #include <chrono>
+
 
 #include "OrbitalPropogator.h"
 #include "../objects/OrbitalInvariants.h"
 #include "../objects/constants.h"
-
+#include "../util/FileNamer.h"
+#include "csv2.h"
 #include "../util/ProgressBar.h"
 
 
@@ -108,7 +113,6 @@ Vector<double, 3> OrbitalPropogator::calculateVelocity(double trueAnomaly) const
 
 void OrbitalPropogator::runTimeStep(double currentTimeStep)
 {
-
     double meanAnomaly = calculateMeanAnomaly(currentTimeStep);
 
     double eccentricAnomaly = calculateEccentricAnomaly(meanAnomaly);
@@ -123,17 +127,37 @@ void OrbitalPropogator::runTimeStep(double currentTimeStep)
 
 void OrbitalPropogator::propogateOrbit(double duration)
 {
+    std::ofstream logFile = generateLogFile();
+    csv2::Writer<csv2::delimiter<','>> csvWriter(logFile);
+
     double currentTime = 0.0;
+    double averageTimeStep = 0.0;
+
+    ProgressBar progressBar(20);
 
     while(currentTime <= duration)
     {
         runTimeStep(currentTime);
-
-        //printInformation();
-
         //progressBar.update(static_cast<float>(currentTime / duration));
+
+        auto start = std::chrono::high_resolution_clock::now();
+        logData(csvWriter, currentTime);
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+        averageTimeStep += elapsed.count();
+
+        //update progress bar every 1000 steps
+        if (static_cast<int>(currentTime) % 1000 == 0)
+        {
+            progressBar.update(static_cast<float>(currentTime / duration));
+        }
+        
         currentTime += m_timeStep;
     }
+
+    std::cout << "\nAverage Time Step: " << averageTimeStep / duration << "\n";
 }
 
 void OrbitalPropogator::printInformation() const
@@ -143,7 +167,47 @@ void OrbitalPropogator::printInformation() const
     std::cout << "Velocity: (" << m_velocity[0] << ", " << m_velocity[1] << ", " << m_velocity[2] << ")\n";
 }
 
-void OrbitalPropogator::writeDataToFile(double currentTime)
+std::ofstream OrbitalPropogator::generateLogFile() const
 {
-    m_csvWriter.addRow(currentTime, m_trueAnomaly, m_position[0], m_position[1], m_position[2], m_velocity[0], m_velocity[1], m_velocity[2]);
+    FileNamer fileNamer("../../out/prop_data.csv");
+    std::ofstream logFile(fileNamer.getAvailableFilename());
+
+    logFile << "Time,True Anomaly,Position X,Position Y,Position Z,Velocity X,Velocity Y,Velocity Z\n";
+
+    return logFile;
+}
+
+void OrbitalPropogator::logData(csv2::Writer<csv2::delimiter<','>>& writer, double time) const
+{
+    // Reserve memory for the row vector to avoid reallocations
+    std::vector<std::string> row;
+    row.reserve(8);
+
+    // Convert double values to strings using a more efficient method than std::to_string
+    char buffer[32]; // Sufficiently large buffer to hold the string representation
+    snprintf(buffer, sizeof(buffer), "%f", time);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_trueAnomaly);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_position[0]);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_position[1]);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_position[2]);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_velocity[0]);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_velocity[1]);
+    row.emplace_back(buffer);
+
+    snprintf(buffer, sizeof(buffer), "%f", m_velocity[2]);
+    row.emplace_back(buffer);
+
+    writer.write_row(row);
 }
