@@ -11,7 +11,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui
     ${PROJECT_SOURCE_DIR}/Dependencies/dwalnut/Walnut/src
 
     # Vulkan
@@ -46,12 +46,12 @@ file(GLOB_RECURSE all_SRC
 )
 
 file(GLOB IMGUI_SRCS
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/*.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_glfw.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_glfw.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_vulkan.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/chernoimgui/backends/imgui_impl_vulkan.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_glfw.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_glfw.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_vulkan.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/dockimgui/backends/imgui_impl_vulkan.h
     
 )
 
