@@ -1,2 +1,0 @@
-# OrbitOps
-Orbital mechanics sim
