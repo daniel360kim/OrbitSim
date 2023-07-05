@@ -22,7 +22,7 @@ include_directories(
 
     #glm
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm
-    
+
     #Walnut
     ${PROJECT_SOURCE_DIR}/Dependencies/walnut
     ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut

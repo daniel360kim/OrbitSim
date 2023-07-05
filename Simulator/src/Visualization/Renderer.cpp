@@ -32,6 +32,7 @@ namespace Visualization
 
     void Renderer::Draw(uint32_t xPos, uint32_t yPos)
     {
+        /*
         auto earth = ViewPort::Get()->GetEarth();
 
         uint32_t *earthPixels = earth->GetPixels();
@@ -55,6 +56,32 @@ namespace Visualization
                 }
             }
         }
+        */
+        // Draw the sphere on top of the earth, set color to blue for now
+        auto sphere = ViewPort::Get()->GetSphere();
+
+        float scale = std::min(m_Width, m_Height) / (2.0f * sphere->GetRadius());
+        float xCenter = m_Width / 2.0f;
+        float yCenter = m_Height / 2.0f;
+
+        for(uint32_t i = 0; i < sphere->GetPositions().size(); i++)
+        {
+            glm::vec3 position = sphere->GetPositions()[i];
+            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * scale + glm::vec2(xCenter, yCenter);
+
+            // Convert the pixel coordinates to array index
+            int x = (int)pixelCoords.x;
+            int y = (int)pixelCoords.y;
+            int index = y * m_Width + x;
+
+            uint32_t sphereColor = 0xFF0000FF;
+            // Check if the pixel is within the bounds of the m_Image image
+            if(x >= 0 && x < m_Width && y >= 0 && y < m_Height)
+            {
+                m_ImageBuffer[index] = sphereColor;
+            }
+        }
+
     }
 
     void Renderer::Clear(uint32_t clearColor)

@@ -18,6 +18,7 @@ namespace Visualization
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
         m_Earth = std::make_shared<Visualization::Image>("../../Resources/earth.jpg");
+        m_Sphere = std::make_shared<Visualization::Sphere>(0.5, 1000, 1000);
     }
 
     ViewPort::~ViewPort()
@@ -26,7 +27,7 @@ namespace Visualization
 
     void ViewPort::OnUpdate(float ts)
     {
-        m_Renderer->Clear(0xff7f007f);
+        m_Renderer->Clear(0x000000FF);
         m_Renderer->Draw(20, 70);
         m_Renderer->UpdateImage();
     }

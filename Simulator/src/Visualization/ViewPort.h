@@ -15,6 +15,7 @@
 
 #include "Renderer.h"
 #include "Image.h"
+#include "Body/Sphere.h"
 
 #include <memory>
 
@@ -33,9 +34,11 @@ namespace Visualization
         static std::shared_ptr<ViewPort> Get();
 
         std::shared_ptr<Visualization::Image> GetEarth() const { return m_Earth; }
+        std::shared_ptr<Visualization::Sphere> GetSphere() const { return m_Sphere; }
 
     private:
         std::shared_ptr<Visualization::Image> m_Earth;
+        std::shared_ptr<Visualization::Sphere> m_Sphere;
         std::shared_ptr<Visualization::Renderer> m_Renderer;
     };
 
