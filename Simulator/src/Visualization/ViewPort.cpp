@@ -1,0 +1,49 @@
+/**
+ * @file ViewPort.cpp
+ * @author Daniel Kim (daniel.kim@studentlaschools.net)
+ * @brief
+ * @version 0.1
+ * @date 2023-07-04
+ *
+ *
+ */
+
+#include "ViewPort.h"
+
+#include <imgui.h>
+
+namespace Visualization
+{
+    ViewPort::ViewPort()
+    {
+        m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
+        m_Earth = std::make_shared<Visualization::Image>("../../Resources/earth.jpg");
+    }
+
+    ViewPort::~ViewPort()
+    {
+    }
+
+    void ViewPort::OnUpdate(float ts)
+    {
+        m_Renderer->Clear(0xff7f007f);
+        m_Renderer->Draw(20, 70);
+        m_Renderer->UpdateImage();
+    }
+    void ViewPort::OnUIRender()
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("Sim");
+
+        uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
+        uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
+
+        ImGui::Image(m_Renderer->GetImage()->GetDescriptorSet(), ImVec2((float)m_Renderer->GetWidth(), (float)m_Renderer->GetHeight()));
+
+        m_Renderer->ResizeIfNeeded(windowWidth, windowHeight);
+
+        ImGui::End();
+
+        ImGui::PopStyleVar();
+    }
+}

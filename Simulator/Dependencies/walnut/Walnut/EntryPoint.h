@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Enable.h"
+
+#if APPLICATION_ENABLE
 
 extern Walnut::Application* Walnut::CreateApplication(int argc, char** argv);
 bool g_ApplicationRunning = true;
@@ -37,4 +40,7 @@ int main(int argc, char** argv)
 }
 
 #endif // WL_DIST
+
+#endif // APPLICATION_ENABLE
+
 

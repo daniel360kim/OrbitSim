@@ -22,15 +22,19 @@ include_directories(
 
     #glm
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm
-
+    
     #Walnut
     ${PROJECT_SOURCE_DIR}/Dependencies/walnut
     ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut
+
+    # Glew
+    ${PROJECT_SOURCE_DIR}/Dependencies/glew/include
 )
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
+    ${PROJECT_SOURCE_DIR}/Dependencies/glew/lib/Release/x64
 )
 
 file(GLOB_RECURSE all_SRCS
@@ -40,10 +44,18 @@ file(GLOB_RECURSE all_SRCS
 )
 
 # glm
-file(GLOB_RECURSE GLM_SRCS
+file(GLOB GLM_SRCS
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.cpp
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.h
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/*.inl
+
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/gtc/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/gtc/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/gtc/*.inl
+
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/ext/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/ext/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm/ext/*.inl
 )
 
 # ImGui
@@ -63,11 +75,15 @@ file(GLOB WALNUT_SRCS
     ${PROJECT_SOURCE_DIR}/Dependencies/walnut/Walnut/Input/*.h
 )
 
-
+# Statically link GLEW
+add_definitions(-DGLEW_STATIC)
 
 add_executable(${PROJECT_NAME} ${all_SRCS} ${GLFW_SRCS} ${GLM_SRCS} ${IMGUI_SRCS} ${WALNUT_SRCS})
 
 target_link_libraries(${PROJECT_NAME} 
     vulkan-1
     glfw3
+    glew32s
+    opengl32
 )
+
