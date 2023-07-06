@@ -89,6 +89,19 @@ namespace Visualization
             moved = true;
         }
 
+        float zoomSpeed = 0.5f;
+        // Q and E for scaling
+        if (Input::IsKeyDown(KeyCode::Q))
+        {
+            m_scale -= zoomSpeed * ts;
+            moved = true;
+        }
+        else if (Input::IsKeyDown(KeyCode::E))
+        {
+            m_scale += zoomSpeed * ts;
+            moved = true;
+        }
+
         // TODO add mouse sensitivity setting
         if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
         {
