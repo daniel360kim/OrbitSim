@@ -15,6 +15,8 @@
 
 #include "Walnut/Image.h"
 
+#include "Camera.h"
+
 namespace Visualization
 {
     class Renderer
@@ -23,7 +25,7 @@ namespace Visualization
         Renderer(uint32_t width, uint32_t height);
         ~Renderer();
 
-        void Draw(uint32_t xPos, uint32_t yPos);
+        void Draw(uint32_t xPos, uint32_t yPos, const Camera &camera);
 
         void Clear(uint32_t clearColor = 0xFF000000);
         void ClearRandom();

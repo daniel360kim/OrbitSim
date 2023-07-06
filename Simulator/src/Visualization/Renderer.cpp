@@ -13,7 +13,7 @@
 #include "Walnut/Random.h"
 
 #include <iostream>
-
+#include <glm/gtx/rotate_vector.hpp>
 #include "ViewPort.h"
 
 namespace Visualization
@@ -30,33 +30,8 @@ namespace Visualization
         delete[] m_ImageBuffer;
     }
 
-    void Renderer::Draw(uint32_t xPos, uint32_t yPos)
+    void Renderer::Draw(uint32_t xPos, uint32_t yPos, const Camera &camera)
     {
-        /*
-        auto earth = ViewPort::Get()->GetEarth();
-
-        uint32_t *earthPixels = earth->GetPixels();
-        uint32_t earthWidth = earth->GetWidth();
-        uint32_t earthHeight = earth->GetHeight();
-
-        for (uint32_t y = 0; y < earthHeight; y++)
-        {
-            for (uint32_t x = 0; x < earthWidth; x++)
-            {
-                int32_t imageX = xPos + x;
-                int32_t imageY = yPos + y;
-
-                // Check if the pixel is within the bounds of the m_Image image
-                if (imageX >= 0 && imageX < m_Width && imageY >= 0 && imageY < m_Height)
-                {
-                    uint32_t imageIndex = imageY * m_Width + imageX;
-                    uint32_t earthIndex = y * earthWidth + x;
-
-                    m_ImageBuffer[imageIndex] = earthPixels[earthIndex];
-                }
-            }
-        }
-        */
         // Draw the sphere on top of the earth, set color to blue for now
         auto sphere = ViewPort::Get()->GetSphere();
 
@@ -64,24 +39,31 @@ namespace Visualization
         float xCenter = m_Width / 2.0f;
         float yCenter = m_Height / 2.0f;
 
-        for(uint32_t i = 0; i < sphere->GetPositions().size(); i++)
+        for (uint32_t i = 0; i < sphere->GetPositions().size(); i++)
         {
             glm::vec3 position = sphere->GetPositions()[i];
+
+            // Apply transformations using the Camera properties
+            position = position * camera.GetScale();              // Scale the position
+            position = glm::rotateX(position, camera.GetPitch()); // Rotate around the x-axis (pitch)
+            position = glm::rotateY(position, camera.GetYaw());   // Rotate around the y-axis (yaw)
+            position = glm::rotateZ(position, camera.GetRoll());  // Rotate around the z-axis (roll)
+            position = position + camera.GetPosition();           // Translate the position
+
             glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * scale + glm::vec2(xCenter, yCenter);
 
             // Convert the pixel coordinates to array index
-            int x = (int)pixelCoords.x;
-            int y = (int)pixelCoords.y;
+            int x = static_cast<int>(pixelCoords.x);
+            int y = static_cast<int>(pixelCoords.y);
             int index = y * m_Width + x;
 
             uint32_t sphereColor = 0xFF0000FF;
             // Check if the pixel is within the bounds of the m_Image image
-            if(x >= 0 && x < m_Width && y >= 0 && y < m_Height)
+            if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
             {
                 m_ImageBuffer[index] = sphereColor;
             }
         }
-
     }
 
     void Renderer::Clear(uint32_t clearColor)

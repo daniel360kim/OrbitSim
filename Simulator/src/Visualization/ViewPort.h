@@ -16,6 +16,7 @@
 #include "Renderer.h"
 #include "Image.h"
 #include "Body/Sphere.h"
+#include "Camera.h"
 
 #include <memory>
 
@@ -40,6 +41,10 @@ namespace Visualization
         std::shared_ptr<Visualization::Image> m_Earth;
         std::shared_ptr<Visualization::Sphere> m_Sphere;
         std::shared_ptr<Visualization::Renderer> m_Renderer;
+
+        Camera m_Camera;
+
+        float scale;
     };
 
 }
