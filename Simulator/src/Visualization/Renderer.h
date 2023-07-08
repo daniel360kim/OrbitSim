@@ -47,6 +47,9 @@ namespace Visualization
         
         std::vector<uint32_t> m_imageBuffer;
 
+        void fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3);
+        uint32_t interpolateColor(uint32_t color1, uint32_t color2, float t);
+
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;
 

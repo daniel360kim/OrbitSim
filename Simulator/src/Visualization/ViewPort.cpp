@@ -17,7 +17,7 @@ namespace Visualization
     ViewPort::ViewPort()
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
-        m_Sphere = std::make_shared<Visualization::Sphere>(1, 1000, 1000, "../../Resources/earth.jpg", 8192, 4096);
+        m_Sphere = std::make_shared<Visualization::Sphere>(1, 7, "../../Resources/earth.jpg");
         m_Camera = std::make_shared<Visualization::Camera>(960, 540);
     }
 

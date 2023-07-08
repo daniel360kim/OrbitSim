@@ -4,8 +4,8 @@
  * @brief generates a sphere, texture is later mapped onto it
  * @version 0.1
  * @date 2023-07-05
- * 
- * 
+ *
+ *
  */
 
 #ifndef Sphere_H
@@ -23,40 +23,35 @@ namespace Visualization
     class Sphere
     {
     public:
-        Sphere(double radius, int segments, int rings, const std::string& texturePath, int textureWidth, int textureHeight);
+        Sphere(double radius, int subdivisionLevel, const std::string &texturePath);
 
-        //Getters
-        const float GetRadius() const { return m_radius; }
-        const int GetSegments() const { return m_segments; }
-        const int GetRings() const { return m_rings; }
-        
-        const std::vector<glm::vec3>& GetPositions() const { return m_positions; }
-        const std::vector<glm::vec3>& GetNormals() const { return m_normals; }
-        const std::vector<unsigned int>& GetIndices() const { return m_indices; }
-        const std::vector<glm::vec2>& GetTexCoords() const { return m_texCoords; }
+        // Getters
+        float GetRadius() const { return m_radius; }
+        int GetSubdivisionLevel() const { return m_subdivisionLevel; }
+
+        const std::vector<glm::vec3> &GetPositions() const { return m_positions; }
+        const std::vector<glm::vec3> &GetNormals() const { return m_normals; }
+        const std::vector<unsigned int> &GetIndices() const { return m_indices; }
+        const std::vector<glm::vec2> &GetTexCoords() const { return m_texCoords; }
 
         std::shared_ptr<Texture> GetTexture() { return m_texture; }
 
     private:
         float m_radius;
-        int m_segments; // number of segments (vertical)
-        int m_rings; // number of rings (horizontal)
-        int m_textureWidth;
-        int m_textureHeight;
-        
+        int m_subdivisionLevel;
+
         std::shared_ptr<Texture> m_texture;
 
-        std::vector<glm::vec3> m_positions; //Vertex positions
-        std::vector<glm::vec3> m_normals; //Vertex normals
-        std::vector<glm::vec2> m_texCoords; //Texture coordinates
-        std::vector<unsigned int> m_indices; //Indices for drawing sphere
+        std::vector<glm::vec3> m_positions;  // Vertex positions
+        std::vector<glm::vec3> m_normals;    // Vertex normals
+        std::vector<glm::vec2> m_texCoords;  // Texture coordinates
+        std::vector<unsigned int> m_indices; // Indices for drawing sphere
 
         void generateSphere();
+        void subdivideTriangle(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, int level);
+        void computeTextureCoordinates();
     };
 
 }
-
-
-
 
 #endif

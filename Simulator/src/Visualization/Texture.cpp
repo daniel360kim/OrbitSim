@@ -19,7 +19,7 @@ namespace Visualization
     Texture::Texture(const std::string &path)
         : m_Path(path), m_imageData(nullptr), m_width(0), m_height(0), m_channels(0)
     {   
-        stbi_set_flip_vertically_on_load(1);
+        stbi_set_flip_vertically_on_load(true);
         m_imageData = stbi_load(path.c_str(), &m_width, &m_height, &m_channels, 0);
         if (m_imageData == nullptr)
         {
@@ -44,6 +44,13 @@ namespace Visualization
             return glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
+        // Check if the texture coordinates are in bounds
+        if (textureCoords.x < 0.0f || textureCoords.x > 1.0f || textureCoords.y < 0.0f || textureCoords.y > 1.0f)
+        {
+            std::cout << "Texture coordinates out of bounds: " << textureCoords.x << ", " << textureCoords.y << std::endl;
+            return glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        }
+
         // Calculate the pixel index
         unsigned int x = (unsigned int)(textureCoords.x * m_width);
         unsigned int y = (unsigned int)(textureCoords.y * m_height);
@@ -63,7 +70,6 @@ namespace Visualization
 
         // Convert to float and return
         return glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-
     }
 
 

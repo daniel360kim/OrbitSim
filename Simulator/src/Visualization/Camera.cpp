@@ -64,7 +64,7 @@ namespace Visualization
         bool moved = false;
 
         float movementSpeed = 10.0f;
-        float zoomSpeed = 5.0f;
+        float zoomSpeed = 1.0f;
         float rotationSpeed = 0.5f;
 
         glm::vec3 forward = getForwardDirection();
@@ -120,7 +120,13 @@ namespace Visualization
         {
             movementType = MovementType::Zoom;
 
+            // Calculate new scale, prevent from going negative so scroll direction doesnt flip
             m_scale -= -scrollOffset * zoomSpeed * ts;
+            if (m_scale < 0.0f)
+            {
+                m_scale = 0.0f;
+            }
+
             moved = true;
         }
         
