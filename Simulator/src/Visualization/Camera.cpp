@@ -45,91 +45,6 @@ namespace Visualization
 
     bool Camera::OnUpdate(float ts)
     {
-        /* old version
-        using namespace Walnut;
-        glm::vec2 mousePosition = Input::GetMousePosition();
-        glm::vec2 deltaMousePosition = (mousePosition - m_lastMousePosition) * 0.002f;
-        m_lastMousePosition = mousePosition;
-
-        if (!Input::IsMouseButtonDown(MouseButton::Right))
-        {
-            Input::SetCursorMode(CursorMode::Normal);
-            return false;
-        }
-
-        Input::SetCursorMode(CursorMode::Locked);
-
-        bool moved = false;
-
-        float movementSpeed = 0.5f;
-
-        glm::vec3 forward = getForwardDirection();
-        glm::vec3 right = getRightDirection();
-        glm::vec3 up = getUpDirection();
-
-        if (Input::IsKeyDown(KeyCode::W))
-        {
-            m_position -= up * movementSpeed * ts;
-            moved = true;
-        }
-        else if (Input::IsKeyDown(KeyCode::S))
-        {
-            m_position += up * movementSpeed * ts;
-            moved = true;
-        }
-        if (Input::IsKeyDown(KeyCode::A))
-        {
-            m_position -= right * movementSpeed * ts;
-            moved = true;
-        }
-        else if (Input::IsKeyDown(KeyCode::D))
-        {
-            m_position += right * movementSpeed * ts;
-            moved = true;
-        }
-
-        float zoomSpeed = 0.5f;
-        // Q and E for scaling
-        if (Input::IsKeyDown(KeyCode::Q))
-        {
-            m_scale -= zoomSpeed * ts;
-            moved = true;
-        }
-        else if (Input::IsKeyDown(KeyCode::E))
-        {
-            m_scale += zoomSpeed * ts;
-            moved = true;
-        }
-
-        // TODO add mouse sensitivity setting
-        if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
-        {
-            // Calculate new yaw and pitch
-            m_yaw += deltaMousePosition.x;
-            m_pitch += deltaMousePosition.y;
-
-            // Clamp pitch
-            if (m_pitch > 89.0f)
-            {
-                m_pitch = 89.0f;
-            }
-            else if (m_pitch < -89.0f)
-            {
-                m_pitch = -89.0f;
-            }
-
-            moved = true;
-        }
-
-        if (moved)
-        {
-            UpdateViewMatrix();
-        }
-
-        return moved;
-
-        */
-
         enum class MovementType
         {
             None,
@@ -200,7 +115,7 @@ namespace Visualization
         }
 
         // Scrolling, set to zoom
-        float scrollOffset = Input::GetMouseScrollOffset();
+        float scrollOffset = Input::GetMouseScrollOffset().y;
         if (scrollOffset != 0)
         {
             movementType = MovementType::Zoom;
