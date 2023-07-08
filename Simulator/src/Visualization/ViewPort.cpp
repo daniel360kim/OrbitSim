@@ -15,11 +15,12 @@
 namespace Visualization
 {
     ViewPort::ViewPort()
-        : m_Camera(960, 540), scale(0.0f)
+        : m_Camera(960, 540)
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
         m_Earth = std::make_shared<Visualization::Image>("../../Resources/earth.jpg");
         m_Sphere = std::make_shared<Visualization::Sphere>(1, 500, 500);
+
     }
 
     ViewPort::~ViewPort()
@@ -29,8 +30,6 @@ namespace Visualization
     void ViewPort::OnUpdate(float ts)
     {
         m_Camera.OnUpdate(ts);
-
-        scale += 0.001f;
 
         m_Renderer->Clear(0x0000FFFF);
         m_Renderer->Draw(0, 0, m_Camera);

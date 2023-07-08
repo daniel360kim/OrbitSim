@@ -37,6 +37,7 @@ namespace Visualization
 
         std::vector<glm::vec3> m_positions; //Vertex positions
         std::vector<glm::vec3> m_normals; //Vertex normals
+        std::vector<glm::vec2> m_texCoords; //Texture coordinates
         std::vector<unsigned int> m_indices; //Indices for drawing sphere
 
         void generateSphere();

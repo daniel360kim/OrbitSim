@@ -26,21 +26,25 @@ namespace Visualization
         float sectorStep = 2 * M_PI / m_segments; // Angle between two vertical segments
         float stackStep = M_PI / m_rings;         // Angle between two horizontal rings
 
-        for (int stack = 0; stack <= m_rings; ++stack)
+        for (int stack = 0; stack <= m_rings; stack++)
         {
             float stackAngle = M_PI / 2 - stack * stackStep;
             float xy = m_radius * std::cosf(stackAngle);
             float z = m_radius * std::sinf(stackAngle);
 
-            for (int sector = 0; sector <= m_segments; ++sector)
+            for (int sector = 0; sector <= m_segments; sector++)
             {
                 float sectorAngle = sector * sectorStep;
 
                 float x = xy * std::cosf(sectorAngle);
                 float y = xy * std::sinf(sectorAngle);
 
+                float s = (float)sector / m_segments;
+                float t = (float)stack / m_rings;
+
                 m_positions.push_back(glm::vec3(x, y, z));               // Add vertex position
                 m_normals.push_back(glm::normalize(glm::vec3(x, y, z))); // Add vertex normal
+                m_texCoords.push_back(glm::vec2(s, t));                  // Add texture coordinate
             }
         }
 

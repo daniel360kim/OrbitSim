@@ -16,6 +16,7 @@
 #include "Walnut/Image.h"
 
 #include "Camera.h"
+#include "Body/Texture.h"
 
 namespace Visualization
 {

@@ -64,6 +64,7 @@ namespace Visualization
                 m_ImageBuffer[index] = sphereColor;
             }
         }
+
     }
 
     void Renderer::Clear(uint32_t clearColor)
