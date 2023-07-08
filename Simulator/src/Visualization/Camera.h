@@ -18,7 +18,7 @@ namespace Visualization
     class Camera
     {
     public:
-        Camera(float screenWidth, float screenHeight);
+        Camera();
 
         bool OnUpdate(float ts);
 
@@ -40,9 +40,6 @@ namespace Visualization
         glm::vec3 getUpDirection() const;
 
     private:
-        float m_screenWidth;
-        float m_screenHeight;
-
         glm::vec3 m_position;
         glm::vec3 m_forwardDirection; // Needed so that up direction doesn't change when rotating
         float m_scale;

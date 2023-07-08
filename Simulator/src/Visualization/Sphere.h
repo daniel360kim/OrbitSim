@@ -15,11 +15,18 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 
 #include "Texture.h"
 
 namespace Visualization
 {
+    struct Triangle
+    {
+        std::array<unsigned int, 3> indices;
+        std::array<glm::vec2, 3> texCoords;
+    };
+
     class Sphere
     {
     public:

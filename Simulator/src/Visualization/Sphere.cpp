@@ -75,6 +75,8 @@ namespace Visualization
         {
             m_indices[i] = i;
         }
+
+        
     }
 
     void Sphere::subdivideTriangle(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, int level)
@@ -96,6 +98,7 @@ namespace Visualization
         subdivideTriangle(v3, v31, v23, level - 1);
         subdivideTriangle(v12, v23, v31, level - 1);
     }
+    
     void Sphere::computeTextureCoordinates()
     {
         m_texCoords.resize(m_positions.size());

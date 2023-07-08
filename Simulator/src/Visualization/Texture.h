@@ -24,6 +24,7 @@ namespace Visualization
         ~Texture();
 
         glm::vec4 getPixel(glm::vec2& textureCoords) const;
+        std::vector<glm::vec4> getPixels(const std::vector<glm::vec2>& textureCoords) const;
 
         inline int getWidth() const { return m_width; }
         inline int getHeight() const { return m_height; }

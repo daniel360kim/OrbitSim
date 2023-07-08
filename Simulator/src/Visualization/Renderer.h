@@ -44,11 +44,17 @@ namespace Visualization
     
     private:
         std::shared_ptr<Walnut::Image> m_Image;
-        
         std::vector<uint32_t> m_imageBuffer;
+
+        glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 offset);
+        uint32_t convertColors(const glm::vec4& color);
 
         void fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3);
         uint32_t interpolateColor(uint32_t color1, uint32_t color2, float t);
+        void unpackColors(uint32_t color, std::array<uint32_t, 4>& components);
+        uint32_t interpolateComponent(uint32_t component1, uint32_t component2, float t);
+        
+
 
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;

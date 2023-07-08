@@ -17,9 +17,8 @@
 
 namespace Visualization
 {
-    Camera::Camera(float screenWidth, float screenHeight)
-        : m_screenWidth(screenWidth), m_screenHeight(screenHeight),
-          m_position(0.0f), m_scale(1.0f),
+    Camera::Camera()
+        : m_position(0.0f), m_scale(1.0f),
           m_yaw(0.0f), m_pitch(0.0f)
     {
         m_forwardDirection = glm::vec3(0.0f, 0.0f, -1.0f);
