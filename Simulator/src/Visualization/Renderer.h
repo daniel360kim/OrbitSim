@@ -17,7 +17,7 @@
 #include "Walnut/Image.h"
 
 #include "Camera.h"
-#include "Body/Texture.h"
+#include "Texture.h"
 
 namespace Visualization
 {
@@ -27,7 +27,7 @@ namespace Visualization
         Renderer(uint32_t width, uint32_t height);
         ~Renderer();
 
-        void Draw(uint32_t xPos, uint32_t yPos, const Camera &camera);
+        void Draw();
 
         void Clear(uint32_t clearColor = 0xFF000000);
         void ClearRandom();
@@ -39,7 +39,6 @@ namespace Visualization
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
 
-        //uint32_t* GetImageBuffer() const { return m_ImageBuffer; }
         std::vector<uint32_t>& GetImageBuffer() { return m_imageBuffer; }
         std::shared_ptr<Walnut::Image> GetImage() const { return m_Image; }
     
@@ -50,6 +49,7 @@ namespace Visualization
 
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;
+
     };
 };
 

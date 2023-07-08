@@ -15,7 +15,7 @@
 
 #include "Renderer.h"
 #include "Image.h"
-#include "Body/Sphere.h"
+#include "Sphere.h"
 #include "Camera.h"
 
 #include <memory>
@@ -35,12 +35,12 @@ namespace Visualization
         static std::shared_ptr<ViewPort> Get();
 
         std::shared_ptr<Visualization::Sphere> GetSphere() const { return m_Sphere; }
+        std::shared_ptr<Visualization::Camera> GetCamera() const { return m_Camera; }
 
     private:
         std::shared_ptr<Visualization::Sphere> m_Sphere;
         std::shared_ptr<Visualization::Renderer> m_Renderer;
-    
-        Camera m_Camera;
+        std::shared_ptr<Visualization::Camera> m_Camera;
     };
 
 }

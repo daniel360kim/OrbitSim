@@ -29,10 +29,11 @@ namespace Visualization
     {
     }
 
-    void Renderer::Draw(uint32_t xPos, uint32_t yPos, const Camera &camera)
+    void Renderer::Draw()
     {
         // Draw the sphere on top of the earth, set color to blue for now
         auto sphere = ViewPort::Get()->GetSphere();
+        auto camera = ViewPort::Get()->GetCamera();
 
         float scale = std::min(m_Width, m_Height) / (2.0f * sphere->GetRadius());
         float xCenter = m_Width / 2.0f;
@@ -43,10 +44,10 @@ namespace Visualization
             glm::vec3 position = sphere->GetPositions()[i];
 
             // Apply transformations using the Camera properties
-            position = position * camera.GetScale();              // Scale the position
-            position = glm::rotateX(position, camera.GetPitch()); // Rotate around the x-axis (pitch)
-            position = glm::rotateY(position, camera.GetYaw());   // Rotate around the y-axis (yaw)
-            position = position + camera.GetPosition();           // Translate the position
+            position = position * camera->GetScale();              // Scale the position
+            position = glm::rotateX(position, camera->GetPitch()); // Rotate around the x-axis (pitch)
+            position = glm::rotateY(position, camera->GetYaw());   // Rotate around the y-axis (yaw)
+            position = position + camera->GetPosition();           // Translate the position
 
             glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * scale + glm::vec2(xCenter, yCenter);
 
@@ -55,11 +56,22 @@ namespace Visualization
             int y = static_cast<int>(pixelCoords.y);
             int index = y * m_Width + x;
 
-            uint32_t sphereColor = 0xFF0000FF;
             // Check if the pixel is within the bounds of the m_Image image
             if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
             {
-                m_imageBuffer[index] = sphereColor;
+                // Map texture coordinates to the sphere
+                glm::vec2 textureCoords = sphere->GetTexCoords()[i];
+                // Sample 
+                glm::vec4 color = sphere->GetTexture()->getPixel(glm::vec2(textureCoords.x, textureCoords.y));
+
+                // Convert the color to a 32-bit integer
+                uint32_t colorInt = (static_cast<uint32_t>(color.a * 255.0f) << 24) |
+                                    (static_cast<uint32_t>(color.b * 255.0f) << 16) |
+                                    (static_cast<uint32_t>(color.g * 255.0f) << 8) |
+                                    (static_cast<uint32_t>(color.r * 255.0f));
+                
+                m_imageBuffer[index] = colorInt;
+
             }
         }
 
