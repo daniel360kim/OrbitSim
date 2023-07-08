@@ -21,11 +21,7 @@
 
 namespace Visualization
 {
-    struct Triangle
-    {
-        std::array<unsigned int, 3> indices;
-        std::array<glm::vec2, 3> texCoords;
-    };
+
 
     class Sphere
     {

@@ -67,6 +67,26 @@ namespace Visualization
 
     void Renderer::Draw()
     {
+        //Draw the space background
+        auto spaceBackground = ViewPort::Get()->GetSpaceBackground();
+        
+        uint32_t* spaceBackgroundData = spaceBackground->GetPixels();
+        uint32_t spaceBackgroundWidth = spaceBackground->GetWidth();
+        uint32_t spaceBackgroundHeight = spaceBackground->GetHeight();
+
+        for (uint32_t y = 0; y < m_Height; y++)
+        {
+            for (uint32_t x = 0; x < m_Width; x++)
+            {
+                uint32_t spaceBackgroundX = (uint32_t)((float)x / m_Width * spaceBackgroundWidth);
+                uint32_t spaceBackgroundY = (uint32_t)((float)y / m_Height * spaceBackgroundHeight);
+
+                uint32_t spaceBackgroundIndex = spaceBackgroundY * spaceBackgroundWidth + spaceBackgroundX;
+
+                m_imageBuffer[y * m_Width + x] = spaceBackgroundData[spaceBackgroundIndex];
+            }
+        }
+
         // Draw the sphere on top of the earth, set color to blue for now
         auto sphere = ViewPort::Get()->GetSphere();
         auto camera = ViewPort::Get()->GetCamera();

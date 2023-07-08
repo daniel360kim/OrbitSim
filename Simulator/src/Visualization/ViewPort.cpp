@@ -19,8 +19,9 @@ namespace Visualization
     ViewPort::ViewPort()
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
-        m_Sphere = std::make_shared<Visualization::Sphere>(1, 6, "../../Resources/earth.jpg");
+        m_Sphere = std::make_shared<Visualization::Sphere>(1, 6, "../../Resources/earthDay.jpg");
         m_Camera = std::make_shared<Visualization::Camera>();
+        m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/milkyway.jpg");
     }
 
     ViewPort::~ViewPort()
@@ -33,10 +34,7 @@ namespace Visualization
         m_Camera->OnUpdate(ts);
         m_Renderer->Clear(0x0000FFFF);
 
-        Timer timer("Draw");
         m_Renderer->Draw();
-        timer.Stop();
-        timer.printResults();
         
         m_Renderer->UpdateImage();
     }
