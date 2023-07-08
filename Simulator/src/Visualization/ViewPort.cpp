@@ -19,9 +19,15 @@ namespace Visualization
     ViewPort::ViewPort()
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
-        m_Sphere = std::make_shared<Visualization::Sphere>(1, 6, "../../Resources/earthDay.jpg");
+        m_Earth = std::make_shared<Visualization::Body>(1, 6, "../../Resources/earthDay.jpg", "Earth", Visualization::Body::BodyType::Planet);
+        m_Sun = std::make_shared<Visualization::Body>(1, 6, "../../Resources/sun.jpg", "Sun", Visualization::Body::BodyType::Star);
+        m_Moon = std::make_shared<Visualization::Body>(1, 6, "../../Resources/moon.jpg", "Moon", Visualization::Body::BodyType::Moon);
         m_Camera = std::make_shared<Visualization::Camera>();
         m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/milkyway.jpg");
+
+        m_Bodies.push_back(m_Earth);
+        m_Bodies.push_back(m_Sun);
+        m_Bodies.push_back(m_Moon);
     }
 
     ViewPort::~ViewPort()
@@ -30,11 +36,10 @@ namespace Visualization
 
     void ViewPort::OnUpdate(float ts)
     {
-
         m_Camera->OnUpdate(ts);
         m_Renderer->Clear(0x0000FFFF);
 
-        m_Renderer->Draw();
+        m_Renderer->Draw(m_Bodies);
         
         m_Renderer->UpdateImage();
     }

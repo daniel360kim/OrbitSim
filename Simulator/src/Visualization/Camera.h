@@ -14,7 +14,15 @@
 #include <glm/glm.hpp>
 
 namespace Visualization
-{ 
+{
+    //Provides information that is needed 
+    struct CameraInfo
+    {
+        float scale;
+        glm::vec3 position;
+        glm::vec3 forwardDirection;
+    };
+
     class Camera
     {
     public:
@@ -32,6 +40,8 @@ namespace Visualization
         float GetYaw() const { return m_yaw; }
         float GetPitch() const { return m_pitch; }
         float GetScale() const { return m_scale; }
+
+        CameraInfo GetCameraInfo() const;
 
         glm::mat4 GetViewMatrix() const;
 

@@ -18,6 +18,8 @@
 
 #include "Camera.h"
 #include "Texture.h"
+#include "Image.h"
+#include "Bodies/Body.h"
 
 namespace Visualization
 {
@@ -27,7 +29,10 @@ namespace Visualization
         Renderer(uint32_t width, uint32_t height);
         ~Renderer();
 
-        void Draw();
+        void Draw(std::vector<std::shared_ptr<Body>>& bodies);
+
+        void DrawBackground(std::shared_ptr<Image> background);
+        void DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2& offset);
 
         void Clear(uint32_t clearColor = 0xFF000000);
         void ClearRandom();
@@ -45,21 +50,21 @@ namespace Visualization
     private:
         std::shared_ptr<Walnut::Image> m_Image;
         std::vector<uint32_t> m_imageBuffer;
+        uint32_t m_Width = 0;
+        uint32_t m_Height = 0;
+
+        std::vector<Body> m_Bodies;
 
         glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 offset);
         uint32_t convertColors(const glm::vec4& color);
 
         void fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3);
         uint32_t interpolateColor(uint32_t color1, uint32_t color2, float t);
-        void unpackColors(uint32_t color, std::array<uint32_t, 4>& components);
         uint32_t interpolateComponent(uint32_t component1, uint32_t component2, float t);
 
-        float calculateBlendingFactor(const glm::vec4& texCoords);
-        
-
-
-        uint32_t m_Width = 0;
-        uint32_t m_Height = 0;
+        inline bool isInFrontOfCamera(glm::vec3& positionCoords, glm::vec3& cameraDirection);
+        bool isInFrontOfCamera(glm::vec3& positionCoords1, glm::vec3& positionCoords2, glm::vec3& positionCoords3,glm::vec3& cameraDirection);
+        inline bool isWithinImageBounds(int x, int y);
 
     };
 };

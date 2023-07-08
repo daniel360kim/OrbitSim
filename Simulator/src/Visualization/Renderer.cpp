@@ -65,45 +65,62 @@ namespace Visualization
         m_Image->SetData(m_imageBuffer.data());
     }
 
-    void Renderer::Draw()
+    void Renderer::Draw(std::vector<std::shared_ptr<Body>>& bodies)
     {
-        //Draw the space background
-        auto spaceBackground = ViewPort::Get()->GetSpaceBackground();
+        DrawBackground(ViewPort::Get()->GetSpaceBackground());
+        // Draw the earth on top of the earth, set color to blue for now
+        auto earth = ViewPort::Get()->GetEarth();
+        auto camera = ViewPort::Get()->GetCamera();
+
+        // Divide the available space into the number of bodies
+        //Distribute each 
+        // Calculate the offset for each body
+
+        int numBodies = bodies.size();
+
+        float dividerDistance = m_Width / (numBodies + 1);
         
-        uint32_t* spaceBackgroundData = spaceBackground->GetPixels();
-        uint32_t spaceBackgroundWidth = spaceBackground->GetWidth();
-        uint32_t spaceBackgroundHeight = spaceBackground->GetHeight();
+        for (int i = 0; i < numBodies; i++)
+        {
+            float offset = (i + 1) * dividerDistance;
+            std::cout << offset << std::endl;
+
+            std::cout << "Middle of screen: " << m_Width / 2 << std::endl;
+            DrawBody(bodies[i], camera, glm::vec2(offset, m_Height / 2));
+        }
+    }
+
+    void Renderer::DrawBackground(std::shared_ptr<Image> background)
+    {
+        // Draw the space background
+        uint32_t *backgroundData = background->GetPixels();
+        uint32_t backgroundWidth = background->GetWidth();
+        uint32_t backgroundHeight = background->GetHeight();
 
         for (uint32_t y = 0; y < m_Height; y++)
         {
             for (uint32_t x = 0; x < m_Width; x++)
             {
-                uint32_t spaceBackgroundX = (uint32_t)((float)x / m_Width * spaceBackgroundWidth);
-                uint32_t spaceBackgroundY = (uint32_t)((float)y / m_Height * spaceBackgroundHeight);
+                uint32_t backgroundX = (uint32_t)((float)x / m_Width * backgroundWidth);
+                uint32_t backgroundY = (uint32_t)((float)y / m_Height * backgroundHeight);
 
-                uint32_t spaceBackgroundIndex = spaceBackgroundY * spaceBackgroundWidth + spaceBackgroundX;
+                uint32_t backgroundIndex = backgroundY * backgroundWidth + backgroundX;
 
-                m_imageBuffer[y * m_Width + x] = spaceBackgroundData[spaceBackgroundIndex];
+                m_imageBuffer[y * m_Width + x] = backgroundData[backgroundIndex];
             }
         }
+    }
 
-        // Draw the sphere on top of the earth, set color to blue for now
-        auto sphere = ViewPort::Get()->GetSphere();
-        auto camera = ViewPort::Get()->GetCamera();
+    void Renderer::DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2& offset)
+    {
+        float scale = std::min(m_Width, m_Height) / (2.0f * body->GetRadius());
 
-        float scale = std::min(m_Width, m_Height) / (2.0f * sphere->GetRadius());
+        const std::vector<unsigned int> &indices = body->GetIndices();
+        const std::vector<glm::vec3> &positions = body->GetPositions();
+        const std::vector<glm::vec2> &texCoords = body->GetTexCoords();
 
-        glm::vec2 offset = glm::vec2(m_Width / 2.0f, m_Height / 2.0f);
-
-        const std::vector<unsigned int> &indices = sphere->GetIndices();
-        const std::vector<glm::vec3> &positions = sphere->GetPositions();
-        const std::vector<glm::vec2> &texCoords = sphere->GetTexCoords();
-
-        float cameraScale = camera->GetScale();
-        float cameraPitch = camera->GetPitch();
-        float cameraYaw = camera->GetYaw();
-        glm::vec3 cameraPosition = camera->GetPosition();
-        glm::vec3 cameraForward = camera->getForwardDirection();
+        glm::mat4 viewMatrix = camera->GetViewMatrix();
+        CameraInfo cameraInfo = camera->GetCameraInfo();
 
         #pragma omp parallel for
         for (uint32_t i = 0; i < indices.size(); i += 3)
@@ -113,30 +130,16 @@ namespace Visualization
             glm::vec3 position3 = positions[indices[i + 2]];
 
             // Apply transformations using the Camera properties
-            position1 = position1 * cameraScale; // Scale the position
-            position2 = position2 * cameraScale; // Scale the position
-            position3 = position3 * cameraScale; // Scale the position
-
-            position1 = glm::rotateX(position1, cameraPitch); // Rotate around the x-axis (pitch)
-            position2 = glm::rotateX(position2, cameraPitch); // Rotate around the x-axis (pitch)
-            position3 = glm::rotateX(position3, cameraPitch); // Rotate around the x-axis (pitch)
-
-            position1 = glm::rotateY(position1, cameraYaw); // Rotate around the y-axis (yaw)
-            position2 = glm::rotateY(position2, cameraYaw); // Rotate around the y-axis (yaw)
-            position3 = glm::rotateY(position3, cameraYaw); // Rotate around the y-axis (yaw)
-
-            position1 = position1 + cameraPosition; // Translate the position
-            position2 = position2 + cameraPosition; // Translate the position
-            position3 = position3 + cameraPosition; // Translate the position
+            position1 = glm::vec3(viewMatrix * glm::vec4(position1 * cameraInfo.scale, 1.0));
+            position2 = glm::vec3(viewMatrix * glm::vec4(position2 * cameraInfo.scale, 1.0));
+            position3 = glm::vec3(viewMatrix * glm::vec4(position3 * cameraInfo.scale, 1.0));
 
             // Check if the positions are in front of the camera - only render what the camera can see
-            glm::vec3 cameraToPosition1 = position1 - cameraPosition;
-            glm::vec3 cameraToPosition2 = position2 - cameraPosition;
-            glm::vec3 cameraToPosition3 = position3 - cameraPosition;
+            glm::vec3 cameraToPosition1 = position1 - cameraInfo.position;
+            glm::vec3 cameraToPosition2 = position2 - cameraInfo.position;
+            glm::vec3 cameraToPosition3 = position3 - cameraInfo.position;
 
-            if (glm::dot(cameraToPosition1, cameraForward) > 0.0f &&
-                glm::dot(cameraToPosition2, cameraForward) > 0.0f &&
-                glm::dot(cameraToPosition3, cameraForward) > 0.0f)
+            if (isInFrontOfCamera(cameraToPosition1, cameraToPosition2, cameraToPosition3, cameraInfo.forwardDirection))
             {
                 glm::vec2 pixelCoords1 = transformToPixelCoords(position1, scale, offset);
                 glm::vec2 pixelCoords2 = transformToPixelCoords(position2, scale, offset);
@@ -156,9 +159,9 @@ namespace Visualization
                 int index3 = y3 * m_Width + x3;
 
                 // Check if the pixels are within the bounds of the m_Image image
-                if (x1 >= 0 && x1 < m_Width && y1 >= 0 && y1 < m_Height &&
-                    x2 >= 0 && x2 < m_Width && y2 >= 0 && y2 < m_Height &&
-                    x3 >= 0 && x3 < m_Width && y3 >= 0 && y3 < m_Height)
+                if (isWithinImageBounds(x1, y1) &&
+                    isWithinImageBounds(x2, y2) &&
+                    isWithinImageBounds(x3, y3))
                 {
                     // Map texture coordinates to the triangle vertices
                     glm::vec2 texCoords1 = texCoords[indices[i]];
@@ -166,9 +169,9 @@ namespace Visualization
                     glm::vec2 texCoords3 = texCoords[indices[i + 2]];
 
                     // Sample the texture colors
-                    glm::vec4 color1 = sphere->GetTexture()->getPixel(glm::vec2(texCoords1.x, texCoords1.y));
-                    glm::vec4 color2 = sphere->GetTexture()->getPixel(glm::vec2(texCoords2.x, texCoords2.y));
-                    glm::vec4 color3 = sphere->GetTexture()->getPixel(glm::vec2(texCoords3.x, texCoords3.y));
+                    glm::vec4 color1 = body->GetTexture()->getPixel(glm::vec2(texCoords1.x, texCoords1.y));
+                    glm::vec4 color2 = body->GetTexture()->getPixel(glm::vec2(texCoords2.x, texCoords2.y));
+                    glm::vec4 color3 = body->GetTexture()->getPixel(glm::vec2(texCoords3.x, texCoords3.y));
 
                     // Convert the colors to 32-bit integers
                     uint32_t colorInt1 = convertColors(color1);
@@ -284,6 +287,23 @@ namespace Visualization
     uint32_t Renderer::interpolateComponent(uint32_t component1, uint32_t component2, float t)
     {
         return static_cast<uint32_t>((1.0f - t) * component1 + t * component2);
+    }
+
+    bool Renderer::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
+    {
+        return glm::dot(positionCoords, cameraDirection) > 0.0f;
+    }
+
+    bool Renderer::isInFrontOfCamera(glm::vec3 &positionCoords1, glm::vec3 &positionCoords2, glm::vec3 &positionCoords3, glm::vec3 &cameraDirection)
+    {
+        return isInFrontOfCamera(positionCoords1, cameraDirection) &&
+               isInFrontOfCamera(positionCoords2, cameraDirection) &&
+               isInFrontOfCamera(positionCoords3, cameraDirection);
+    }
+
+    bool Renderer::isWithinImageBounds(int x, int y)
+    {
+        return x >= 0 && x < m_Width && y >= 0 && y < m_Height;
     }
 
 }

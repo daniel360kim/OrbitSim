@@ -64,14 +64,14 @@ namespace Visualization
 
         float movementSpeed = 10.0f;
         float zoomSpeed = 1.0f;
-        float rotationSpeed = 0.5f;
+        float rotationSpeed = 30.0f;
 
         glm::vec3 forward = getForwardDirection();
         glm::vec3 right = getRightDirection();
         glm::vec3 up = getUpDirection();
 
         // Middle mouse button
-        if ((Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift) ) && Input::IsMouseButtonDown(MouseButton::Middle))
+        if ((Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift)) && Input::IsMouseButtonDown(MouseButton::Middle))
         {
             Input::SetCursorMode(CursorMode::Locked);
             movementType = MovementType::Rotate;
@@ -79,8 +79,8 @@ namespace Visualization
             if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
             {
                 // Calculate new yaw and pitch
-                m_yaw += deltaMousePosition.x;
-                m_pitch += deltaMousePosition.y;
+                m_yaw += -deltaMousePosition.x * rotationSpeed;
+                m_pitch += deltaMousePosition.y * rotationSpeed;
 
                 // Clamp pitch
                 if (m_pitch > 89.0f)
@@ -108,7 +108,7 @@ namespace Visualization
                 moved = true;
             }
         }
-        else 
+        else
         {
             Input::SetCursorMode(CursorMode::Normal);
         }
@@ -128,7 +128,6 @@ namespace Visualization
 
             moved = true;
         }
-        
 
         if (moved)
         {
@@ -136,8 +135,6 @@ namespace Visualization
         }
 
         return moved;
-
-        
     }
 
     void Camera::SetPosition(const glm::vec3 &newPosition)
@@ -167,6 +164,15 @@ namespace Visualization
     glm::mat4 Camera::GetViewMatrix() const
     {
         return m_viewMatrix;
+    }
+
+    CameraInfo Camera::GetCameraInfo() const
+    {
+        CameraInfo info;
+        info.position = m_position;
+        info.scale = m_scale;
+        info.forwardDirection = getForwardDirection();
+        return info;
     }
 
     void Camera::UpdateViewMatrix()
