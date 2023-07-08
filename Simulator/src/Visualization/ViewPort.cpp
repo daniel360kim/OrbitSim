@@ -19,7 +19,7 @@ namespace Visualization
     {
         m_Renderer = std::make_shared<Visualization::Renderer>(960, 540);
         m_Earth = std::make_shared<Visualization::Image>("../../Resources/earth.jpg");
-        m_Sphere = std::make_shared<Visualization::Sphere>(1, 500, 500);
+        m_Sphere = std::make_shared<Visualization::Sphere>(1, 100, 100);
 
     }
 

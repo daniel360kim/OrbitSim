@@ -19,30 +19,28 @@ namespace Visualization
 {
     Camera::Camera(float screenWidth, float screenHeight)
         : m_screenWidth(screenWidth), m_screenHeight(screenHeight),
-          m_position(0.0f), m_roll(0.0f), m_scale(1.0f),
+          m_position(0.0f), m_scale(1.0f),
           m_yaw(0.0f), m_pitch(0.0f)
     {
+        m_forwardDirection = glm::vec3(0.0f, 0.0f, -1.0f);
         UpdateViewMatrix();
     }
 
     glm::vec3 Camera::getForwardDirection() const
     {
-        glm::quat orientation = glm::quat(glm::vec3(m_pitch, m_yaw, m_roll));
-        glm::vec3 forward = glm::normalize(orientation * glm::vec3(0.0f, 0.0f, -1.0f));
-        return forward;
+        return m_forwardDirection;
     }
 
     glm::vec3 Camera::getRightDirection() const
     {
-        glm::vec3 right = glm::normalize(glm::cross(getForwardDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
+        glm::vec3 right = glm::cross(getForwardDirection(), getUpDirection());
         return right;
     }
 
     glm::vec3 Camera::getUpDirection() const
     {
-        glm::vec3 forward = getForwardDirection();
-        glm::vec3 right = getRightDirection();
-        return glm::normalize(glm::cross(right, forward));
+        constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        return up;
     }
 
     bool Camera::OnUpdate(float ts)
@@ -70,12 +68,12 @@ namespace Visualization
 
         if (Input::IsKeyDown(KeyCode::W))
         {
-            m_position += up * movementSpeed * ts;
+            m_position -= up * movementSpeed * ts;
             moved = true;
         }
         else if (Input::IsKeyDown(KeyCode::S))
         {
-            m_position -= up * movementSpeed * ts;
+            m_position += up * movementSpeed * ts;
             moved = true;
         }
         if (Input::IsKeyDown(KeyCode::A))
@@ -105,19 +103,20 @@ namespace Visualization
         // TODO add mouse sensitivity setting
         if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
         {
+            // Calculate new yaw and pitch
             m_yaw += deltaMousePosition.x;
-            m_pitch -= deltaMousePosition.y;
+            m_pitch += deltaMousePosition.y;
 
-            // Limit pitch to avoid flipping
-            const float maxPitch = glm::radians(89.0f);
-            if (m_pitch > maxPitch)
+            // Clamp pitch
+            if (m_pitch > 89.0f)
             {
-                m_pitch = maxPitch;
+                m_pitch = 89.0f;
             }
-            else if (m_pitch < -maxPitch)
+            else if (m_pitch < -89.0f)
             {
-                m_pitch = -maxPitch;
+                m_pitch = -89.0f;
             }
+
             moved = true;
         }
 
@@ -132,12 +131,6 @@ namespace Visualization
     void Camera::SetPosition(const glm::vec3 &newPosition)
     {
         m_position = newPosition;
-        UpdateViewMatrix();
-    }
-
-    void Camera::SetRoll(float newRoll)
-    {
-        m_roll = newRoll;
         UpdateViewMatrix();
     }
 
@@ -166,14 +159,17 @@ namespace Visualization
 
     void Camera::UpdateViewMatrix()
     {
-        // Calculate the transformation matrix
-        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), m_position);
-        glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), m_roll, glm::vec3(0.0f, 0.0f, 1.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, m_pitch, glm::vec3(1.0f, 0.0f, 0.0f));
-        rotationMatrix = glm::rotate(rotationMatrix, m_yaw, glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_scale));
+        // Update view matrix based on position, yaw, and pitch
+        glm::mat4 rotation = glm::mat4(1.0f);
+        rotation = glm::rotate(rotation, glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        rotation = glm::rotate(rotation, glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        // Combine the transformations to get the view matrix
-        m_viewMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+        glm::mat4 translation = glm::mat4(1.0f);
+        translation = glm::translate(translation, -m_position);
+
+        glm::mat4 scale = glm::mat4(1.0f);
+        scale = glm::scale(scale, glm::vec3(m_scale));
+
+        m_viewMatrix = rotation * translation * scale;
     }
 }

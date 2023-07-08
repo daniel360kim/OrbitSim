@@ -47,7 +47,6 @@ namespace Visualization
             position = position * camera.GetScale();              // Scale the position
             position = glm::rotateX(position, camera.GetPitch()); // Rotate around the x-axis (pitch)
             position = glm::rotateY(position, camera.GetYaw());   // Rotate around the y-axis (yaw)
-            position = glm::rotateZ(position, camera.GetRoll());  // Rotate around the z-axis (roll)
             position = position + camera.GetPosition();           // Translate the position
 
             glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * scale + glm::vec2(xCenter, yCenter);
