@@ -45,6 +45,7 @@ namespace Visualization
 
     bool Camera::OnUpdate(float ts)
     {
+        /* old version
         using namespace Walnut;
         glm::vec2 mousePosition = Input::GetMousePosition();
         glm::vec2 deltaMousePosition = (mousePosition - m_lastMousePosition) * 0.002f;
@@ -126,6 +127,97 @@ namespace Visualization
         }
 
         return moved;
+
+        */
+
+        enum class MovementType
+        {
+            None,
+            Translate,
+            Rotate,
+            Zoom
+        };
+
+        MovementType movementType = MovementType::None;
+
+        using namespace Walnut;
+
+        glm::vec2 mousePosition = Input::GetMousePosition();
+        glm::vec2 deltaMousePosition = (mousePosition - m_lastMousePosition) * 0.002f;
+        m_lastMousePosition = mousePosition;
+
+        bool moved = false;
+
+        float movementSpeed = 10.0f;
+        float zoomSpeed = 5.0f;
+        float rotationSpeed = 0.5f;
+
+        glm::vec3 forward = getForwardDirection();
+        glm::vec3 right = getRightDirection();
+        glm::vec3 up = getUpDirection();
+
+        // Middle mouse button
+        if ((Input::IsKeyDown(KeyCode::LeftShift) || Input::IsKeyDown(KeyCode::RightShift) ) && Input::IsMouseButtonDown(MouseButton::Middle))
+        {
+            Input::SetCursorMode(CursorMode::Locked);
+            movementType = MovementType::Rotate;
+
+            if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
+            {
+                // Calculate new yaw and pitch
+                m_yaw += deltaMousePosition.x;
+                m_pitch += deltaMousePosition.y;
+
+                // Clamp pitch
+                if (m_pitch > 89.0f)
+                {
+                    m_pitch = 89.0f;
+                }
+                else if (m_pitch < -89.0f)
+                {
+                    m_pitch = -89.0f;
+                }
+
+                moved = true;
+            }
+        }
+        else if (Input::IsMouseButtonDown(MouseButton::Middle))
+        {
+            Input::SetCursorMode(CursorMode::Locked);
+            movementType = MovementType::Translate;
+
+            if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
+            {
+                m_position -= -right * deltaMousePosition.x * movementSpeed * ts;
+                m_position += up * deltaMousePosition.y * movementSpeed * ts;
+
+                moved = true;
+            }
+        }
+        else 
+        {
+            Input::SetCursorMode(CursorMode::Normal);
+        }
+
+        // Scrolling, set to zoom
+        float scrollOffset = Input::GetMouseScrollOffset();
+        if (scrollOffset != 0)
+        {
+            movementType = MovementType::Zoom;
+
+            m_scale -= -scrollOffset * zoomSpeed * ts;
+            moved = true;
+        }
+        
+
+        if (moved)
+        {
+            UpdateViewMatrix();
+        }
+
+        return moved;
+
+        
     }
 
     void Camera::SetPosition(const glm::vec3 &newPosition)

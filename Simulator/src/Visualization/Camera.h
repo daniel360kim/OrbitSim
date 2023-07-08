@@ -14,7 +14,7 @@
 #include <glm/glm.hpp>
 
 namespace Visualization
-{
+{ 
     class Camera
     {
     public:
@@ -53,7 +53,8 @@ namespace Visualization
         glm::mat4 m_viewMatrix;
 
         glm::vec2 m_lastMousePosition;
-
+        
+        float m_yTranslationElapsed; // Used for 
         void UpdateViewMatrix();
     };
 }
