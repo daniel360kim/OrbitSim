@@ -2,3 +2,6 @@
 [submodule "Simulator/Dependencies/glmsm"]
 	path = Simulator/Dependencies/glmsm
 	url = https://github.com/g-truc/glm.git
+[submodule "Simulator/Dependencies/myWalnut"]
+	path = Simulator/Dependencies/myWalnut
+	url = https://github.com/daniel360kim/Walnut.git
