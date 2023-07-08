@@ -22,12 +22,11 @@ namespace Visualization
         : m_Width(width), m_Height(height)
     {
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
-        m_ImageBuffer = new uint32_t[width * height];
+        m_imageBuffer.resize(width * height);
     }
 
     Renderer::~Renderer()
     {
-        delete[] m_ImageBuffer;
     }
 
     void Renderer::Draw(uint32_t xPos, uint32_t yPos, const Camera &camera)
@@ -60,7 +59,7 @@ namespace Visualization
             // Check if the pixel is within the bounds of the m_Image image
             if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
             {
-                m_ImageBuffer[index] = sphereColor;
+                m_imageBuffer[index] = sphereColor;
             }
         }
 
@@ -70,7 +69,7 @@ namespace Visualization
     {
         for (uint32_t i = 0; i < m_Width * m_Height; i++)
         {
-            m_ImageBuffer[i] = clearColor;
+            m_imageBuffer[i] = clearColor;
         }
     }
 
@@ -78,7 +77,7 @@ namespace Visualization
     {
         for (uint32_t i = 0; i < m_Width * m_Height; i++)
         {
-            m_ImageBuffer[i] = Walnut::Random::UInt();
+            m_imageBuffer[i] = Walnut::Random::UInt();
         }
     }
 
@@ -92,13 +91,13 @@ namespace Visualization
 
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
 
-        delete[] m_ImageBuffer;
-        m_ImageBuffer = new uint32_t[width * height];
+        m_imageBuffer.resize(width * height);
     }
 
     void Renderer::UpdateImage()
     {
-        m_Image->SetData(m_ImageBuffer);
+        //m_Image->SetData(m_ImageBuffer);
+        m_Image->SetData(m_imageBuffer.data());
     }
 
 }

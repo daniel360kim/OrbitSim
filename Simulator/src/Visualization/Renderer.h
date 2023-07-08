@@ -11,6 +11,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <vector>
 #include <memory>
 
 #include "Walnut/Image.h"
@@ -38,12 +39,15 @@ namespace Visualization
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
 
-        uint32_t* GetImageBuffer() const { return m_ImageBuffer; }
+        //uint32_t* GetImageBuffer() const { return m_ImageBuffer; }
+        std::vector<uint32_t>& GetImageBuffer() { return m_imageBuffer; }
         std::shared_ptr<Walnut::Image> GetImage() const { return m_Image; }
     
     private:
         std::shared_ptr<Walnut::Image> m_Image;
-        uint32_t* m_ImageBuffer = nullptr;
+        
+        std::vector<uint32_t> m_imageBuffer;
+
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;
     };
