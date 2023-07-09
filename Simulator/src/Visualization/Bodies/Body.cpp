@@ -15,7 +15,7 @@
 
 namespace Visualization
 {
-    Body::Body(double radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type)
+    Body::Body(float radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type)
         : Sphere(radius, subdivisionLevel), m_name(name), m_type(type)
     {
         m_texture = std::make_shared<Texture>(texturePath);
@@ -48,5 +48,12 @@ namespace Visualization
 
             m_texCoords[i] = glm::vec2(u, v);
         }
+    }
+
+    void Body::changeSubdivisionLevel(int subdivisionLevel)
+    {
+        m_subdivisionLevel = subdivisionLevel;
+        generateSphere();
+        computeTextureCoordinates();
     }
 }

@@ -4,6 +4,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(OrbitSim)
 
+
+
+
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
@@ -35,7 +38,10 @@ link_directories(
     $ENV{VULKAN_SDK}/Lib
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
     ${PROJECT_SOURCE_DIR}/Dependencies/glew/lib/Release/x64
+    
 )
+
+
 
 file(GLOB_RECURSE all_SRCS
     ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -86,4 +92,6 @@ target_link_libraries(${PROJECT_NAME}
     glew32s
     opengl32
 )
+
+
 

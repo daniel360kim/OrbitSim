@@ -34,15 +34,18 @@ namespace Visualization
 
     private:
         float m_radius;
-        int m_subdivisionLevel;
 
-        void generateSphere();
         void subdivideTriangle(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, int level);
 
     protected:
         std::vector<glm::vec3> m_positions;  // Vertex positions
         std::vector<glm::vec3> m_normals;    // Vertex normals
         std::vector<unsigned int> m_indices; // Indices for drawing sphere
+
+        int m_subdivisionLevel;
+        void generateSphere();
+
+    
     };
 
 }

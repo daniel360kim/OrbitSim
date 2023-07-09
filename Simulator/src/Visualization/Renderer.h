@@ -29,7 +29,7 @@ namespace Visualization
         Renderer(uint32_t width, uint32_t height);
         ~Renderer();
 
-        void Draw(std::vector<std::shared_ptr<Body>>& bodies);
+        void Draw();
 
         void DrawBackground(std::shared_ptr<Image> background);
         void DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2& offset);
@@ -52,10 +52,18 @@ namespace Visualization
         std::vector<uint32_t> m_imageBuffer;
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;
+        float m_CameraScale = 1.0f;
 
         std::vector<Body> m_Bodies;
 
-        glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 offset);
+        template<typename T>
+        struct Triangle
+        {
+            T v1, v2, v3; //three vertices
+        };
+
+        inline glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset);
+        void transformToPixelCoords(Triangle<glm::vec3>& trianglePositions, float scale, glm::vec2 &offset, Triangle<glm::vec2>& trianglePixels);
         uint32_t convertColors(const glm::vec4& color);
 
         void fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3);
@@ -63,9 +71,12 @@ namespace Visualization
         uint32_t interpolateComponent(uint32_t component1, uint32_t component2, float t);
 
         inline bool isInFrontOfCamera(glm::vec3& positionCoords, glm::vec3& cameraDirection);
-        bool isInFrontOfCamera(glm::vec3& positionCoords1, glm::vec3& positionCoords2, glm::vec3& positionCoords3,glm::vec3& cameraDirection);
+        bool isInFrontOfCamera(Triangle<glm::vec3>& positionCoords, glm::vec3& cameraDirection);
         inline bool isWithinImageBounds(int x, int y);
 
+        void applyTransformation(Triangle<glm::vec3>& trianglePositions, float yaw, float pitch, glm::vec3 position, float scale);
+
+        void resetCameraScaling();
     };
 };
 

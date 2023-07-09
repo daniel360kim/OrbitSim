@@ -38,6 +38,9 @@ namespace Visualization
         std::shared_ptr<Visualization::Camera> GetCamera() const { return m_Camera; }
         std::shared_ptr<Visualization::Image> GetSpaceBackground() const { return m_SpaceBackground; }
 
+        std::vector<std::shared_ptr<Visualization::Body>> GetBodies() const { return m_Bodies; }
+
+
     private:
         std::shared_ptr<Visualization::Image> m_SpaceBackground;
         std::shared_ptr<Visualization::Body> m_Earth;

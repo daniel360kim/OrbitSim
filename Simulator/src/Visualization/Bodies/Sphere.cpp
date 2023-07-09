@@ -10,6 +10,7 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <iostream>
 
 #include "Sphere.h"
 
@@ -23,6 +24,7 @@ namespace Visualization
 
     void Sphere::generateSphere()
     {
+        std::cout << "Generating sphere. Subdivision level: " << m_subdivisionLevel << std::endl;
         // Create an icosahedron (a 20-sided polyhedron) as the base mesh
         const float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 
@@ -61,7 +63,7 @@ namespace Visualization
         // Normalize all the vertex positions to make the sphere radius equal to 1
         for (glm::vec3 &position : m_positions)
         {
-            position = glm::normalize(position) * m_radius;
+            position = glm::normalize(position);
         }
 
         // Set the normals based on the vertex positions

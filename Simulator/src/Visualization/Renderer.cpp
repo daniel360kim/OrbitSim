@@ -24,6 +24,8 @@ namespace Visualization
     {
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
         m_imageBuffer.resize(width * height);
+
+        //resetCameraScaling();
     }
 
     Renderer::~Renderer()
@@ -57,6 +59,8 @@ namespace Visualization
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
 
         m_imageBuffer.resize(width * height);
+
+        resetCameraScaling();
     }
 
     void Renderer::UpdateImage()
@@ -65,27 +69,26 @@ namespace Visualization
         m_Image->SetData(m_imageBuffer.data());
     }
 
-    void Renderer::Draw(std::vector<std::shared_ptr<Body>>& bodies)
+    void Renderer::Draw()
     {
         DrawBackground(ViewPort::Get()->GetSpaceBackground());
         // Draw the earth on top of the earth, set color to blue for now
-        auto earth = ViewPort::Get()->GetEarth();
         auto camera = ViewPort::Get()->GetCamera();
 
         // Divide the available space into the number of bodies
-        //Distribute each 
+        // Distribute each
         // Calculate the offset for each body
 
-        int numBodies = bodies.size();
+        const std::vector<std::shared_ptr<Body>> &bodies = ViewPort::Get()->GetBodies();
 
+        int numBodies = bodies.size();
         float dividerDistance = m_Width / (numBodies + 1);
-        
+
         for (int i = 0; i < numBodies; i++)
         {
             float offset = (i + 1) * dividerDistance;
             std::cout << offset << std::endl;
 
-            std::cout << "Middle of screen: " << m_Width / 2 << std::endl;
             DrawBody(bodies[i], camera, glm::vec2(offset, m_Height / 2));
         }
     }
@@ -111,10 +114,8 @@ namespace Visualization
         }
     }
 
-    void Renderer::DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2& offset)
+    void Renderer::DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2 &offset)
     {
-        float scale = std::min(m_Width, m_Height) / (2.0f * body->GetRadius());
-
         const std::vector<unsigned int> &indices = body->GetIndices();
         const std::vector<glm::vec3> &positions = body->GetPositions();
         const std::vector<glm::vec2> &texCoords = body->GetTexCoords();
@@ -122,40 +123,38 @@ namespace Visualization
         glm::mat4 viewMatrix = camera->GetViewMatrix();
         CameraInfo cameraInfo = camera->GetCameraInfo();
 
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (uint32_t i = 0; i < indices.size(); i += 3)
         {
-            glm::vec3 position1 = positions[indices[i]];
-            glm::vec3 position2 = positions[indices[i + 1]];
-            glm::vec3 position3 = positions[indices[i + 2]];
+            Triangle<glm::vec3> trianglePosition;
+            trianglePosition = {positions[indices[i]], positions[indices[i + 1]], positions[indices[i + 2]]};
 
             // Apply transformations using the Camera properties
-            position1 = glm::vec3(viewMatrix * glm::vec4(position1 * cameraInfo.scale, 1.0));
-            position2 = glm::vec3(viewMatrix * glm::vec4(position2 * cameraInfo.scale, 1.0));
-            position3 = glm::vec3(viewMatrix * glm::vec4(position3 * cameraInfo.scale, 1.0));
+            applyTransformation(trianglePosition, camera->GetYaw(), camera->GetPitch(), camera->GetPosition(), body->GetRadius() * m_CameraScale);
 
             // Check if the positions are in front of the camera - only render what the camera can see
-            glm::vec3 cameraToPosition1 = position1 - cameraInfo.position;
-            glm::vec3 cameraToPosition2 = position2 - cameraInfo.position;
-            glm::vec3 cameraToPosition3 = position3 - cameraInfo.position;
+            Triangle<glm::vec3> cameraPositionDistance;
+            cameraPositionDistance.v1 = trianglePosition.v1 - cameraInfo.position;
+            cameraPositionDistance.v2 = trianglePosition.v2 - cameraInfo.position;
+            cameraPositionDistance.v3 = trianglePosition.v3 - cameraInfo.position;
 
-            if (isInFrontOfCamera(cameraToPosition1, cameraToPosition2, cameraToPosition3, cameraInfo.forwardDirection))
+            if (isInFrontOfCamera(cameraPositionDistance, cameraInfo.forwardDirection))
             {
-                glm::vec2 pixelCoords1 = transformToPixelCoords(position1, scale, offset);
-                glm::vec2 pixelCoords2 = transformToPixelCoords(position2, scale, offset);
-                glm::vec2 pixelCoords3 = transformToPixelCoords(position3, scale, offset);
+                // Transform to pixel coordinates
+                Triangle<glm::vec2> pixelCoords;
+                transformToPixelCoords(trianglePosition, cameraInfo.scale, offset, pixelCoords);
 
                 // Convert the pixel coordinates to array indices
-                int x1 = static_cast<int>(pixelCoords1.x);
-                int y1 = static_cast<int>(pixelCoords1.y);
+                int x1 = static_cast<int>(pixelCoords.v1.x);
+                int y1 = static_cast<int>(pixelCoords.v1.y);
                 int index1 = y1 * m_Width + x1;
 
-                int x2 = static_cast<int>(pixelCoords2.x);
-                int y2 = static_cast<int>(pixelCoords2.y);
+                int x2 = static_cast<int>(pixelCoords.v2.x);
+                int y2 = static_cast<int>(pixelCoords.v2.y);
                 int index2 = y2 * m_Width + x2;
 
-                int x3 = static_cast<int>(pixelCoords3.x);
-                int y3 = static_cast<int>(pixelCoords3.y);
+                int x3 = static_cast<int>(pixelCoords.v3.x);
+                int y3 = static_cast<int>(pixelCoords.v3.y);
                 int index3 = y3 * m_Width + x3;
 
                 // Check if the pixels are within the bounds of the m_Image image
@@ -185,9 +184,16 @@ namespace Visualization
         }
     }
 
-    glm::vec2 Renderer::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 offset)
+    glm::vec2 Renderer::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
     {
         return glm::vec2(positionCoords.x, positionCoords.y) * scale + offset;
+    }
+
+    void Renderer::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
+    {
+        trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, scale, offset);
+        trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, scale, offset);
+        trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, scale, offset);
     }
 
     uint32_t Renderer::convertColors(const glm::vec4 &color)
@@ -294,11 +300,11 @@ namespace Visualization
         return glm::dot(positionCoords, cameraDirection) > 0.0f;
     }
 
-    bool Renderer::isInFrontOfCamera(glm::vec3 &positionCoords1, glm::vec3 &positionCoords2, glm::vec3 &positionCoords3, glm::vec3 &cameraDirection)
+    bool Renderer::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
     {
-        return isInFrontOfCamera(positionCoords1, cameraDirection) &&
-               isInFrontOfCamera(positionCoords2, cameraDirection) &&
-               isInFrontOfCamera(positionCoords3, cameraDirection);
+        return isInFrontOfCamera(positionCoords.v1, cameraDirection) &&
+               isInFrontOfCamera(positionCoords.v2, cameraDirection) &&
+               isInFrontOfCamera(positionCoords.v3, cameraDirection);
     }
 
     bool Renderer::isWithinImageBounds(int x, int y)
@@ -306,4 +312,40 @@ namespace Visualization
         return x >= 0 && x < m_Width && y >= 0 && y < m_Height;
     }
 
+    void Renderer::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
+    {
+        trianglePositions.v1 *= scale;
+        trianglePositions.v2 *= scale;
+        trianglePositions.v3 *= scale;
+
+        trianglePositions.v1 = glm::rotateX(trianglePositions.v1, pitch);
+        trianglePositions.v2 = glm::rotateX(trianglePositions.v2, pitch);
+        trianglePositions.v3 = glm::rotateX(trianglePositions.v3, pitch);
+
+        trianglePositions.v1 = glm::rotateY(trianglePositions.v1, yaw);
+        trianglePositions.v2 = glm::rotateY(trianglePositions.v2, yaw);
+        trianglePositions.v3 = glm::rotateY(trianglePositions.v3, yaw);
+
+        trianglePositions.v1 += position;
+        trianglePositions.v2 += position;
+        trianglePositions.v3 += position;
+    }
+
+    void Renderer::resetCameraScaling()
+    {
+        // Set initial camera scale based on the sizes of the bodies and the window size
+
+        const std::vector<std::shared_ptr<Visualization::Body>>& bodies = ViewPort::Get()->GetBodies();
+
+        float maxRadius = 0.0f;
+        for(auto& body : bodies)
+        {
+            float radius = body->GetRadius();
+            if(radius > maxRadius)
+                maxRadius = radius;
+        }
+
+        uint32_t minDimension = std::min(m_Width, m_Height);
+        m_CameraScale = minDimension / maxRadius / 2.0f;
+    }
 }

@@ -1,3 +1,4 @@
+
 #include "Platform.h"
 
 #include "Walnut/Application.h"
@@ -20,17 +21,19 @@ namespace Visualization
     }
 }
 
+
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 {
-	Walnut::ApplicationSpecification spec;
-	spec.Name = "OrbitSim";
+    Walnut::ApplicationSpecification spec;
+    spec.Name = "OrbitSim";
 
-	Walnut::Application* app = new Walnut::Application(spec);
+    Walnut::Application* app = new Walnut::Application(spec);
 
     std::shared_ptr<Visualization::ViewPort> layer = std::make_shared<Visualization::ViewPort>();
-	app->PushLayer(layer);
+    app->PushLayer(layer);
 
     Visualization::s_ViewPort = layer;
-    
-	return app;
-} 
+
+    return app;
+}
+

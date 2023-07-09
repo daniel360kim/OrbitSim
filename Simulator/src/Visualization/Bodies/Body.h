@@ -26,11 +26,13 @@ namespace Visualization
             Moon
         };
 
-        Body(double radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type);
+        Body(float radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type);
         ~Body();
 
         const std::vector<glm::vec2> &GetTexCoords() const { return m_texCoords; }
         std::shared_ptr<Texture> GetTexture() { return m_texture; }
+
+        void changeSubdivisionLevel(int subdivisionLevel);
     private:
         std::shared_ptr<Texture> m_texture;
         std::vector<glm::vec2> m_texCoords;  // Texture coordinates

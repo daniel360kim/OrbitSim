@@ -63,8 +63,8 @@ namespace Visualization
         bool moved = false;
 
         float movementSpeed = 10.0f;
-        float zoomSpeed = 1.0f;
-        float rotationSpeed = 30.0f;
+        float zoomSpeed = 10.0f;
+        float rotationSpeed = 3.0f;
 
         glm::vec3 forward = getForwardDirection();
         glm::vec3 right = getRightDirection();
@@ -80,7 +80,7 @@ namespace Visualization
             {
                 // Calculate new yaw and pitch
                 m_yaw += -deltaMousePosition.x * rotationSpeed;
-                m_pitch += deltaMousePosition.y * rotationSpeed;
+                m_pitch += -deltaMousePosition.y * rotationSpeed;
 
                 // Clamp pitch
                 if (m_pitch > 89.0f)
