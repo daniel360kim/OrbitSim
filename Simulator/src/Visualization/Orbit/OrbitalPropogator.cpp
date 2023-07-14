@@ -18,22 +18,23 @@
 #include <chrono>
 
 #include "OrbitalPropogator.h"
-#include "OrbitalInvariants.h"
-#include "constants.h"
-#include "../util/FileNamer.h"
+#include "../../orbit/OrbitalInvariants.h"
+#include "../../orbit/constants.h"
+#include "../../util/FileNamer.h"
 #include "csv2.h"
-#include "../util/ProgressBar.h"
+#include "../../util/ProgressBar.h"
 
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const
 {
-    return m_meanMotion * timeSincePeriapsis;
+    return m_orbitalObject.getMeanMotion() * timeSincePeriapsis;
 }
 
 double OrbitalPropogator::calculateEccentricAnomaly(double meanAnomaly) const
 {
     const double error = 1e-8;
-    const double sinEccentricAnomalyMultiplier = m_eccentricity * std::sin(meanAnomaly);
-    const double cosEccentricAnomalyMultiplier = m_eccentricity * std::cos(meanAnomaly);
+    double eccentricity = m_orbitalObject.getEccentricity();
+    const double sinEccentricAnomalyMultiplier = eccentricity * std::sin(meanAnomaly);
+    const double cosEccentricAnomalyMultiplier = eccentricity * std::cos(meanAnomaly);
 
     double eccentricAnomaly = meanAnomaly + sinEccentricAnomalyMultiplier;
 
@@ -53,12 +54,13 @@ double OrbitalPropogator::calculateEccentricAnomaly(double meanAnomaly) const
 
 double OrbitalPropogator::calculateTrueAnomaly(double eccentricAnomaly) const
 {
-    return 2 * std::atan(std::sqrt((1 + m_eccentricity) / (1 - m_eccentricity)) * std::tan(eccentricAnomaly / 2));
+    return 2 * std::atan(std::sqrt((1 + m_orbitalObject.getEccentricity()) / (1 - m_orbitalObject.getEccentricity())) * std::tan(eccentricAnomaly / 2));
 }
 
 double OrbitalPropogator::calculateRadius(double trueAnomaly) const
 {
-    return m_semiMajorAxis * (1 - m_eccentricity * m_eccentricity) / (1 + m_eccentricity * std::cos(trueAnomaly));
+    double eccentricity = m_orbitalObject.getEccentricity();
+    return m_orbitalObject.getSemiMajorAxis() * (1 - eccentricity * eccentricity) / (1 + eccentricity * std::cos(trueAnomaly));
 }
 
 void OrbitalPropogator::calculateKinematicParameters(double trueAnomaly)
@@ -66,12 +68,12 @@ void OrbitalPropogator::calculateKinematicParameters(double trueAnomaly)
     m_radius = calculateRadius(trueAnomaly);
     m_cosTrueAnomaly = std::cos(trueAnomaly);
     m_sinTrueAnomaly = std::sin(trueAnomaly);
-    m_cosArgPeriapsis = std::cos(m_argumentOfPeriapsis);
-    m_sinArgPeriapsis = std::sin(m_argumentOfPeriapsis);
-    m_cosLongAscNode = std::cos(m_longitudeOfAscendingNode);
-    m_sinLongAscNode = std::sin(m_longitudeOfAscendingNode);
-    m_cosInclination = std::cos(m_inclination);
-    m_sinInclination = std::sin(m_inclination);
+    m_cosArgPeriapsis = std::cos(m_orbitalObject.getArgumentOfPeriapsis());
+    m_sinArgPeriapsis = std::sin(m_orbitalObject.getArgumentOfPeriapsis());
+    m_cosLongAscNode = std::cos(m_orbitalObject.getLongitudeOfAscendingNode());
+    m_sinLongAscNode = std::sin(m_orbitalObject.getLongitudeOfAscendingNode());
+    m_cosInclination = std::cos(m_orbitalObject.getInclination());
+    m_sinInclination = std::sin(m_orbitalObject.getInclination());
 }
 
 /**
@@ -106,11 +108,11 @@ Vector<double, 3> OrbitalPropogator::calculatePosition(double trueAnomaly)
  */
 Vector<double, 3> OrbitalPropogator::calculateVelocity(double trueAnomaly)
 {
-    double angular_momentum = std::sqrt(m_semiMajorAxis * m_centralBody.getGravitationalParameter() * (1.0 - m_eccentricity * m_eccentricity));
-    double scale = m_centralBody.getGravitationalParameter() / angular_momentum;
+    double angular_momentum = std::sqrt(m_orbitalObject.getSemiMajorAxis() * m_orbitalObject.getCentralBody().getGravitationalParameter() * (1.0 - m_orbitalObject.getEccentricity() * m_orbitalObject.getEccentricity()));
+    double scale = m_orbitalObject.getCentralBody().getGravitationalParameter() / angular_momentum;
 
     double v_x = -scale * m_sinTrueAnomaly;
-    double v_y = scale * (m_eccentricity + m_cosTrueAnomaly);
+    double v_y = scale * (m_orbitalObject.getEccentricity() + m_cosTrueAnomaly);
 
     Vector<double, 3> velocity;
     velocity[0] = v_x * (-m_sinLongAscNode * m_cosInclination * m_sinArgPeriapsis + m_cosLongAscNode * m_cosArgPeriapsis) - v_y * (m_sinLongAscNode * m_cosInclination * m_cosArgPeriapsis + m_cosLongAscNode * m_sinArgPeriapsis);
@@ -147,14 +149,6 @@ void OrbitalPropogator::propogateOrbit(double duration)
         runTimeStep(currentTime);
         logData(csvWriter, currentTime);
 
-        // update progress bar every 1000 steps
-        /*
-        if (static_cast<int>(currentTime) % 1000 == 0)
-        {
-            progressBar.update(static_cast<float>(currentTime / duration));
-        }
-        */
-
         m_positions.push_back(m_position);
         
 
@@ -162,13 +156,6 @@ void OrbitalPropogator::propogateOrbit(double duration)
     }
 
     logFile.close();
-}
-
-void OrbitalPropogator::printInformation() const
-{
-    std::cout << "True Anomaly: " << m_trueAnomaly << "\n";
-    std::cout << "Position: (" << m_position[0] << ", " << m_position[1] << ", " << m_position[2] << ")\n";
-    std::cout << "Velocity: (" << m_velocity[0] << ", " << m_velocity[1] << ", " << m_velocity[2] << ")\n";
 }
 
 std::ofstream OrbitalPropogator::generateLogFile() const

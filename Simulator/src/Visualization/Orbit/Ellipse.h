@@ -4,8 +4,8 @@
  * @brief converts x, y, z, coordinates of the orbit into vertex and index data
  * @version 0.1
  * @date 2023-07-11
- * 
- * 
+ *
+ *
  */
 
 #ifndef ELLIPSE_H
@@ -15,7 +15,7 @@
 #include <glm/glm.hpp>
 
 #include "../../math/vectorOps.h"
-#include "../../orbit/OrbitalPropogator.h"
+#include "OrbitalPropogator.h"
 
 namespace Visualization
 {
@@ -23,20 +23,18 @@ namespace Visualization
     {
     public:
         Ellipse(const std::string &name, const Type &type, double mass,
-                      double semiMajorAxis, double eccentricity, double inclination,
-                      double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                      CentralBody centralBody, double timeStep);
-        
+                double semiMajorAxis, double eccentricity, double inclination,
+                double longitudeOfAscendingNode, double argumentOfPeriapsis,
+                CentralBody centralBody, double timeStep);
+
         Ellipse(const OrbitalObject &orbitalObject, double timeStep);
         ~Ellipse();
 
-        void generateVertexPositions();
-
         const std::vector<glm::vec3> &GetVertexPositions() const { return m_vertexPositions; }
-
 
     private:
         std::vector<glm::vec3> m_vertexPositions;
+        void generateVertexPositions();
     };
 }
 

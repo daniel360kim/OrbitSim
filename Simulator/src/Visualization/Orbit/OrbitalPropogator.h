@@ -15,36 +15,26 @@
 #include <string>
 #include <fstream>
 
-#include "OrbitalObject.h"
-#include "../math/vectorOps.h"
+#include "../../orbit/OrbitalObject.h"
+#include "../../math/vectorOps.h"
 #include "csv2.h"
 
 const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z", "VX", "VY", "VZ"};
 
-class OrbitalPropogator : public OrbitalObject
+class OrbitalPropogator
 {
 public:
-    OrbitalPropogator(const std::string &name, const Type &type, double mass,
-                      double semiMajorAxis, double eccentricity, double inclination,
-                      double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                      CentralBody centralBody, double timeStep) : OrbitalObject(name, type, mass, semiMajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, centralBody),
-                                                                  m_timeStep(timeStep) {}
-                                                                  
-
-    OrbitalPropogator(const OrbitalObject &orbitalObject, double timeStep) : OrbitalObject(orbitalObject),
+    OrbitalPropogator(const OrbitalObject &orbitalObject, double timeStep) : m_orbitalObject(orbitalObject),
                                                                              m_timeStep(timeStep) {}
 
     void runTimeStep(double currentTimeStep);
-    void propogateOrbit(double duration);
-    
-
-    void printInformation() const override;
+    virtual void propogateOrbit(double duration);
 
     const std::vector<Vector<double, 3>> &getPositions() const { return m_positions; }
 
 protected:
     std::vector<Vector<double, 3>> m_positions;
-
+    OrbitalObject m_orbitalObject;
 private:
     double calculateMeanAnomaly(double timeSincePeriapsis) const;
     double calculateEccentricAnomaly(double meanAnomaly) const;

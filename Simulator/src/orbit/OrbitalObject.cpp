@@ -95,12 +95,12 @@ OrbitalObject::OrbitalObject(const std::string& name, const Type& type, double m
     m_orbitalPeriod = calculateOrbitalPeriod();
 }
 
-double OrbitalObject::getApogee() const
+double OrbitalObject::calculateApogee() const
 {
     return m_semiMajorAxis * (1 + m_eccentricity);
 }
 
-double OrbitalObject::getPerigee() const
+double OrbitalObject::calculatePerigee() const
 {
     return m_semiMajorAxis * (1 - m_eccentricity);
 }
@@ -115,7 +115,7 @@ double OrbitalObject::calculateMeanMotion() const
     return 2.0 * M_PI / calculateOrbitalPeriod();
 }
 
-double OrbitalObject::getTrueAnomalyOfAscendingNode() const
+double OrbitalObject::calculateTrueAnomalyOfAscendingNode() const
 {
     return 2.0 * M_PI - m_argumentOfPeriapsis;
 }
@@ -136,7 +136,7 @@ void OrbitalObject::printInformation() const
     std::cout << "Eccentricity: " << m_eccentricity << std::endl;
     std::cout << "Inclination: " << m_inclination << std::endl;
     std::cout << "Longitude of ascending node: " << m_longitudeOfAscendingNode << std::endl;
-    std::cout << "Apogee: " << getApogee() << std::endl;
-    std::cout << "Perigee: " << getPerigee() << std::endl;
+    std::cout << "Apogee: " << calculateApogee() << std::endl;
+    std::cout << "Perigee: " << calculatePerigee() << std::endl;
     std::cout << "Orbital period: " << std::setprecision(15) << calculateOrbitalPeriod() << std::setprecision(6) << std::endl;
 }

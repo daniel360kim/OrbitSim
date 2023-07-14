@@ -14,7 +14,7 @@
 
 #include "../util/Timer.h"
 
-#include "../orbit/OrbitalPropogator.h"
+#include "orbit/OrbitalPropogator.h"
 
 namespace Visualization
 {
@@ -26,6 +26,7 @@ namespace Visualization
         m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/milkyway.jpg");
 
         CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
+
         OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Planet, 7.34767309e22)
                                  .setSemiMajorAxis(7000.0)
                                  .setEccentricity(0.001)
@@ -35,11 +36,6 @@ namespace Visualization
                                  .build();
 
         m_Orbit = std::make_shared<Visualization::Ellipse>(moon, 1);
-
-        m_Orbit->propogateOrbit(m_Orbit->getOrbitalPeriod());
-
-        m_Orbit->generateVertexPositions();
-    
         m_Bodies.push_back(m_Earth);
     }
 

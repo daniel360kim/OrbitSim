@@ -15,21 +15,11 @@
 
 namespace Visualization
 {
-    Ellipse::Ellipse(const std::string &name, const Type &type, double mass,
-                      double semiMajorAxis, double eccentricity, double inclination,
-                      double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                      CentralBody centralBody, double timeStep)
-        : OrbitalPropogator(name, type, mass, semiMajorAxis, eccentricity, inclination,
-                            longitudeOfAscendingNode, argumentOfPeriapsis, centralBody, timeStep)
-        
-    {
-  
-    }
-
     Ellipse::Ellipse(const OrbitalObject &orbitalObject, double timeStep)
         : OrbitalPropogator(orbitalObject, timeStep)
     {
-
+        propogateOrbit(m_orbitalObject.getOrbitalPeriod());
+        generateVertexPositions();
     }
 
     Ellipse::~Ellipse()

@@ -17,7 +17,7 @@
 #include "Image.h"
 #include "Bodies/Body.h"
 #include "Camera.h"
-#include "Bodies/Ellipse.h"
+#include "Orbit/Ellipse.h"
 
 #include <memory>
 

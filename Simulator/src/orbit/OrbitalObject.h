@@ -68,11 +68,11 @@ public:
     double getArgumentOfPeriapsis() const { return m_argumentOfPeriapsis; }
     double getOrbitalPeriod() const { return m_orbitalPeriod; }
     double getMeanMotion() const { return m_meanMotion; }
+    CentralBody getCentralBody() const { return m_centralBody; }
 
-    double getApogee() const;
-    double getPerigee() const;
-    double getTrueAnomalyOfAscendingNode() const;
-
+    double calculateApogee() const;
+    double calculatePerigee() const;
+    double calculateTrueAnomalyOfAscendingNode() const;
     double calculateOrbitalPeriod() const;
     double calculateMeanMotion() const;
 
@@ -84,7 +84,7 @@ public:
     void setArgumentOfPeriapsis(double argumentOfPeriapsis) { m_argumentOfPeriapsis = argumentOfPeriapsis; }
     void printInformation() const override;
 
-protected:
+private:
     double m_semiMajorAxis;
     double m_eccentricity;
     double m_inclination;
