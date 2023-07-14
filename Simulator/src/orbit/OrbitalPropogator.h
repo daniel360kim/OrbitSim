@@ -15,7 +15,7 @@
 #include <string>
 #include <fstream>
 
-#include "../objects/OrbitalObject.h"
+#include "OrbitalObject.h"
 #include "../math/vectorOps.h"
 #include "csv2.h"
 
@@ -36,8 +36,14 @@ public:
 
     void runTimeStep(double currentTimeStep);
     void propogateOrbit(double duration);
+    
 
     void printInformation() const override;
+
+    const std::vector<Vector<double, 3>> &getPositions() const { return m_positions; }
+
+protected:
+    std::vector<Vector<double, 3>> m_positions;
 
 private:
     double calculateMeanAnomaly(double timeSincePeriapsis) const;
@@ -63,7 +69,7 @@ private:
     double m_sinInclination;
 
     Vector<double, 3> m_position;
-    Vector<double, 3> m_velocity;
+    Vector<double, 3> m_velocity; 
 
     std::ofstream generateLogFile() const;
     void logData(csv2::Writer<csv2::delimiter<','>> &writer, double time) const;

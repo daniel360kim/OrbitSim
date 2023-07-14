@@ -17,6 +17,7 @@
 #include "Image.h"
 #include "Bodies/Body.h"
 #include "Camera.h"
+#include "Bodies/Ellipse.h"
 
 #include <memory>
 
@@ -35,8 +36,11 @@ namespace Visualization
         static std::shared_ptr<ViewPort> Get();
 
         std::shared_ptr<Visualization::Body> GetEarth() const { return m_Earth; }
+        
         std::shared_ptr<Visualization::Camera> GetCamera() const { return m_Camera; }
         std::shared_ptr<Visualization::Image> GetSpaceBackground() const { return m_SpaceBackground; }
+
+        std::shared_ptr<Visualization::Ellipse> GetOrbit() const { return m_Orbit; }
 
         std::vector<std::shared_ptr<Visualization::Body>> GetBodies() const { return m_Bodies; }
 
@@ -44,8 +48,8 @@ namespace Visualization
     private:
         std::shared_ptr<Visualization::Image> m_SpaceBackground;
         std::shared_ptr<Visualization::Body> m_Earth;
-        std::shared_ptr<Visualization::Body> m_Sun;
-        std::shared_ptr<Visualization::Body> m_Moon;
+
+        std::shared_ptr<Visualization::Ellipse> m_Orbit;
 
         std::vector<std::shared_ptr<Visualization::Body>> m_Bodies;
         

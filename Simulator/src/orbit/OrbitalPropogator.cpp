@@ -18,8 +18,8 @@
 #include <chrono>
 
 #include "OrbitalPropogator.h"
-#include "../objects/OrbitalInvariants.h"
-#include "../objects/constants.h"
+#include "OrbitalInvariants.h"
+#include "constants.h"
 #include "../util/FileNamer.h"
 #include "csv2.h"
 #include "../util/ProgressBar.h"
@@ -140,7 +140,7 @@ void OrbitalPropogator::propogateOrbit(double duration)
 
     double currentTime = 0.0;
 
-    ProgressBar progressBar(20);
+    //ProgressBar progressBar(20);
 
     while (currentTime <= duration)
     {
@@ -148,10 +148,15 @@ void OrbitalPropogator::propogateOrbit(double duration)
         logData(csvWriter, currentTime);
 
         // update progress bar every 1000 steps
+        /*
         if (static_cast<int>(currentTime) % 1000 == 0)
         {
             progressBar.update(static_cast<float>(currentTime / duration));
         }
+        */
+
+        m_positions.push_back(m_position);
+        
 
         currentTime += m_timeStep;
     }

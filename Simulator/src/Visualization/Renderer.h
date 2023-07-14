@@ -52,7 +52,7 @@ namespace Visualization
         std::vector<uint32_t> m_imageBuffer;
         uint32_t m_Width = 0;
         uint32_t m_Height = 0;
-        float m_CameraScale = 1.0f;
+        float m_Scaling = 1.0f;
 
         std::vector<Body> m_Bodies;
 
@@ -77,6 +77,8 @@ namespace Visualization
         void applyTransformation(Triangle<glm::vec3>& trianglePositions, float yaw, float pitch, glm::vec3 position, float scale);
 
         void resetCameraScaling();
+
+        unsigned long iteration;
     };
 };
 

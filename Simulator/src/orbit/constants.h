@@ -11,7 +11,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-constexpr double G = 6.67430e-11; // gravitational constant
+constexpr double G = 6.67430e-11; // gravitational constant in m^3 kg^-1 s^-2
 constexpr double EARTH_MASS = 5.972e24; // mass of earth in kg
 
 

@@ -26,7 +26,7 @@ namespace Visualization
             Moon
         };
 
-        Body(float radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type);
+        Body(float radius, int subdivisionLevel, const std::string &texturePath, BodyType type);
         ~Body();
 
         const std::vector<glm::vec2> &GetTexCoords() const { return m_texCoords; }
@@ -36,7 +36,6 @@ namespace Visualization
     private:
         std::shared_ptr<Texture> m_texture;
         std::vector<glm::vec2> m_texCoords;  // Texture coordinates
-        std::string m_name;
         BodyType m_type;
 
         void computeTextureCoordinates();

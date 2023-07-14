@@ -15,8 +15,8 @@
 
 namespace Visualization
 {
-    Body::Body(float radius, int subdivisionLevel, const std::string &texturePath, const std::string &name, BodyType type)
-        : Sphere(radius, subdivisionLevel), m_name(name), m_type(type)
+    Body::Body(float radius, int subdivisionLevel, const std::string &texturePath, BodyType type)
+        : Sphere(radius, subdivisionLevel), m_type(type)
     {
         m_texture = std::make_shared<Texture>(texturePath);
         computeTextureCoordinates();

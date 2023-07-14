@@ -32,5 +32,7 @@ namespace Visualization
     {
         stbi_image_free(m_Pixels);
     }
+
+
 }
 

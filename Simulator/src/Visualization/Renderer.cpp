@@ -24,8 +24,6 @@ namespace Visualization
     {
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
         m_imageBuffer.resize(width * height);
-
-        //resetCameraScaling();
     }
 
     Renderer::~Renderer()
@@ -65,20 +63,19 @@ namespace Visualization
 
     void Renderer::UpdateImage()
     {
-        // m_Image->SetData(m_ImageBuffer);
         m_Image->SetData(m_imageBuffer.data());
     }
 
     void Renderer::Draw()
     {
         DrawBackground(ViewPort::Get()->GetSpaceBackground());
-        // Draw the earth on top of the earth, set color to blue for now
+        //  Draw the earth on top of the earth, set color to blue for now
         auto camera = ViewPort::Get()->GetCamera();
 
         // Divide the available space into the number of bodies
         // Distribute each
         // Calculate the offset for each body
-
+        
         const std::vector<std::shared_ptr<Body>> &bodies = ViewPort::Get()->GetBodies();
 
         int numBodies = bodies.size();
@@ -87,14 +84,48 @@ namespace Visualization
         for (int i = 0; i < numBodies; i++)
         {
             float offset = (i + 1) * dividerDistance;
-            std::cout << offset << std::endl;
 
             DrawBody(bodies[i], camera, glm::vec2(offset, m_Height / 2));
+        }
+        
+
+        auto ellipse = ViewPort::Get()->GetOrbit();
+
+        float offsetX = m_Width / 2;
+        float offsetY = m_Height / 2;
+
+        //float scale = std::min<uint32_t>(m_Width, m_Height) / 2;
+
+        std::vector<uint32_t> ellipseImage(m_Width * m_Height, 0);
+
+        for (size_t i = 0; i < ellipse->GetVertexPositions().size(); i++)
+        {
+            glm::vec3 position = ellipse->GetVertexPositions()[i];
+            
+
+            CameraInfo cameraInfo = camera->GetCameraInfo();
+            position *= cameraInfo.scale;
+            position = glm::rotateX(position, camera->GetPitch());
+            position = glm::rotateY(position, camera->GetYaw());
+
+            position += cameraInfo.position;
+
+            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * bodies[0]->GetRadius() * 4.0f * m_Scaling + glm::vec2(offsetX, offsetY);
+
+            int x = static_cast<int>(pixelCoords.x);
+            int y = static_cast<int>(pixelCoords.y);
+            int index = y * m_Width + x;
+
+            if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
+            {
+                m_imageBuffer[index] = 0xffffffff;
+            }
         }
     }
 
     void Renderer::DrawBackground(std::shared_ptr<Image> background)
     {
+
         // Draw the space background
         uint32_t *backgroundData = background->GetPixels();
         uint32_t backgroundWidth = background->GetWidth();
@@ -130,7 +161,7 @@ namespace Visualization
             trianglePosition = {positions[indices[i]], positions[indices[i + 1]], positions[indices[i + 2]]};
 
             // Apply transformations using the Camera properties
-            applyTransformation(trianglePosition, camera->GetYaw(), camera->GetPitch(), camera->GetPosition(), body->GetRadius() * m_CameraScale);
+            applyTransformation(trianglePosition, camera->GetYaw(), camera->GetPitch(), camera->GetPosition(), body->GetRadius() * m_Scaling);
 
             // Check if the positions are in front of the camera - only render what the camera can see
             Triangle<glm::vec3> cameraPositionDistance;
@@ -335,17 +366,17 @@ namespace Visualization
     {
         // Set initial camera scale based on the sizes of the bodies and the window size
 
-        const std::vector<std::shared_ptr<Visualization::Body>>& bodies = ViewPort::Get()->GetBodies();
+        const std::vector<std::shared_ptr<Visualization::Body>> &bodies = ViewPort::Get()->GetBodies();
 
         float maxRadius = 0.0f;
-        for(auto& body : bodies)
+        for (auto &body : bodies)
         {
             float radius = body->GetRadius();
-            if(radius > maxRadius)
+            if (radius > maxRadius)
                 maxRadius = radius;
         }
 
-        uint32_t minDimension = std::min(m_Width, m_Height);
-        m_CameraScale = minDimension / maxRadius / 2.0f;
+        uint32_t minDimension = std::min<float>(m_Width, m_Height);
+        m_Scaling = minDimension / maxRadius / 2.0f;
     }
 }

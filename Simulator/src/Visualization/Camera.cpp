@@ -62,9 +62,9 @@ namespace Visualization
 
         bool moved = false;
 
-        float movementSpeed = 10.0f;
-        float zoomSpeed = 10.0f;
-        float rotationSpeed = 3.0f;
+        float movementSpeed = 10000.0f;
+        float zoomSpeed = 5.0f;
+        float rotationSpeed = 2.0f;
 
         glm::vec3 forward = getForwardDirection();
         glm::vec3 right = getRightDirection();
