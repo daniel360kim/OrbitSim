@@ -10,6 +10,7 @@ project(OrbitSim)
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src/core
 
     # Vulkan
     $ENV{VULKAN_SDK}/Include

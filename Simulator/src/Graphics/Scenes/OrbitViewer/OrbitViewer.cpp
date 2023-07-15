@@ -1,5 +1,5 @@
 /**
- * @file Renderer.cpp
+ * @file ViewPort.cpp
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
  * @brief
  * @version 0.1
@@ -8,29 +8,53 @@
  *
  */
 
-#include "Renderer.h"
-
-#include "Walnut/Random.h"
+#include "OrbitViewer.h"
 
 #include <iostream>
 #include <unordered_map>
 #include <glm/gtx/rotate_vector.hpp>
-#include "ViewPort.h"
+#include "OrbitViewer.h"
 
 namespace Visualization
 {
-    Renderer::Renderer(uint32_t width, uint32_t height)
+    OrbitViewer::OrbitViewer(uint32_t width, uint32_t height)
         : m_Width(width), m_Height(height)
     {
+        m_Camera = std::make_shared<Visualization::Camera>();
+
+        m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/milkyway.jpg");
+
+        CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
+
+        m_Earth = std::make_shared<Visualization::CentralRenderBody>(earth, 4.0f, 5, "../../Resources/earthDay.jpg");
+
+        OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Planet, 7.34767309e22)
+                                 .setSemiMajorAxis(384400.0)
+                                 .setEccentricity(0.0549)
+                                 .setInclination(5.145)
+                                 .setLongitudeOfAscendingNode(125.08)
+                                 .setCentralBody(earth)
+                                 .build();
+
+        m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
         m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
         m_imageBuffer.resize(width * height);
     }
 
-    Renderer::~Renderer()
+    OrbitViewer::~OrbitViewer()
     {
     }
 
-    void Renderer::Clear(uint32_t clearColor)
+    void OrbitViewer::update(float ts)
+    {
+        m_Camera->OnUpdate(ts);
+
+        Clear();
+        Draw();
+        UpdateImage();
+    }
+
+    void OrbitViewer::Clear(uint32_t clearColor)
     {
         for (uint32_t i = 0; i < m_Width * m_Height; i++)
         {
@@ -38,15 +62,7 @@ namespace Visualization
         }
     }
 
-    void Renderer::ClearRandom()
-    {
-        for (uint32_t i = 0; i < m_Width * m_Height; i++)
-        {
-            m_imageBuffer[i] = Walnut::Random::UInt();
-        }
-    }
-
-    void Renderer::ResizeIfNeeded(uint32_t width, uint32_t height)
+    void OrbitViewer::ResizeIfNeeded(uint32_t width, uint32_t height)
     {
         if (m_Width == width && m_Height == height)
             return;
@@ -61,56 +77,41 @@ namespace Visualization
         resetCameraScaling();
     }
 
-    void Renderer::UpdateImage()
+    void OrbitViewer::UpdateImage()
     {
         m_Image->SetData(m_imageBuffer.data());
     }
 
-    void Renderer::Draw()
+    void OrbitViewer::Draw()
     {
-        DrawBackground(ViewPort::Get()->GetSpaceBackground());
+        DrawBackground(m_SpaceBackground);
         //  Draw the earth on top of the earth, set color to blue for now
-        auto camera = ViewPort::Get()->GetCamera();
 
         // Divide the available space into the number of bodies
         // Distribute each
         // Calculate the offset for each body
-        
-        const std::vector<std::shared_ptr<Body>> &bodies = ViewPort::Get()->GetBodies();
 
-        int numBodies = bodies.size();
-        float dividerDistance = m_Width / (numBodies + 1);
-
-        for (int i = 0; i < numBodies; i++)
-        {
-            float offset = (i + 1) * dividerDistance;
-
-            DrawBody(bodies[i], camera, glm::vec2(offset, m_Height / 2));
-        }
-        
-
-        auto ellipse = ViewPort::Get()->GetOrbit();
+        DrawBody(m_Earth, m_Camera, glm::vec2(m_Width / 2, m_Height / 2));
 
         float offsetX = m_Width / 2;
         float offsetY = m_Height / 2;
 
-        //float scale = std::min<uint32_t>(m_Width, m_Height) / 2;
+        // float scale = std::min<uint32_t>(m_Width, m_Height) / 2;
 
         std::vector<uint32_t> ellipseImage(m_Width * m_Height, 0);
 
-        for (size_t i = 0; i < ellipse->GetVertexPositions().size(); i++)
+        for (size_t i = 0; i < m_Orbit->GetVertexPositions().size(); i++)
         {
-            glm::vec3 position = ellipse->GetVertexPositions()[i];
-            
+            glm::vec3 position = m_Orbit->GetVertexPositions()[i];
 
-            CameraInfo cameraInfo = camera->GetCameraInfo();
+            CameraInfo cameraInfo = m_Camera->GetCameraInfo();
             position *= cameraInfo.scale;
-            position = glm::rotateX(position, camera->GetPitch());
-            position = glm::rotateY(position, camera->GetYaw());
+            position = glm::rotateX(position, m_Camera->GetPitch());
+            position = glm::rotateY(position, m_Camera->GetYaw());
 
             position += cameraInfo.position;
 
-            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * bodies[0]->GetRadius() * 4.0f * m_Scaling + glm::vec2(offsetX, offsetY);
+            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * m_Earth->GetRadius() * 4.0f * m_Scaling + glm::vec2(offsetX, offsetY);
 
             int x = static_cast<int>(pixelCoords.x);
             int y = static_cast<int>(pixelCoords.y);
@@ -123,7 +124,7 @@ namespace Visualization
         }
     }
 
-    void Renderer::DrawBackground(std::shared_ptr<Image> background)
+    void OrbitViewer::DrawBackground(std::shared_ptr<Image> background)
     {
 
         // Draw the space background
@@ -145,13 +146,12 @@ namespace Visualization
         }
     }
 
-    void Renderer::DrawBody(std::shared_ptr<Body> body, std::shared_ptr<Camera> camera, glm::vec2 &offset)
+    void OrbitViewer::DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<Camera> camera, glm::vec2 &offset)
     {
         const std::vector<unsigned int> &indices = body->GetIndices();
         const std::vector<glm::vec3> &positions = body->GetPositions();
         const std::vector<glm::vec2> &texCoords = body->GetTexCoords();
 
-        glm::mat4 viewMatrix = camera->GetViewMatrix();
         CameraInfo cameraInfo = camera->GetCameraInfo();
 
         // #pragma omp parallel for
@@ -215,19 +215,19 @@ namespace Visualization
         }
     }
 
-    glm::vec2 Renderer::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
+    glm::vec2 OrbitViewer::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
     {
         return glm::vec2(positionCoords.x, positionCoords.y) * scale + offset;
     }
 
-    void Renderer::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
+    void OrbitViewer::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
     {
         trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, scale, offset);
         trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, scale, offset);
         trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, scale, offset);
     }
 
-    uint32_t Renderer::convertColors(const glm::vec4 &color)
+    uint32_t OrbitViewer::convertColors(const glm::vec4 &color)
     {
         uint32_t colorInt = (static_cast<uint32_t>(color.a * 255.0f) << 24) |
                             (static_cast<uint32_t>(color.b * 255.0f) << 16) |
@@ -237,7 +237,7 @@ namespace Visualization
         return colorInt;
     }
 
-    void Renderer::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3)
+    void OrbitViewer::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3)
     {
         // Sort the vertices vertically by y-coordinate (top to bottom)
         if (index2 < index1)
@@ -301,7 +301,7 @@ namespace Visualization
         }
     }
 
-    uint32_t Renderer::interpolateColor(uint32_t color1, uint32_t color2, float t)
+    uint32_t OrbitViewer::interpolateColor(uint32_t color1, uint32_t color2, float t)
     {
         uint32_t a1 = (color1 >> 24) & 0xFF;
         uint32_t r1 = (color1 >> 16) & 0xFF;
@@ -321,29 +321,29 @@ namespace Visualization
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    uint32_t Renderer::interpolateComponent(uint32_t component1, uint32_t component2, float t)
+    uint32_t OrbitViewer::interpolateComponent(uint32_t component1, uint32_t component2, float t)
     {
         return static_cast<uint32_t>((1.0f - t) * component1 + t * component2);
     }
 
-    bool Renderer::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
+    bool OrbitViewer::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
     {
         return glm::dot(positionCoords, cameraDirection) > 0.0f;
     }
 
-    bool Renderer::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
+    bool OrbitViewer::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
     {
         return isInFrontOfCamera(positionCoords.v1, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v2, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v3, cameraDirection);
     }
 
-    bool Renderer::isWithinImageBounds(int x, int y)
+    bool OrbitViewer::isWithinImageBounds(int x, int y)
     {
         return x >= 0 && x < m_Width && y >= 0 && y < m_Height;
     }
 
-    void Renderer::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
+    void OrbitViewer::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
     {
         trianglePositions.v1 *= scale;
         trianglePositions.v2 *= scale;
@@ -362,21 +362,36 @@ namespace Visualization
         trianglePositions.v3 += position;
     }
 
-    void Renderer::resetCameraScaling()
+    void OrbitViewer::resetCameraScaling()
     {
         // Set initial camera scale based on the sizes of the bodies and the window size
-
-        const std::vector<std::shared_ptr<Visualization::Body>> &bodies = ViewPort::Get()->GetBodies();
-
         float maxRadius = 0.0f;
-        for (auto &body : bodies)
-        {
-            float radius = body->GetRadius();
-            if (radius > maxRadius)
-                maxRadius = radius;
-        }
+
+        float radius = m_Earth->GetRadius();
+        if (radius > maxRadius)
+            maxRadius = radius;
 
         uint32_t minDimension = std::min<float>(m_Width, m_Height);
         m_Scaling = minDimension / maxRadius / 2.0f;
     }
 }
+
+/*
+void OrbitViewer::OnUIRender()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("ViewPort");
+
+    uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
+    uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
+
+    ImGui::Image(m_Renderer->GetImage()->GetDescriptorSet(), ImVec2((float)m_Renderer->GetWidth(), (float)m_Renderer->GetHeight()));
+
+    m_Renderer->ResizeIfNeeded(windowWidth, windowHeight);
+
+    ImGui::End();
+
+    ImGui::PopStyleVar();
+
+}
+*/

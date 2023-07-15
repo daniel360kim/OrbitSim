@@ -18,11 +18,11 @@
 #include <chrono>
 
 #include "OrbitalPropogator.h"
-#include "../../orbit/OrbitalInvariants.h"
-#include "../../orbit/constants.h"
-#include "../../util/FileNamer.h"
+#include "orbit/OrbitalInvariants.h"
+#include "orbit/constants.h"
+#include "util/FileNamer.h"
 #include "csv2.h"
-#include "../../util/ProgressBar.h"
+#include "util/ProgressBar.h"
 
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const
 {
@@ -142,6 +142,10 @@ void OrbitalPropogator::propogateOrbit(double duration)
 
     double currentTime = 0.0;
 
+    // Calculate time step based on orbital period
+    // larger orbital periods require larger time steps to run in a reasonable amount of time
+    double timestep = m_orbitalObject.getOrbitalPeriod() / 10000.0;
+
     //ProgressBar progressBar(20);
 
     while (currentTime <= duration)
@@ -152,7 +156,7 @@ void OrbitalPropogator::propogateOrbit(double duration)
         m_positions.push_back(m_position);
         
 
-        currentTime += m_timeStep;
+        currentTime += timestep;
     }
 
     logFile.close();

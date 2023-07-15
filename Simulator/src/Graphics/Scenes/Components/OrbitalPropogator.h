@@ -15,8 +15,8 @@
 #include <string>
 #include <fstream>
 
-#include "../../orbit/OrbitalObject.h"
-#include "../../math/vectorOps.h"
+#include "orbit/OrbitalObject.h"
+#include "math/vectorOps.h"
 #include "csv2.h"
 
 const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z", "VX", "VY", "VZ"};
@@ -24,8 +24,8 @@ const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z",
 class OrbitalPropogator
 {
 public:
-    OrbitalPropogator(const OrbitalObject &orbitalObject, double timeStep) : m_orbitalObject(orbitalObject),
-                                                                             m_timeStep(timeStep) {}
+    OrbitalPropogator(const OrbitalObject &orbitalObject) : m_orbitalObject(orbitalObject) {}
+                                                                              
 
     void runTimeStep(double currentTimeStep);
     virtual void propogateOrbit(double duration);
@@ -45,7 +45,6 @@ private:
     void calculateKinematicParameters(double trueAnomaly);
     Vector<double, 3> calculatePosition(double trueAnomaly);
     Vector<double, 3> calculateVelocity(double trueAnomaly);
-    double m_timeStep;
 
     double m_trueAnomaly;
     double m_radius;

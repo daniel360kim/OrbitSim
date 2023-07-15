@@ -9,18 +9,17 @@
 
 #include <memory>
 
-#include "Visualization/ViewPort.h"
+#include "Application.h"
 
 namespace Visualization
 {
-    static std::weak_ptr<ViewPort> s_ViewPort;
+    static std::weak_ptr<Application> s_Application;
 
-    std::shared_ptr<ViewPort> ViewPort::Get()
+    std::shared_ptr<Application> Application::Get()
     {
-        return s_ViewPort.lock();
+        return s_Application.lock();
     }
 }
-
 
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 {
@@ -29,11 +28,10 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     Walnut::Application* app = new Walnut::Application(spec);
 
-    std::shared_ptr<Visualization::ViewPort> layer = std::make_shared<Visualization::ViewPort>();
+    std::shared_ptr<Visualization::Application> layer = std::make_shared<Visualization::Application>();
     app->PushLayer(layer);
 
-    Visualization::s_ViewPort = layer;
+    Visualization::s_Application = layer;
 
     return app;
 }
-

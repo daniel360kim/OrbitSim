@@ -16,10 +16,12 @@
 
 namespace Visualization
 {
-    Sphere::Sphere(double radius, int subdivisionLevel)
+    Sphere::Sphere(double radius, int subdivisionLevel, const std::string &texturePath)
         : m_radius(radius), m_subdivisionLevel(subdivisionLevel)
     {
+        m_texture = std::make_shared<Texture>(texturePath);
         generateSphere();
+        computeTextureCoordinates();
     }
 
     void Sphere::generateSphere()
@@ -96,7 +98,36 @@ namespace Visualization
         subdivideTriangle(v3, v31, v23, level - 1);
         subdivideTriangle(v12, v23, v31, level - 1);
     }
-    
 
+    void Sphere::computeTextureCoordinates()
+    {
+        m_texCoords.resize(m_positions.size());
+
+        for (unsigned int i = 0; i < m_positions.size(); i++)
+        {
+            glm::vec3 position = m_positions[i];
+
+            float u = 0.5f + std::atan2(position.z, position.x) / (2 * M_PI);
+            float v = 0.5f - std::asin(position.y) / M_PI;
+
+            // Normalize the texture coordinates
+            u = std::fmod(u, 1.0f);
+            v = std::fmod(v, 1.0f);
+
+            if (u < 0.0f)
+                u += 1.0f;
+            if (v < 0.0f)
+                v += 1.0f;
+
+            m_texCoords[i] = glm::vec2(u, v);
+        }
+    }
+
+    void Sphere::changeSubdivisionLevel(int subdivisionLevel)
+    {
+        m_subdivisionLevel = subdivisionLevel;
+        generateSphere();
+        computeTextureCoordinates();
+    }
 
 }

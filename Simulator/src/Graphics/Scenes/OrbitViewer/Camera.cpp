@@ -57,6 +57,7 @@ namespace Visualization
         using namespace Walnut;
 
         glm::vec2 mousePosition = Input::GetMousePosition();
+
         glm::vec2 deltaMousePosition = (mousePosition - m_lastMousePosition) * 0.002f;
         m_lastMousePosition = mousePosition;
 

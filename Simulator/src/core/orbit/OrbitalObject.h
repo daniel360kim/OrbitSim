@@ -13,7 +13,7 @@
 
 #include "CentralBody.h"
 #include "CelestialObject.h"
-#include "../math/vectorOps.h"
+#include "math/vectorOps.h"
 #include "OrbitalInvariants.h"
 
 class OrbitalObject; // forward declaration

@@ -14,20 +14,15 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "../../math/vectorOps.h"
-#include "OrbitalPropogator.h"
+#include "math/vectorOps.h"
+#include "../OrbitalPropogator.h"
 
 namespace Visualization
 {
     class Ellipse : public OrbitalPropogator
     {
     public:
-        Ellipse(const std::string &name, const Type &type, double mass,
-                double semiMajorAxis, double eccentricity, double inclination,
-                double longitudeOfAscendingNode, double argumentOfPeriapsis,
-                CentralBody centralBody, double timeStep);
-
-        Ellipse(const OrbitalObject &orbitalObject, double timeStep);
+        Ellipse(const OrbitalObject &orbitalObject);
         ~Ellipse();
 
         const std::vector<glm::vec3> &GetVertexPositions() const { return m_vertexPositions; }

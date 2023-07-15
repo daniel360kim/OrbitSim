@@ -13,7 +13,7 @@
 #define ORBITALINVARIANTS_H
 
 #include "OrbitalObject.h"
-#include "../math/vectorOps.h"
+#include "math/vectorOps.h"
 
 class OrbitalInvariants
 {

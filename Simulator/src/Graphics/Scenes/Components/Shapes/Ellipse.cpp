@@ -15,8 +15,8 @@
 
 namespace Visualization
 {
-    Ellipse::Ellipse(const OrbitalObject &orbitalObject, double timeStep)
-        : OrbitalPropogator(orbitalObject, timeStep)
+    Ellipse::Ellipse(const OrbitalObject &orbitalObject)
+        : OrbitalPropogator(orbitalObject)
     {
         propogateOrbit(m_orbitalObject.getOrbitalPeriod());
         generateVertexPositions();
