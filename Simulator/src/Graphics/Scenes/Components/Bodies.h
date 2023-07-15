@@ -19,8 +19,8 @@ namespace Visualization
     class CentralRenderBody : public Sphere
     {
     public:
-        CentralRenderBody(CentralBody& centralBody, double radius, int subdivisionlevel, const std::string& texturePath)
-            : Sphere(radius, subdivisionlevel, texturePath), m_centralBody(centralBody) {}
+        CentralRenderBody(CentralBody& centralBody, int subdivisionlevel, const std::string& texturePath)
+            : Sphere(centralBody.getRadius(), subdivisionlevel, texturePath), m_centralBody(centralBody) {}
         
         CentralBody GetCentralBody() const { return m_centralBody; }
 

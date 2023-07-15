@@ -1,49 +1,58 @@
 /**
- * @file OrbitViewer.h
+ * @file OpeningScene.h
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
  * @brief
  * @version 0.1
- * @date 2023-07-04
+ * @date 2023-07-14
  *
  *
  */
 
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
 #include "../Scene.h"
+#include "Camera.h"
 #include "../Components/Image.h"
+#include <glm/glm.hpp>
 #include "../Components/Bodies.h"
-#include "../Components/Shapes/Ellipse.h"
-
-#include "OrbitCamera.h"
 
 namespace Visualization
 {
-    class OrbitCamera;
-    class OrbitViewer : public Scene
+    struct Commands
+    {
+        bool m_Exit = false;
+    };
+
+    class OpeningScene : public Scene
     {
     public:
-        OrbitViewer(uint32_t width, uint32_t height);
-        ~OrbitViewer();
+        OpeningScene(uint32_t width, uint32_t height);
+        ~OpeningScene();
 
-        void OnUpdate(float ts) override;
-        void OnUIRender() override;
+        void Draw();
+        void DrawBackground();
+        void DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<OpeningSceneScene::Camera> camera, glm::vec2 &offset);
+
+        void OnUpdate(float ts);
+        void OnUIRender();
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
-        void Draw();
-
-        void DrawBackground(std::shared_ptr<Image> background);
-        void DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<OrbitCamera> camera, glm::vec2 &offset);
+        Commands &GetCommands() { return m_Commands; }
 
     private:
-        std::shared_ptr<Image> m_SpaceBackground;
-        std::shared_ptr<CentralRenderBody> m_Earth;
-        std::shared_ptr<Ellipse> m_Orbit;
-        std::shared_ptr<OrbitCamera> m_Camera;
+        Commands m_Commands;
 
-        float m_Scaling = 1.0f;
+        std::shared_ptr<Image> m_SpaceBackground;
+
+        std::shared_ptr<CentralRenderBody> m_Mercury;
+        std::shared_ptr<CentralRenderBody> m_Venus;
+        std::shared_ptr<CentralRenderBody> m_Earth;
+        std::shared_ptr<CentralRenderBody> m_Mars;
+
+        std::shared_ptr<OpeningSceneScene::Camera> m_Camera;
+
+        std::vector<std::shared_ptr<CentralRenderBody>> m_Bodies;
 
         template <typename T>
         struct Triangle
@@ -66,7 +75,8 @@ namespace Visualization
         void applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale);
 
         void resetCameraScaling();
-    };
-};
 
-#endif
+        float m_Scaling = 1.0f;
+    };
+
+}

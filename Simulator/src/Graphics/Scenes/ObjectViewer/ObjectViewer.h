@@ -10,11 +10,6 @@
 
 #pragma once
 
-#include <vector>
-#include <memory>
-#include <cstdint>
-
-#include "Walnut/Image.h"
 #include "../Scene.h"
 
 namespace Visualization

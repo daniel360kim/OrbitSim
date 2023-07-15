@@ -15,18 +15,19 @@
 
 namespace Visualization
 {
-    //Provides information that is needed 
-    struct CameraInfo
+
+    // Provides information that is needed
+    struct OrbitCameraInfo
     {
         float scale;
         glm::vec3 position;
         glm::vec3 forwardDirection;
     };
 
-    class Camera
+    class OrbitCamera
     {
     public:
-        Camera();
+        OrbitCamera();
 
         bool OnUpdate(float ts);
 
@@ -41,7 +42,7 @@ namespace Visualization
         float GetPitch() const { return m_pitch; }
         float GetScale() const { return m_scale; }
 
-        CameraInfo GetCameraInfo() const;
+        OrbitCameraInfo GetCameraInfo() const;
 
         glm::mat4 GetViewMatrix() const;
 
@@ -60,8 +61,8 @@ namespace Visualization
         glm::mat4 m_viewMatrix;
 
         glm::vec2 m_lastMousePosition;
-        
-        float m_yTranslationElapsed; // Used for 
+
+        float m_yTranslationElapsed; // Used for
         void UpdateViewMatrix();
     };
 }

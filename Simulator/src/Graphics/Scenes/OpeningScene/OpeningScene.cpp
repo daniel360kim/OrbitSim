@@ -1,77 +1,82 @@
 /**
- * @file ViewPort.cpp
+ * @file OpeningScene.cpp
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
  * @brief
  * @version 0.1
- * @date 2023-07-04
+ * @date 2023-07-14
  *
  *
  */
 
-#include "OrbitViewer.h"
+#include "OpeningScene.h"
+#include "orbit/CentralBody.h"
 
 #include <imgui.h>
-#include <iostream>
-#include <unordered_map>
 #include <glm/gtx/rotate_vector.hpp>
-#include "OrbitViewer.h"
 
 namespace Visualization
 {
-
-    OrbitViewer::OrbitViewer(uint32_t width, uint32_t height)
+    OpeningScene::OpeningScene(uint32_t width, uint32_t height)
         : Scene(width, height)
     {
-        m_Camera = std::make_shared<OrbitCamera>();
+        m_SpaceBackground = std::make_shared<Image>("../../Resources/Textures/milkyway.jpg");
+        m_Camera = std::make_shared<OpeningSceneScene::Camera>();
 
-        m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/Textures/milkyway.jpg");
-
+        CentralBody mercury("mercury", Type::Planet, 3.3011e23, 2439.7, 3);
+        CentralBody venus("venus", Type::Planet, 4.8675e24, 6051.8, 3);
         CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
+        CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
+
+        m_Mercury = std::make_shared<Visualization::CentralRenderBody>(mercury, 3, "../../Resources/Textures/mercury.jpg");
+        m_Venus = std::make_shared<Visualization::CentralRenderBody>(venus, 4, "../../Resources/Textures/venus.jpg");
         m_Earth = std::make_shared<Visualization::CentralRenderBody>(earth, 5, "../../Resources/Textures/earthDay.jpg");
+        m_Mars = std::make_shared<Visualization::CentralRenderBody>(mars, 3, "../../Resources/Textures/mars.jpg");
+        
+        m_Bodies.push_back(m_Mercury);
+        m_Bodies.push_back(m_Venus);
+        m_Bodies.push_back(m_Earth);
+        m_Bodies.push_back(m_Mars);
 
-        OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Planet, 7.34767309e22)
-                                 .setSemiMajorAxis(384400.0)
-                                 .setEccentricity(0.0549)
-                                 .setInclination(5.145)
-                                 .setLongitudeOfAscendingNode(125.08)
-                                 .setCentralBody(earth)
-                                 .build();
-
-        m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
     }
 
-    OrbitViewer::~OrbitViewer()
+    OpeningScene::~OpeningScene()
     {
     }
 
-    void OrbitViewer::OnUpdate(float ts)
+    void OpeningScene::OnUpdate(float ts)
     {
         m_Camera->OnUpdate(ts);
-
         Clear();
         Draw();
         UpdateImage();
     }
 
-    void OrbitViewer::OnUIRender()
+    void OpeningScene::OnUIRender()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("OrbitViewer");
+        ImGui::Begin("OrbitSim");
 
         uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
         uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
 
+        // Set button color
+
         ImGui::Image(GetImage()->GetDescriptorSet(), ImVec2((float)GetWidth(), (float)GetHeight()));
 
-        ResizeIfNeeded(windowWidth, windowHeight);
+        if (ImGui::Button("Object Viewer"))
+        {
+            m_Commands.m_Exit = true;
+        }
+
+        ResizeIfNeeded(windowWidth, windowHeight - (windowHeight / 2));
 
         ImGui::End();
 
         ImGui::PopStyleVar();
     }
 
-    void OrbitViewer::ResizeIfNeeded(uint32_t width, uint32_t height)
+    void OpeningScene::ResizeIfNeeded(uint32_t width, uint32_t height)
     {
         if (m_Width == width && m_Height == height)
             return;
@@ -86,77 +91,49 @@ namespace Visualization
         resetCameraScaling();
     }
 
-    void OrbitViewer::Draw()
+    void OpeningScene::Draw()
     {
-        DrawBackground(m_SpaceBackground);
-        //  Draw the earth on top of the earth, set color to blue for now
+        DrawBackground();
 
-        // Divide the available space into the number of bodies
-        // Distribute each
-        // Calculate the offset for each body
+        int numBodies = m_Bodies.size();
 
-        DrawBody(m_Earth, m_Camera, glm::vec2(m_Width / 2, m_Height / 2));
+        float dividerDistance = m_Width / (numBodies + 1);
 
-        float offsetX = m_Width / 2;
-        float offsetY = m_Height / 2;
-
-        // float scale = std::min<uint32_t>(m_Width, m_Height) / 2;
-
-        std::vector<uint32_t> ellipseImage(m_Width * m_Height, 0);
-
-        for (size_t i = 0; i < m_Orbit->GetVertexPositions().size(); i++)
+        for (int i = 0; i < numBodies; i++)
         {
-            glm::vec3 position = m_Orbit->GetVertexPositions()[i];
+            std::shared_ptr<CentralRenderBody> body = m_Bodies[i];
 
-            OrbitCameraInfo cameraInfo = m_Camera->GetCameraInfo();
-            position *= cameraInfo.scale;
-            position = glm::rotateX(position, m_Camera->GetPitch());
-            position = glm::rotateY(position, m_Camera->GetYaw());
+            glm::vec2 offset = {dividerDistance * (i + 1), m_Height / 2};
 
-            position += cameraInfo.position;
-
-            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) * m_Earth->GetRadius() * 4.0f * m_Scaling + glm::vec2(offsetX, offsetY);
-
-            int x = static_cast<int>(pixelCoords.x);
-            int y = static_cast<int>(pixelCoords.y);
-            int index = y * m_Width + x;
-
-            if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
-            {
-                m_imageBuffer[index] = 0xffffffff;
-            }
+            DrawBody(body, m_Camera, offset);
         }
     }
 
-    void OrbitViewer::DrawBackground(std::shared_ptr<Image> background)
+    void OpeningScene::DrawBackground()
     {
 
         // Draw the space background
-        uint32_t *backgroundData = background->GetPixels();
-        uint32_t backgroundWidth = background->GetWidth();
-        uint32_t backgroundHeight = background->GetHeight();
+        uint32_t *backgroundData = m_SpaceBackground->GetPixels();
+        uint32_t backgroundWidth = m_SpaceBackground->GetWidth();
+        uint32_t backgroundHeight = m_SpaceBackground->GetHeight();
 
+        // Add to image buffer. Fit only the center of the image if the image is bigger than the screen
         for (uint32_t y = 0; y < m_Height; y++)
         {
             for (uint32_t x = 0; x < m_Width; x++)
             {
-                uint32_t backgroundX = (uint32_t)((float)x / m_Width * backgroundWidth);
-                uint32_t backgroundY = (uint32_t)((float)y / m_Height * backgroundHeight);
-
-                uint32_t backgroundIndex = backgroundY * backgroundWidth + backgroundX;
-
-                m_imageBuffer[y * m_Width + x] = backgroundData[backgroundIndex];
+                m_imageBuffer[y * m_Width + x] = backgroundData[(y % backgroundHeight) * backgroundWidth + (x % backgroundWidth)];
             }
         }
     }
 
-    void OrbitViewer::DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<OrbitCamera> camera, glm::vec2 &offset)
+    void OpeningScene::DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<OpeningSceneScene::Camera> camera, glm::vec2 &offset)
     {
         const std::vector<unsigned int> &indices = body->GetIndices();
         const std::vector<glm::vec3> &positions = body->GetPositions();
         const std::vector<glm::vec2> &texCoords = body->GetTexCoords();
 
-        OrbitCameraInfo cameraInfo = camera->GetCameraInfo();
+        OpeningSceneScene::CameraInfo cameraInfo = camera->GetCameraInfo();
 
         // #pragma omp parallel for
         for (uint32_t i = 0; i < indices.size(); i += 3)
@@ -219,19 +196,19 @@ namespace Visualization
         }
     }
 
-    glm::vec2 OrbitViewer::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
+    glm::vec2 OpeningScene::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
     {
         return glm::vec2(positionCoords.x, positionCoords.y) * scale + offset;
     }
 
-    void OrbitViewer::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
+    void OpeningScene::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
     {
         trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, scale, offset);
         trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, scale, offset);
         trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, scale, offset);
     }
 
-    uint32_t OrbitViewer::convertColors(const glm::vec4 &color)
+    uint32_t OpeningScene::convertColors(const glm::vec4 &color)
     {
         uint32_t colorInt = (static_cast<uint32_t>(color.a * 255.0f) << 24) |
                             (static_cast<uint32_t>(color.b * 255.0f) << 16) |
@@ -241,7 +218,7 @@ namespace Visualization
         return colorInt;
     }
 
-    void OrbitViewer::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3)
+    void OpeningScene::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3)
     {
         // Sort the vertices vertically by y-coordinate (top to bottom)
         if (index2 < index1)
@@ -305,7 +282,7 @@ namespace Visualization
         }
     }
 
-    uint32_t OrbitViewer::interpolateColor(uint32_t color1, uint32_t color2, float t)
+    uint32_t OpeningScene::interpolateColor(uint32_t color1, uint32_t color2, float t)
     {
         uint32_t a1 = (color1 >> 24) & 0xFF;
         uint32_t r1 = (color1 >> 16) & 0xFF;
@@ -325,29 +302,29 @@ namespace Visualization
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    uint32_t OrbitViewer::interpolateComponent(uint32_t component1, uint32_t component2, float t)
+    uint32_t OpeningScene::interpolateComponent(uint32_t component1, uint32_t component2, float t)
     {
         return static_cast<uint32_t>((1.0f - t) * component1 + t * component2);
     }
 
-    bool OrbitViewer::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
+    bool OpeningScene::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
     {
         return glm::dot(positionCoords, cameraDirection) > 0.0f;
     }
 
-    bool OrbitViewer::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
+    bool OpeningScene::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
     {
         return isInFrontOfCamera(positionCoords.v1, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v2, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v3, cameraDirection);
     }
 
-    bool OrbitViewer::isWithinImageBounds(int x, int y)
+    bool OpeningScene::isWithinImageBounds(int x, int y)
     {
         return x >= 0 && x < m_Width && y >= 0 && y < m_Height;
     }
 
-    void OrbitViewer::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
+    void OpeningScene::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
     {
         trianglePositions.v1 *= scale;
         trianglePositions.v2 *= scale;
@@ -366,7 +343,7 @@ namespace Visualization
         trianglePositions.v3 += position;
     }
 
-    void OrbitViewer::resetCameraScaling()
+    void OpeningScene::resetCameraScaling()
     {
         // Set initial camera scale based on the sizes of the bodies and the window size
         float maxRadius = 0.0f;
@@ -376,6 +353,7 @@ namespace Visualization
             maxRadius = radius;
 
         uint32_t minDimension = std::min<float>(m_Width, m_Height);
-        m_Scaling = minDimension / maxRadius / 2.0f;
+        m_Scaling = minDimension / maxRadius / 4.0f;
     }
+
 }

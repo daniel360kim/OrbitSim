@@ -36,10 +36,7 @@ link_directories(
     $ENV{VULKAN_SDK}/Lib
     ${PROJECT_SOURCE_DIR}/Dependencies/glfw/lib-vc2022
     ${PROJECT_SOURCE_DIR}/Dependencies/glew/lib/Release/x64
-    
 )
-
-
 
 file(GLOB_RECURSE all_SRCS
     ${PROJECT_SOURCE_DIR}/src/*.cpp

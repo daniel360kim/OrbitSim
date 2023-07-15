@@ -1,5 +1,5 @@
 /**
- * @file Camera.cpp
+ * @file OrbitCamera.cpp
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
  * @brief produces rotation, translation, and scaling matrices
  * @version 0.1
@@ -8,7 +8,7 @@
  *
  */
 
-#include "Camera.h"
+#include "OrbitCamera.h"
 
 #include <Walnut/Input/Input.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,7 +17,8 @@
 
 namespace Visualization
 {
-    Camera::Camera()
+
+    OrbitCamera::OrbitCamera()
         : m_position(0.0f), m_scale(1.0f),
           m_yaw(0.0f), m_pitch(0.0f)
     {
@@ -25,24 +26,24 @@ namespace Visualization
         UpdateViewMatrix();
     }
 
-    glm::vec3 Camera::getForwardDirection() const
+    glm::vec3 OrbitCamera::getForwardDirection() const
     {
         return m_forwardDirection;
     }
 
-    glm::vec3 Camera::getRightDirection() const
+    glm::vec3 OrbitCamera::getRightDirection() const
     {
         glm::vec3 right = glm::cross(getForwardDirection(), getUpDirection());
         return right;
     }
 
-    glm::vec3 Camera::getUpDirection() const
+    glm::vec3 OrbitCamera::getUpDirection() const
     {
         constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
         return up;
     }
 
-    bool Camera::OnUpdate(float ts)
+    bool OrbitCamera::OnUpdate(float ts)
     {
         enum class MovementType
         {
@@ -138,45 +139,45 @@ namespace Visualization
         return moved;
     }
 
-    void Camera::SetPosition(const glm::vec3 &newPosition)
+    void OrbitCamera::SetPosition(const glm::vec3 &newPosition)
     {
         m_position = newPosition;
         UpdateViewMatrix();
     }
 
-    void Camera::SetScale(float newScale)
+    void OrbitCamera::SetScale(float newScale)
     {
         m_scale = newScale;
         UpdateViewMatrix();
     }
 
-    void Camera::SetYaw(float newYaw)
+    void OrbitCamera::SetYaw(float newYaw)
     {
         m_yaw = newYaw;
         UpdateViewMatrix();
     }
 
-    void Camera::SetPitch(float newPitch)
+    void OrbitCamera::SetPitch(float newPitch)
     {
         m_pitch = newPitch;
         UpdateViewMatrix();
     }
 
-    glm::mat4 Camera::GetViewMatrix() const
+    glm::mat4 OrbitCamera::GetViewMatrix() const
     {
         return m_viewMatrix;
     }
 
-    CameraInfo Camera::GetCameraInfo() const
+    OrbitCameraInfo OrbitCamera::GetCameraInfo() const
     {
-        CameraInfo info;
+        OrbitCameraInfo info;
         info.position = m_position;
         info.scale = m_scale;
         info.forwardDirection = getForwardDirection();
         return info;
     }
 
-    void Camera::UpdateViewMatrix()
+    void OrbitCamera::UpdateViewMatrix()
     {
         // Update view matrix based on position, yaw, and pitch
         glm::mat4 rotation = glm::mat4(1.0f);
