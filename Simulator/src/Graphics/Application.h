@@ -1,15 +1,23 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "Walnut/Layer.h"
 #include "Scenes/OrbitViewer/OrbitViewer.h"
+#include "Scenes/ObjectViewer/ObjectViewer.h"
 
 namespace Visualization
 {
     class Application : public Walnut::Layer
     {
     public:
-        Application();
+        enum class Scene
+        {
+            OrbitViewer = 0,
+            ObjectViewer = 1
+        };
 
+        Application();
 
         static std::shared_ptr<Application> Get();
 
@@ -17,6 +25,8 @@ namespace Visualization
         virtual void OnUIRender() override;
     
     private:
-        std::shared_ptr<Visualization::OrbitViewer> m_OrbitViewer;
+        Scene m_CurrentScene;
+        std::shared_ptr<OrbitViewer> m_OrbitViewer;
+        std::shared_ptr<ObjectViewer> m_ObjectViewer;
     };
 }

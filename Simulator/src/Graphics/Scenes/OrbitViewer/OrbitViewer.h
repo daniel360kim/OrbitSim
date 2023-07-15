@@ -16,6 +16,7 @@
 
 #include "Walnut/Image.h"
 
+#include "../Scene.h"
 #include "Camera.h"
 #include "../Components/Image.h"
 #include "../Components/Bodies.h"
@@ -23,30 +24,21 @@
 
 namespace Visualization
 {
-    class OrbitViewer
+    class OrbitViewer : public Scene
     {
     public:
         OrbitViewer(uint32_t width, uint32_t height);
         ~OrbitViewer();
 
-        void update(float ts);
+        void OnUpdate(float ts) override;
+        void OnUIRender() override;
+
+        void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
         void Draw();
 
         void DrawBackground(std::shared_ptr<Image> background);
         void DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<Camera> camera, glm::vec2 &offset);
-
-        void Clear(uint32_t clearColor = 0xFF000000);
-
-        void ResizeIfNeeded(uint32_t width, uint32_t height);
-
-        void UpdateImage();
-
-        uint32_t GetWidth() const { return m_Width; }
-        uint32_t GetHeight() const { return m_Height; }
-
-        std::vector<uint32_t> &GetImageBuffer() { return m_imageBuffer; }
-        std::shared_ptr<Walnut::Image> GetImage() const { return m_Image; }
 
     private:
         std::shared_ptr<Image> m_SpaceBackground;
@@ -54,10 +46,6 @@ namespace Visualization
         std::shared_ptr<Ellipse> m_Orbit;
         std::shared_ptr<Camera> m_Camera;
 
-        std::shared_ptr<Walnut::Image> m_Image;
-        std::vector<uint32_t> m_imageBuffer;
-        uint32_t m_Width = 0;
-        uint32_t m_Height = 0;
         float m_Scaling = 1.0f;
 
         template <typename T>

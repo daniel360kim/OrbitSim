@@ -10,6 +10,7 @@
 
 #include "OrbitViewer.h"
 
+#include <imgui.h>
 #include <iostream>
 #include <unordered_map>
 #include <glm/gtx/rotate_vector.hpp>
@@ -18,7 +19,7 @@
 namespace Visualization
 {
     OrbitViewer::OrbitViewer(uint32_t width, uint32_t height)
-        : m_Width(width), m_Height(height)
+        : Scene(width, height)
     {
         m_Camera = std::make_shared<Visualization::Camera>();
 
@@ -37,15 +38,13 @@ namespace Visualization
                                  .build();
 
         m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
-        m_Image = std::make_shared<Walnut::Image>(width, height, Walnut::ImageFormat::RGBA);
-        m_imageBuffer.resize(width * height);
     }
 
     OrbitViewer::~OrbitViewer()
     {
     }
 
-    void OrbitViewer::update(float ts)
+    void OrbitViewer::OnUpdate(float ts)
     {
         m_Camera->OnUpdate(ts);
 
@@ -54,12 +53,22 @@ namespace Visualization
         UpdateImage();
     }
 
-    void OrbitViewer::Clear(uint32_t clearColor)
+    void OrbitViewer::OnUIRender()
     {
-        for (uint32_t i = 0; i < m_Width * m_Height; i++)
-        {
-            m_imageBuffer[i] = clearColor;
-        }
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("OrbitViewer");
+
+        uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
+        uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
+
+
+        ImGui::Image(GetImage()->GetDescriptorSet(), ImVec2((float)GetWidth(), (float)GetHeight()));
+
+        ResizeIfNeeded(windowWidth, windowHeight);
+
+        ImGui::End();
+
+        ImGui::PopStyleVar();
     }
 
     void OrbitViewer::ResizeIfNeeded(uint32_t width, uint32_t height)
@@ -75,11 +84,6 @@ namespace Visualization
         m_imageBuffer.resize(width * height);
 
         resetCameraScaling();
-    }
-
-    void OrbitViewer::UpdateImage()
-    {
-        m_Image->SetData(m_imageBuffer.data());
     }
 
     void OrbitViewer::Draw()
