@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef CENTRALBODY_H
-#define CENTRALBODY_H
+#pragma once
 
 #include <string>
 
@@ -46,20 +45,3 @@ private:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

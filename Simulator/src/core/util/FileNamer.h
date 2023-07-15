@@ -10,8 +10,7 @@
 
 
 
-#ifndef FILE_NAMER_H
-#define FILE_NAMER_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -56,4 +55,3 @@ private:
     }
 };
 
-#endif // FILE_NAMER_H

@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #include <chrono>
 #include <vector>
@@ -52,5 +51,3 @@ private:
     
 };
 
-
-#endif

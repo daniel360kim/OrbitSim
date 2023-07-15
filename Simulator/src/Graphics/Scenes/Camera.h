@@ -1,35 +1,34 @@
 /**
  * @file Camera.h
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
- * @brief produces rotation, translation, and scaling matrices
+ * @brief 
  * @version 0.1
- * @date 2023-07-05
- *
- *
+ * @date 2023-07-15
+ * 
+ * 
  */
 
-#ifndef Camera_H
-#define Camera_H
+#pragma once
 
 #include <glm/glm.hpp>
 
 namespace Visualization
 {
-
-    // Provides information that is needed
-    struct OrbitCameraInfo
+    struct CameraInfo
     {
         float scale;
         glm::vec3 position;
         glm::vec3 forwardDirection;
+        float yaw;
+        float pitch;
     };
-
-    class OrbitCamera
+    
+    class Camera
     {
     public:
-        OrbitCamera();
+        Camera();
 
-        bool OnUpdate(float ts);
+        virtual bool OnUpdate(float ts);
 
         void SetPosition(const glm::vec3 &newPosition);
         void SetScale(float newScale);
@@ -42,7 +41,7 @@ namespace Visualization
         float GetPitch() const { return m_pitch; }
         float GetScale() const { return m_scale; }
 
-        OrbitCameraInfo GetCameraInfo() const;
+        CameraInfo GetCameraInfo() const;
 
         glm::mat4 GetViewMatrix() const;
 
@@ -50,7 +49,7 @@ namespace Visualization
         glm::vec3 getRightDirection() const;
         glm::vec3 getUpDirection() const;
 
-    private:
+    protected:
         glm::vec3 m_position;
         glm::vec3 m_forwardDirection; // Needed so that up direction doesn't change when rotating
         float m_scale;
@@ -65,6 +64,5 @@ namespace Visualization
         float m_yTranslationElapsed; // Used for
         void UpdateViewMatrix();
     };
-}
 
-#endif
+};

@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef CELESTIALOBJECT_H
-#define CELESTIALOBJECT_H
+#pragma once
 
 #include <string>
 
@@ -51,5 +50,3 @@ protected:
     Type m_type;
     double m_mass;
 };
-
-#endif

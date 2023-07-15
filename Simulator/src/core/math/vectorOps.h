@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef VECTOROPS_H
-#define VECTOROPS_H
+#pragma once
 
 #include <cmath>
 
@@ -177,23 +176,3 @@ Vector<T, N> Vector<T, N>::cross(const Vector& a, const Vector& b)
     return result;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

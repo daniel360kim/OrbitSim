@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef Image_H
-#define Image_H
+#pragma once
 
 #include <filesystem>
 
@@ -34,9 +33,3 @@ namespace Visualization
     };
 };
 
-
-
-
-
-
-#endif

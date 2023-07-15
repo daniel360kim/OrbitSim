@@ -8,8 +8,7 @@
  * 
  */
 
-#ifndef ORBITALOBJECT_H
-#define ORBITALOBJECT_H
+#pragma once
 
 #include "CentralBody.h"
 #include "CelestialObject.h"
@@ -95,5 +94,3 @@ private:
     CentralBody m_centralBody;
 
 };
-
-#endif

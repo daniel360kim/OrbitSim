@@ -9,8 +9,7 @@
  * 
  */
 
-#ifndef ORBITALINVARIANTS_H
-#define ORBITALINVARIANTS_H
+#pragma once
 
 #include "OrbitalObject.h"
 #include "math/vectorOps.h"
@@ -29,4 +28,3 @@ public:
 private:
     double m_centralBodyMass;
 };
-#endif

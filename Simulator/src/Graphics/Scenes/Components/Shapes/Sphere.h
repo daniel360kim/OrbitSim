@@ -8,8 +8,7 @@
  *
  */
 
-#ifndef Sphere_H
-#define Sphere_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -40,7 +39,6 @@ namespace Visualization
         void changeSubdivisionLevel(int subdivisionLevel);
 
     private:
-        float m_radius;
 
         std::shared_ptr<Texture> m_texture;
         std::vector<glm::vec2> m_texCoords; // Texture coordinates
@@ -49,6 +47,7 @@ namespace Visualization
         void computeTextureCoordinates();
 
     protected:
+        float m_radius;
         std::vector<glm::vec3> m_positions;  // Vertex positions
         std::vector<glm::vec3> m_normals;    // Vertex normals
         std::vector<unsigned int> m_indices; // Indices for drawing sphere
@@ -58,5 +57,3 @@ namespace Visualization
     };
 
 }
-
-#endif
