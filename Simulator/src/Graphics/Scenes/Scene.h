@@ -12,7 +12,7 @@
 
 #include <memory>
 #include <vector>
-
+#include <imgui.h>
 #include "Walnut/Image.h"
 
 namespace Visualization

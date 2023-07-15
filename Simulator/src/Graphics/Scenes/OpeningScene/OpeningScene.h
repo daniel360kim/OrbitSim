@@ -43,16 +43,13 @@ namespace Visualization
     private:
         Commands m_Commands;
 
+        std::shared_ptr<Walnut::Image> m_StartButtonIcon;
+
         std::shared_ptr<Image> m_SpaceBackground;
 
-        std::shared_ptr<CentralRenderBody> m_Mercury;
-        std::shared_ptr<CentralRenderBody> m_Venus;
-        std::shared_ptr<CentralRenderBody> m_Earth;
         std::shared_ptr<CentralRenderBody> m_Mars;
 
         std::shared_ptr<OpeningSceneScene::Camera> m_Camera;
-
-        std::vector<std::shared_ptr<CentralRenderBody>> m_Bodies;
 
         template <typename T>
         struct Triangle

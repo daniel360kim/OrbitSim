@@ -10,6 +10,7 @@
 
 #include "OpeningScene.h"
 #include "orbit/CentralBody.h"
+#include "../Components/ImageResizer.h"
 
 #include <imgui.h>
 #include <glm/gtx/rotate_vector.hpp>
@@ -19,25 +20,17 @@ namespace Visualization
     OpeningScene::OpeningScene(uint32_t width, uint32_t height)
         : Scene(width, height)
     {
+        std::vector<uint32_t> rocketIconImageBuffer(20 * 20);
+        ImageResizer::resizeImage("../../Resources/Icons/rocket.png", 20, 20, rocketIconImageBuffer);
+
+        m_StartButtonIcon = std::make_shared<Walnut::Image>(20, 20, Walnut::ImageFormat::RGBA, rocketIconImageBuffer.data());
+
         m_SpaceBackground = std::make_shared<Image>("../../Resources/Textures/milkyway.jpg");
         m_Camera = std::make_shared<OpeningSceneScene::Camera>();
 
-        CentralBody mercury("mercury", Type::Planet, 3.3011e23, 2439.7, 3);
-        CentralBody venus("venus", Type::Planet, 4.8675e24, 6051.8, 3);
-        CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
-
-        m_Mercury = std::make_shared<Visualization::CentralRenderBody>(mercury, 3, "../../Resources/Textures/mercury.jpg");
-        m_Venus = std::make_shared<Visualization::CentralRenderBody>(venus, 4, "../../Resources/Textures/venus.jpg");
-        m_Earth = std::make_shared<Visualization::CentralRenderBody>(earth, 5, "../../Resources/Textures/earthDay.jpg");
-        m_Mars = std::make_shared<Visualization::CentralRenderBody>(mars, 3, "../../Resources/Textures/mars.jpg");
-        
-        m_Bodies.push_back(m_Mercury);
-        m_Bodies.push_back(m_Venus);
-        m_Bodies.push_back(m_Earth);
-        m_Bodies.push_back(m_Mars);
-
+        m_Mars = std::make_shared<Visualization::CentralRenderBody>(mars, 6, "../../Resources/Textures/mars.jpg");
     }
 
     OpeningScene::~OpeningScene()
@@ -55,25 +48,52 @@ namespace Visualization
     void OpeningScene::OnUIRender()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
         ImGui::Begin("OrbitSim");
 
         uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
         uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
 
-        // Set button color
-
         ImGui::Image(GetImage()->GetDescriptorSet(), ImVec2((float)GetWidth(), (float)GetHeight()));
 
-        if (ImGui::Button("Object Viewer"))
+        // Set cursor to the third of the window width from the right and middle of the window height
+        ImGui::SetCursorPos(ImVec2(windowWidth / 3 + windowWidth / 3, windowHeight / 2));
+
+        // Save the current button color and hover color
+        ImVec4 defaultButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+        ImVec4 defaultHoverColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
+        ImVec4 defaultBackgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+
+        // Set custom button and hover colors
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.369f, 0.157f, 0.969f, 1.0f));
+
+        // Set custom button border properties
+        ImGuiStyle &style = ImGui::GetStyle();
+        style.FrameBorderSize = 1.0f; // Set border thickness
+        style.Colors[ImGuiCol_Border] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        if (ImGui::Button("Start", ImVec2(150, 75)))
         {
             m_Commands.m_Exit = true;
         }
+        // Restore the default button and hover colors
+        ImGui::PopStyleColor(2);
 
-        ResizeIfNeeded(windowWidth, windowHeight - (windowHeight / 2));
+        // Restore the default button border properties
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        style.FrameBorderSize = 0.0f;
+        style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
+
+        ResizeIfNeeded(windowWidth, windowHeight);
+
 
         ImGui::End();
 
         ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
     }
 
     void OpeningScene::ResizeIfNeeded(uint32_t width, uint32_t height)
@@ -95,23 +115,13 @@ namespace Visualization
     {
         DrawBackground();
 
-        int numBodies = m_Bodies.size();
-
-        float dividerDistance = m_Width / (numBodies + 1);
-
-        for (int i = 0; i < numBodies; i++)
-        {
-            std::shared_ptr<CentralRenderBody> body = m_Bodies[i];
-
-            glm::vec2 offset = {dividerDistance * (i + 1), m_Height / 2};
-
-            DrawBody(body, m_Camera, offset);
-        }
+        // Set offset so the body is in the first third of the screen (from the left) and in the middle of the screen (from the top)
+        glm::vec2 offset = glm::vec2(m_Width / 5, m_Height + (m_Height / 6));
+        DrawBody(m_Mars, m_Camera, offset);
     }
 
     void OpeningScene::DrawBackground()
     {
-
         // Draw the space background
         uint32_t *backgroundData = m_SpaceBackground->GetPixels();
         uint32_t backgroundWidth = m_SpaceBackground->GetWidth();
@@ -348,12 +358,12 @@ namespace Visualization
         // Set initial camera scale based on the sizes of the bodies and the window size
         float maxRadius = 0.0f;
 
-        float radius = m_Earth->GetRadius();
+        float radius = m_Mars->GetRadius();
         if (radius > maxRadius)
             maxRadius = radius;
 
         uint32_t minDimension = std::min<float>(m_Width, m_Height);
-        m_Scaling = minDimension / maxRadius / 4.0f;
+        m_Scaling = minDimension / maxRadius / 2.0f;
     }
 
 }
