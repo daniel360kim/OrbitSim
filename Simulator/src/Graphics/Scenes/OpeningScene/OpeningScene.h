@@ -34,7 +34,7 @@ namespace Visualization
         void DrawBody(std::shared_ptr<CentralRenderBody> body, std::shared_ptr<OpeningSceneScene::Camera> camera, glm::vec2 &offset);
 
         void OnUpdate(float ts);
-        void OnUIRender();
+        void OnUIRender(std::vector<ImFont*>& fonts);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
@@ -50,6 +50,8 @@ namespace Visualization
         std::shared_ptr<CentralRenderBody> m_Mars;
 
         std::shared_ptr<OpeningSceneScene::Camera> m_Camera;
+
+        ImFont* m_TitleFont = nullptr;
 
         template <typename T>
         struct Triangle

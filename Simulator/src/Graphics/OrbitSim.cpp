@@ -28,7 +28,7 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     Walnut::Application* app = new Walnut::Application(spec);
 
-    std::shared_ptr<Visualization::Application> layer = std::make_shared<Visualization::Application>();
+    std::shared_ptr<Visualization::Application> layer = std::make_shared<Visualization::Application>(app->GetFonts());
     app->PushLayer(layer);
 
     Visualization::s_Application = layer;

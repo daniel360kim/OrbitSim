@@ -20,10 +20,6 @@ namespace Visualization
     OpeningScene::OpeningScene(uint32_t width, uint32_t height)
         : Scene(width, height)
     {
-        std::vector<uint32_t> rocketIconImageBuffer(20 * 20);
-        ImageResizer::resizeImage("../../Resources/Icons/rocket.png", 20, 20, rocketIconImageBuffer);
-
-        m_StartButtonIcon = std::make_shared<Walnut::Image>(20, 20, Walnut::ImageFormat::RGBA, rocketIconImageBuffer.data());
 
         m_SpaceBackground = std::make_shared<Image>("../../Resources/Textures/milkyway.jpg");
         m_Camera = std::make_shared<OpeningSceneScene::Camera>();
@@ -45,19 +41,29 @@ namespace Visualization
         UpdateImage();
     }
 
-    void OpeningScene::OnUIRender()
+    void OpeningScene::OnUIRender(std::vector<ImFont*>& fonts)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
         ImGui::Begin("OrbitSim");
+        ImGuiStyle &style = ImGui::GetStyle();
 
         uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
         uint32_t windowHeight = (uint32_t)ImGui::GetWindowHeight();
 
         ImGui::Image(GetImage()->GetDescriptorSet(), ImVec2((float)GetWidth(), (float)GetHeight()));
 
-        // Set cursor to the third of the window width from the right and middle of the window height
-        ImGui::SetCursorPos(ImVec2(windowWidth / 3 + windowWidth / 3, windowHeight / 2));
+        float titleX = windowWidth / 18;
+        float titleY = windowHeight / 8;
+        ImGui::SetCursorPos(ImVec2(titleX, titleY));
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.906f, 0.608f, 1.0f);
+        ImGui::PushFont(fonts[1]);
+        ImGui::Text("OrbitSim");
+        
+        ImGui::PopFont();
+
+        // Set cursor right below the title
+        ImGui::SetCursorPos(ImVec2(titleX, titleY + 300));
 
         // Save the current button color and hover color
         ImVec4 defaultButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
@@ -66,13 +72,13 @@ namespace Visualization
 
         // Set custom button and hover colors
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.369f, 0.157f, 0.969f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.906f, 0.608f, 0.8f));
 
         // Set custom button border properties
-        ImGuiStyle &style = ImGui::GetStyle();
         style.FrameBorderSize = 1.0f; // Set border thickness
         style.Colors[ImGuiCol_Border] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+        // Set custom text color
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
         if (ImGui::Button("Start", ImVec2(150, 75)))
@@ -88,7 +94,6 @@ namespace Visualization
         style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
 
         ResizeIfNeeded(windowWidth, windowHeight);
-
 
         ImGui::End();
 
@@ -285,6 +290,7 @@ namespace Visualization
                 uint32_t color = interpolateColor(color1, color3, t);
 
                 // Set the pixel color in the image buffer
+       
                 m_imageBuffer[currentIndex] = color;
 
                 currentIndex++;

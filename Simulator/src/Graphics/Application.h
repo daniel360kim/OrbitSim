@@ -19,7 +19,7 @@ namespace Visualization
             ObjectViewer
         };
 
-        Application();
+        Application(std::vector<ImFont*> fonts);
 
         static std::shared_ptr<Application> Get();
 
@@ -31,5 +31,7 @@ namespace Visualization
         std::shared_ptr<OpeningScene> m_OpeningScene;
         std::shared_ptr<OrbitViewer> m_OrbitViewer;
         std::shared_ptr<ObjectViewer> m_ObjectViewer;
+
+        std::shared_ptr<std::vector<ImFont*>> m_Fonts;
     };
 }
