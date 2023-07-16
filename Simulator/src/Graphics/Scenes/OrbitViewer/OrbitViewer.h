@@ -8,8 +8,9 @@
  *
  */
 
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
+
+#include <imgui.h>
 
 #include "../Scene.h"
 #include "../Components/Image.h"
@@ -26,8 +27,8 @@ namespace Visualization
         OrbitViewer(uint32_t width, uint32_t height);
         ~OrbitViewer();
 
-        void OnUpdate(float ts) override;
-        void OnUIRender() override;
+        void OnUpdate(float ts);
+        void OnUIRender(std::vector<ImFont*>& fonts);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
@@ -42,4 +43,3 @@ namespace Visualization
     };
 };
 
-#endif

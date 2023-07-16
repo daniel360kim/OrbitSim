@@ -20,7 +20,8 @@ namespace Visualization
 
     Camera::Camera()
         : m_position(0.0f), m_scale(1.0f),
-          m_yaw(0.0f), m_pitch(0.0f)
+          m_yaw(0.0f), m_pitch(0.0f),
+          m_movementSpeed(1.0f), m_zoomSpeed(3.0f), m_rotationSpeed(2.0f)
     {
         m_forwardDirection = glm::vec3(0.0f, 0.0f, -1.0f);
         UpdateViewMatrix();
@@ -64,10 +65,6 @@ namespace Visualization
 
         bool moved = false;
 
-        float movementSpeed = 10000.0f;
-        float zoomSpeed = 5.0f;
-        float rotationSpeed = 2.0f;
-
         glm::vec3 forward = getForwardDirection();
         glm::vec3 right = getRightDirection();
         glm::vec3 up = getUpDirection();
@@ -81,8 +78,8 @@ namespace Visualization
             if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
             {
                 // Calculate new yaw and pitch
-                m_yaw += -deltaMousePosition.x * rotationSpeed;
-                m_pitch += -deltaMousePosition.y * rotationSpeed;
+                m_yaw += -deltaMousePosition.x * m_rotationSpeed;
+                m_pitch += -deltaMousePosition.y * m_rotationSpeed;
 
                 // Clamp pitch
                 if (m_pitch > 89.0f)
@@ -104,8 +101,8 @@ namespace Visualization
 
             if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
             {
-                m_position -= -right * deltaMousePosition.x * movementSpeed * ts;
-                m_position += up * deltaMousePosition.y * movementSpeed * ts;
+                m_position -= -right * deltaMousePosition.x * m_movementSpeed * 1000.0f * ts;
+                m_position += up * deltaMousePosition.y * m_movementSpeed * 1000.0f * ts;
 
                 moved = true;
             }
@@ -122,7 +119,7 @@ namespace Visualization
             movementType = MovementType::Zoom;
 
             // Calculate new scale, prevent from going negative so scroll direction doesnt flip
-            m_scale -= -scrollOffset * zoomSpeed * ts;
+            m_scale -= -scrollOffset * m_zoomSpeed * ts;
             if (m_scale < 0.0f)
             {
                 m_scale = 0.0f;

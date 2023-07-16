@@ -26,9 +26,11 @@ namespace Visualization
         ~Ellipse();
 
         const std::vector<glm::vec3> &GetVertexPositions() const { return m_vertexPositions; }
+        const OrbitalObject &GetOrbitalObject() const { return m_orbitalObject; }
 
     private:
         std::vector<glm::vec3> m_vertexPositions;
+        OrbitalObject m_orbitalObject;
         void generateVertexPositions();
     };
 }

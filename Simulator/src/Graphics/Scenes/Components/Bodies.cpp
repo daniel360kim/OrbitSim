@@ -22,9 +22,9 @@ namespace Visualization
         m_Height = height;
         resetCameraScaling();
     }
-    void CentralRenderBody::Draw(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t>& pixels)
+    void CentralRenderBody::Draw(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t> &pixels)
     {
-         const std::vector<unsigned int> &indices = GetIndices();
+        const std::vector<unsigned int> &indices = GetIndices();
         const std::vector<glm::vec3> &positions = GetPositions();
         const std::vector<glm::vec2> &texCoords = GetTexCoords();
 
@@ -34,7 +34,7 @@ namespace Visualization
             trianglePosition = {positions[indices[i]], positions[indices[i + 1]], positions[indices[i + 2]]};
 
             // Apply transformations using the Camera properties
-            applyTransformation(trianglePosition, cameraInfo.yaw, cameraInfo.pitch, cameraInfo.position, m_radius * m_Scaling);
+            applyTransformation(trianglePosition, cameraInfo.yaw, cameraInfo.pitch, cameraInfo.position, m_radius * m_Scaling * cameraInfo.scale);
 
             // Check if the positions are in front of the camera - only render what the camera can see
             Triangle<glm::vec3> cameraPositionDistance;
@@ -46,7 +46,7 @@ namespace Visualization
             {
                 // Transform to pixel coordinates
                 Triangle<glm::vec2> pixelCoords;
-                transformToPixelCoords(trianglePosition, cameraInfo.scale, offset, pixelCoords);
+                transformToPixelCoords(trianglePosition, offset, pixelCoords);
 
                 // Convert the pixel coordinates to array indices
                 int x1 = static_cast<int>(pixelCoords.v1.x);
@@ -88,16 +88,16 @@ namespace Visualization
         }
     }
 
-    glm::vec2 CentralRenderBody::transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset)
+    glm::vec2 CentralRenderBody::transformToPixelCoords(glm::vec3 positionCoords, glm::vec2 &offset)
     {
-        return glm::vec2(positionCoords.x, positionCoords.y) * scale + offset;
+        return glm::vec2(positionCoords.x, positionCoords.y) + offset;
     }
 
-    void CentralRenderBody::transformToPixelCoords(Triangle<glm::vec3> &triangle, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
+    void CentralRenderBody::transformToPixelCoords(Triangle<glm::vec3> &triangle,  glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
     {
-        trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, scale, offset);
-        trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, scale, offset);
-        trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, scale, offset);
+        trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, offset);
+        trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, offset);
+        trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, offset);
     }
 
     uint32_t CentralRenderBody::convertColors(const glm::vec4 &color)
@@ -218,6 +218,7 @@ namespace Visualization
 
     void CentralRenderBody::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
     {
+
         trianglePositions.v1 *= scale;
         trianglePositions.v2 *= scale;
         trianglePositions.v3 *= scale;

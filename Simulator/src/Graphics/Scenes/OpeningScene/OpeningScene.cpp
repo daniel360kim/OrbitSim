@@ -45,7 +45,8 @@ namespace Visualization
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-        ImGui::Begin("OrbitSim");
+        ImGui::SetNextWindowSize(ImVec2(m_Width, m_Height));
+        ImGui::Begin("OrbitSim", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize);
         ImGuiStyle &style = ImGui::GetStyle();
 
         uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();

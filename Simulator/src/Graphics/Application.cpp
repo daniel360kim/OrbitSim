@@ -45,7 +45,7 @@ namespace Visualization
                 }
                 break;
             case Scene::OrbitViewer:
-                m_OrbitViewer->OnUIRender();
+                m_OrbitViewer->OnUIRender(*m_Fonts);
                 break;
             case Scene::ObjectViewer:
                 m_ObjectViewer->OnUIRender();

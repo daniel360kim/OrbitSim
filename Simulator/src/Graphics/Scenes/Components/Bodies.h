@@ -47,8 +47,8 @@ namespace Visualization
             T v1, v2, v3; // three vertices
         };
 
-        inline glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, float scale, glm::vec2 &offset);
-        void transformToPixelCoords(Triangle<glm::vec3> &trianglePositions, float scale, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixels);
+        inline glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, glm::vec2 &offset);
+        void transformToPixelCoords(Triangle<glm::vec3> &trianglePositions, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixels);
 
         uint32_t convertColors(const glm::vec4 &color);
         void fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3, std::vector<uint32_t>& pixels);

@@ -11,6 +11,9 @@
 #pragma once
 
 #include "../Scene.h"
+#include "../Camera.h"
+#include "../Components/Image.h"
+#include "../Components/Bodies.h"
 
 namespace Visualization
 {
@@ -24,6 +27,12 @@ namespace Visualization
         void OnUIRender();
 
         void Draw();
+    private:
+        std::shared_ptr<Image> m_SpaceBackground;
+                
+        std::vector<std::shared_ptr<CentralRenderBody>> m_Bodies;
+
+        std::shared_ptr<Camera> m_Camera;
     };
 
 }

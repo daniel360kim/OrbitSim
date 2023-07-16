@@ -1,11 +1,11 @@
 /**
  * @file Camera.h
  * @author Daniel Kim (daniel.kim@studentlaschools.net)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2023-07-15
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -22,7 +22,7 @@ namespace Visualization
         float yaw;
         float pitch;
     };
-    
+
     class Camera
     {
     public:
@@ -48,6 +48,10 @@ namespace Visualization
         glm::vec3 getForwardDirection() const;
         glm::vec3 getRightDirection() const;
         glm::vec3 getUpDirection() const;
+
+        float m_movementSpeed;
+        float m_rotationSpeed;
+        float m_zoomSpeed;
 
     protected:
         glm::vec3 m_position;
