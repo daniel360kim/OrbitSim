@@ -15,6 +15,7 @@
 #include "../Components/Image.h"
 #include <glm/glm.hpp>
 #include "../Components/Bodies.h"
+#include "SimulationTime.h"
 
 namespace Visualization
 {
@@ -32,8 +33,8 @@ namespace Visualization
         void Draw();
         void DrawBackground();
 
-        void OnUpdate(float ts);
-        void OnUIRender(std::vector<ImFont *> &fonts);
+        void OnUpdate(float ts, SimulationTime &simulationTime);
+        void OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 

@@ -7,6 +7,7 @@ namespace Visualization
 {
     Application::Application(std::vector<ImFont *> fonts)
     {
+        m_SimulationTime.loadTimeFromFile();
         m_OpeningScene = std::make_shared<OpeningScene>(1280, 720);
         m_OrbitViewer = std::make_shared<OrbitViewer>(1280, 720);
         m_ObjectViewer = std::make_shared<ObjectViewer>(1280, 720);
@@ -16,16 +17,19 @@ namespace Visualization
 
     void Application::OnUpdate(float ts)
     {
+        m_SimulationTime.incrementTimeReal();
+        std::cout << m_SimulationTime.getFormattedTime() << std::endl;
+
         switch (m_CurrentScene)
         {
         case Scene::OpeningScene:
-            m_OpeningScene->OnUpdate(ts);
+            m_OpeningScene->OnUpdate(ts, m_SimulationTime);
             break;
         case Scene::OrbitViewer:
-            m_OrbitViewer->OnUpdate(ts);
+            m_OrbitViewer->OnUpdate(ts, m_SimulationTime);
             break;
         case Scene::ObjectViewer:
-            m_ObjectViewer->OnUpdate(ts);
+            m_ObjectViewer->OnUpdate(ts, m_SimulationTime);
             break;
         }
     }
@@ -36,9 +40,7 @@ namespace Visualization
         {
         case Scene::OpeningScene:
         {
-
-        
-            m_OpeningScene->OnUIRender(*m_Fonts);
+            m_OpeningScene->OnUIRender(*m_Fonts, m_SimulationTime);
             OpeningScene::Commands commands;
             commands = m_OpeningScene->GetCommands();
             if (commands.m_Exit)
@@ -49,7 +51,7 @@ namespace Visualization
         }
         case Scene::OrbitViewer:
         {
-            m_OrbitViewer->OnUIRender(*m_Fonts);
+            m_OrbitViewer->OnUIRender(*m_Fonts, m_SimulationTime);
             OrbitViewer::Commands commands;
             commands = m_OrbitViewer->GetCommands();
             if (commands.m_ViewObject)
@@ -60,7 +62,7 @@ namespace Visualization
         }
         case Scene::ObjectViewer:
         {
-            m_ObjectViewer->OnUIRender();
+            m_ObjectViewer->OnUIRender(*m_Fonts, m_SimulationTime);
             break;
         }
         }

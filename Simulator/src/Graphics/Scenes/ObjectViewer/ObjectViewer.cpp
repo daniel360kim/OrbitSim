@@ -25,13 +25,13 @@ namespace Visualization
     {
     }
 
-    void ObjectViewer::OnUpdate(float ts)
+    void ObjectViewer::OnUpdate(float ts, SimulationTime &simulationTime)
     {
         Clear();
         UpdateImage();
     }
 
-    void ObjectViewer::OnUIRender()
+    void ObjectViewer::OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin("ObjectViewer");

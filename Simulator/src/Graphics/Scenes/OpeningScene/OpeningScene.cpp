@@ -34,7 +34,7 @@ namespace Visualization
     {
     }
 
-    void OpeningScene::OnUpdate(float ts)
+    void OpeningScene::OnUpdate(float ts, SimulationTime &simulationTime)
     {
         Walnut::Timer timer;
         m_Camera->OnUpdate(ts);
@@ -45,7 +45,7 @@ namespace Visualization
         m_LastRenderTime = timer.ElapsedMillis();
     }
 
-    void OpeningScene::OnUIRender(std::vector<ImFont *> &fonts)
+    void OpeningScene::OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));

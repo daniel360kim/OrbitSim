@@ -51,7 +51,7 @@ namespace Visualization
     {
     }
 
-    void OrbitViewer::OnUpdate(float ts)
+    void OrbitViewer::OnUpdate(float ts, SimulationTime &simulationTime)
     {
         Walnut::Timer timer;
         m_Camera->OnUpdate(ts);
@@ -63,7 +63,7 @@ namespace Visualization
         m_LastRenderTime = timer.ElapsedMillis();
     }
 
-    void OrbitViewer::OnUIRender(std::vector<ImFont *> &fonts)
+    void OrbitViewer::OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         // Set this window to take up 3/4 of the screen
@@ -86,7 +86,7 @@ namespace Visualization
 
         // Set background color theme
         ImGuiStyle &style = ImGui::GetStyle();
-
+        
         ImGui::SetCursorPos(ImVec2(10, 10));
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.906f, 0.608f, 1.0f);
         ImGui::PushFont(fonts[2]);
@@ -143,7 +143,7 @@ namespace Visualization
 
         ImGui::SetCursorPos(ImVec2(10, 315));
         ImGui::Separator();
-
+        
         ImGui::SetCursorPos(ImVec2(10, 325));
         style.Colors[ImGuiCol_Text] = ImVec4(0.867f, 0.345f, 0.839f, 1.0f);
         ImGui::PushFont(fonts[3]);
@@ -161,9 +161,13 @@ namespace Visualization
             ImGui::Text(centralRenderBodyInfo[i].c_str());
         }
 
-        ImGui::SetCursorPos(ImVec2(10, 450));
+        ImGui::SetCursorPos(ImVec2(10, 440));
+        //Print year, month, day, hour, minute, second
+        ImGui::Text("Date: %d/%d/%d %d:%d:%d", simulationTime.getYears(), simulationTime.getMonths(), simulationTime.getDays(), simulationTime.getHours(), simulationTime.getMinutes(), simulationTime.getSeconds());
+
+        ImGui::SetCursorPos(ImVec2(10, 470));
         ImGui::Text("Resolution");
-        ImGui::SetCursorPos(ImVec2(120, 445));
+        ImGui::SetCursorPos(ImVec2(120, 465));
         style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
         int newResolution = m_Earth->GetSubdivisionLevel();
         ImGui::SliderInt("Resolution", &newResolution, 2, 7, "%d");
@@ -173,24 +177,25 @@ namespace Visualization
 
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(10, 485));
+        ImGui::SetCursorPos(ImVec2(10, 500));
         ImGui::Separator();
 
-        ImGui::SetCursorPos(ImVec2(10, 495));
+        // Target Orbit
+        ImGui::SetCursorPos(ImVec2(10, 510));
         style.Colors[ImGuiCol_Text] = ImVec4(0.867f, 0.345f, 0.839f, 1.0f);
         ImGui::PushFont(fonts[3]);
         std::string targetOrbitText = "Target Orbit: " + m_Orbit->GetOrbitalObject().getName();
         ImGui::Text(targetOrbitText.c_str());
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(10, 535));
+        ImGui::SetCursorPos(ImVec2(10, 550));
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
         ImGui::PushFont(fonts[4]);
 
         std::vector<std::string> targetInfo = getOrbitGUIItems(m_Orbit);
         for (int i = 0; i < targetInfo.size(); i++)
         {
-            ImGui::SetCursorPos(ImVec2(10, 535 + i * 25));
+            ImGui::SetCursorPos(ImVec2(10, 550 + i * 25));
             ImGui::Text(targetInfo[i].c_str());
         }
 
@@ -209,7 +214,7 @@ namespace Visualization
         // Set custom text color
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-        ImGui::SetCursorPos(ImVec2(10, 720));
+        ImGui::SetCursorPos(ImVec2(10, 750));
         if (ImGui::Button("View Object"))
         {
             m_Commands.m_ViewObject = true;

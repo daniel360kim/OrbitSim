@@ -5,6 +5,7 @@
 #include "Walnut/Layer.h"
 #include "Scenes/OpeningScene/OpeningScene.h"
 #include "Scenes/OrbitViewer/OrbitViewer.h"
+#include "SimulationTime.h"
 #include "Scenes/ObjectViewer/ObjectViewer.h"
 
 namespace Visualization
@@ -28,6 +29,7 @@ namespace Visualization
     
     private:
         Scene m_CurrentScene;
+        SimulationTime m_SimulationTime;
         std::shared_ptr<OpeningScene> m_OpeningScene;
         std::shared_ptr<OrbitViewer> m_OrbitViewer;
         std::shared_ptr<ObjectViewer> m_ObjectViewer;

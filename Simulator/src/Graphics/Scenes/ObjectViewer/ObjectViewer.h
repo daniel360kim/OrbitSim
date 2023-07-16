@@ -14,6 +14,7 @@
 #include "../Camera.h"
 #include "../Components/Image.h"
 #include "../Components/Bodies.h"
+#include "SimulationTime.h"
 
 namespace Visualization
 {
@@ -23,8 +24,8 @@ namespace Visualization
         ObjectViewer(uint32_t width, uint32_t height);
         ~ObjectViewer();
 
-        void OnUpdate(float ts);
-        void OnUIRender();
+        void OnUpdate(float ts, SimulationTime &simulationTime);
+        void OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime);
 
         void Draw();
     private:

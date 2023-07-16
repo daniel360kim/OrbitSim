@@ -16,7 +16,7 @@
 #include "../Components/Image.h"
 #include "../Components/Bodies.h"
 #include "../Components/Shapes/Ellipse.h"
-
+#include "SimulationTime.h"
 #include "../Camera.h"
 
 namespace Visualization
@@ -32,8 +32,8 @@ namespace Visualization
         OrbitViewer(uint32_t width, uint32_t height);
         ~OrbitViewer();
 
-        void OnUpdate(float ts);
-        void OnUIRender(std::vector<ImFont *> &fonts);
+        void OnUpdate(float ts, SimulationTime &simulationTime);
+        void OnUIRender(std::vector<ImFont *> &fonts, SimulationTime &simulationTime);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
