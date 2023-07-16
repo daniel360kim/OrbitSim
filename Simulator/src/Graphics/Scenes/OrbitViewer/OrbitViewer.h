@@ -24,22 +24,36 @@ namespace Visualization
     class OrbitViewer : public Scene
     {
     public:
+        struct Commands
+        {
+            bool m_ViewObject = false;
+            std::shared_ptr<Body> m_Object;
+        };
         OrbitViewer(uint32_t width, uint32_t height);
         ~OrbitViewer();
 
         void OnUpdate(float ts);
-        void OnUIRender(std::vector<ImFont*>& fonts);
+        void OnUIRender(std::vector<ImFont *> &fonts);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
         void Draw();
         void DrawBackground(std::shared_ptr<Image> background);
 
+        Commands &GetCommands() { return m_Commands; }
+
     private:
+        Commands m_Commands;
+
         std::shared_ptr<Image> m_SpaceBackground;
-        std::shared_ptr<CentralRenderBody> m_Earth;
+        std::shared_ptr<Body> m_Earth;
+        std::shared_ptr<Body> m_Moon;
         std::shared_ptr<Ellipse> m_Orbit;
         std::shared_ptr<Camera> m_Camera;
+
+        float m_LastRenderTime = 0.0f;
+
+        static std::vector<std::string> getBodyGUIItems(std::shared_ptr<Body> body);
+        static std::vector<std::string> getOrbitGUIItems(std::shared_ptr<Ellipse> orbit);
     };
 };
-

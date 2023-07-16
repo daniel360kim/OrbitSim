@@ -18,14 +18,14 @@
 
 namespace Visualization
 {
-    struct Commands
-    {
-        bool m_Exit = false;
-    };
-
     class OpeningScene : public Scene
     {
     public:
+        struct Commands
+        {
+            bool m_Exit = false;
+        };
+
         OpeningScene(uint32_t width, uint32_t height);
         ~OpeningScene();
 
@@ -33,7 +33,7 @@ namespace Visualization
         void DrawBackground();
 
         void OnUpdate(float ts);
-        void OnUIRender(std::vector<ImFont*>& fonts);
+        void OnUIRender(std::vector<ImFont *> &fonts);
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
@@ -44,8 +44,10 @@ namespace Visualization
 
         std::shared_ptr<Walnut::Image> m_StartButtonIcon;
         std::shared_ptr<Image> m_SpaceBackground;
-        std::shared_ptr<CentralRenderBody> m_Mars;
+        std::shared_ptr<Body> m_Mars;
         std::shared_ptr<OpeningSceneCamera> m_Camera;
+
+        float m_LastRenderTime = 0.0f;
     };
 
 }

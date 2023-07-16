@@ -30,7 +30,7 @@ namespace Visualization
     private:
         std::shared_ptr<Image> m_SpaceBackground;
                 
-        std::vector<std::shared_ptr<CentralRenderBody>> m_Bodies;
+        std::vector<std::shared_ptr<Body>> m_Bodies;
 
         std::shared_ptr<Camera> m_Camera;
     };

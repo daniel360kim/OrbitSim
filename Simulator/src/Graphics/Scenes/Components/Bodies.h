@@ -20,10 +20,10 @@
 
 namespace Visualization
 {
-    class CentralRenderBody : public Sphere
+    class Body : public Sphere
     {
     public:
-        CentralRenderBody(CentralBody &centralBody, int subdivisionlevel, const std::string &texturePath)
+        Body(CentralBody &centralBody, int subdivisionlevel, const std::string &texturePath)
             : Sphere(centralBody.getRadius(), subdivisionlevel, texturePath), m_centralBody(centralBody) {}
 
         CentralBody GetCentralBody() const { return m_centralBody; }

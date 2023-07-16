@@ -37,6 +37,7 @@ namespace Visualization
         std::shared_ptr<Texture> GetTexture() { return m_texture; }
 
         void changeSubdivisionLevel(int subdivisionLevel);
+        int getSubdivisionLevel() const { return m_subdivisionLevel; }
 
     private:
 

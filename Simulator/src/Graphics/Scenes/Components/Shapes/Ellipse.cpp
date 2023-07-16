@@ -43,8 +43,6 @@ namespace Visualization
             
             vertexPosition = glm::normalize(vertexPosition);
             m_vertexPositions.push_back(vertexPosition);
-
-
         }
     }
 

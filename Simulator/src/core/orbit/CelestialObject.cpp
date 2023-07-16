@@ -9,6 +9,8 @@
  */
 
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 #include "CelestialObject.h"
 
@@ -24,4 +26,49 @@ CelestialObject::CelestialObject(const std::string& name, const Type& type, doub
     m_name = name;
     m_type = type;
     m_mass = mass;
+}
+
+std::string CelestialObject::getTypeString() const
+{
+    switch (m_type)
+    {
+    case Type::Planet:
+        return "Planet";
+        break;
+    case Type::Star:
+        return "Star";
+        break;
+    case Type::Satellite:
+        return "Satellite";
+        break;
+    case Type::Moon:
+        return "Moon";
+        break;
+    case Type::Nebulae:
+        return "Nebulae";
+        break;
+    case Type::Cloud:
+        return "Cloud";
+        break;
+    case Type::BlackHole:
+        return "Black Hole";
+        break;
+    case Type::Asteroid:
+        return "Asteroid";
+        break;
+    case Type::Comet:
+        return "Comet";
+        break;
+    default:
+        return "Unknown";
+        break;
+    }
+    
+}
+
+std::string CelestialObject::getMassScientific(int precision) const
+{
+    std::stringstream ss;
+    ss << std::scientific << std::setprecision(precision) << m_mass;
+    return ss.str();
 }

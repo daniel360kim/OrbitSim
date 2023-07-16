@@ -16,13 +16,13 @@
 
 namespace Visualization
 {
-    void CentralRenderBody::onResize(uint32_t width, uint32_t height)
+    void Body::onResize(uint32_t width, uint32_t height)
     {
         m_Width = width;
         m_Height = height;
         resetCameraScaling();
     }
-    void CentralRenderBody::Draw(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t> &pixels)
+    void Body::Draw(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t> &pixels)
     {
         const std::vector<unsigned int> &indices = GetIndices();
         const std::vector<glm::vec3> &positions = GetPositions();
@@ -88,19 +88,19 @@ namespace Visualization
         }
     }
 
-    glm::vec2 CentralRenderBody::transformToPixelCoords(glm::vec3 positionCoords, glm::vec2 &offset)
+    glm::vec2 Body::transformToPixelCoords(glm::vec3 positionCoords, glm::vec2 &offset)
     {
         return glm::vec2(positionCoords.x, positionCoords.y) + offset;
     }
 
-    void CentralRenderBody::transformToPixelCoords(Triangle<glm::vec3> &triangle,  glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
+    void Body::transformToPixelCoords(Triangle<glm::vec3> &triangle,  glm::vec2 &offset, Triangle<glm::vec2> &trianglePixelCoords)
     {
         trianglePixelCoords.v1 = transformToPixelCoords(triangle.v1, offset);
         trianglePixelCoords.v2 = transformToPixelCoords(triangle.v2, offset);
         trianglePixelCoords.v3 = transformToPixelCoords(triangle.v3, offset);
     }
 
-    uint32_t CentralRenderBody::convertColors(const glm::vec4 &color)
+    uint32_t Body::convertColors(const glm::vec4 &color)
     {
         uint32_t colorInt = (static_cast<uint32_t>(color.a * 255.0f) << 24) |
                             (static_cast<uint32_t>(color.b * 255.0f) << 16) |
@@ -110,7 +110,7 @@ namespace Visualization
         return colorInt;
     }
 
-    void CentralRenderBody::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3, std::vector<uint32_t> &pixels)
+    void Body::fillTriangle(int index1, int index2, int index3, uint32_t color1, uint32_t color2, uint32_t color3, std::vector<uint32_t> &pixels)
     {
         // Sort the vertices vertically by y-coordinate (top to bottom)
         if (index2 < index1)
@@ -174,7 +174,7 @@ namespace Visualization
         }
     }
 
-    uint32_t CentralRenderBody::interpolateColor(uint32_t color1, uint32_t color2, float t)
+    uint32_t Body::interpolateColor(uint32_t color1, uint32_t color2, float t)
     {
         uint32_t a1 = (color1 >> 24) & 0xFF;
         uint32_t r1 = (color1 >> 16) & 0xFF;
@@ -194,29 +194,29 @@ namespace Visualization
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    uint32_t CentralRenderBody::interpolateComponent(uint32_t component1, uint32_t component2, float t)
+    uint32_t Body::interpolateComponent(uint32_t component1, uint32_t component2, float t)
     {
         return static_cast<uint32_t>((1.0f - t) * component1 + t * component2);
     }
 
-    bool CentralRenderBody::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
+    bool Body::isInFrontOfCamera(glm::vec3 &positionCoords, glm::vec3 &cameraDirection)
     {
         return glm::dot(positionCoords, cameraDirection) > 0.0f;
     }
 
-    bool CentralRenderBody::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
+    bool Body::isInFrontOfCamera(Triangle<glm::vec3> &positionCoords, glm::vec3 &cameraDirection)
     {
         return isInFrontOfCamera(positionCoords.v1, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v2, cameraDirection) &&
                isInFrontOfCamera(positionCoords.v3, cameraDirection);
     }
 
-    bool CentralRenderBody::isWithinImageBounds(int x, int y)
+    bool Body::isWithinImageBounds(int x, int y)
     {
         return x >= 0 && x < m_Width && y >= 0 && y < m_Height;
     }
 
-    void CentralRenderBody::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
+    void Body::applyTransformation(Triangle<glm::vec3> &trianglePositions, float yaw, float pitch, glm::vec3 position, float scale)
     {
 
         trianglePositions.v1 *= scale;
@@ -236,7 +236,7 @@ namespace Visualization
         trianglePositions.v3 += position;
     }
 
-    void CentralRenderBody::resetCameraScaling()
+    void Body::resetCameraScaling()
     {
         // Set initial camera scale based on the sizes of the bodies and the window size
         float maxRadius = 0.0f;

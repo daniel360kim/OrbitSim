@@ -16,7 +16,7 @@ namespace Visualization
     {
         bool moved = false;
 
-        float rotationSpeed = 0.02f;
+        float rotationSpeed = 0.1f;
 
         glm::vec2 delta = glm::vec2(1.0f, 0.0f) * ts;
 

@@ -13,9 +13,10 @@
 #include <imgui.h>
 #include <iostream>
 #include <unordered_map>
+#include <iomanip>
+#include <sstream>
 #include <glm/gtx/rotate_vector.hpp>
-#include "OrbitViewer.h"
-
+#include <Walnut/Timer.h>
 namespace Visualization
 {
 
@@ -26,17 +27,22 @@ namespace Visualization
 
         m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/Textures/milkyway.jpg");
 
-        CentralBody earth("earth", Type::Planet, 5.97219e24, 6371, 3);
+        CentralBody earth("Earth", Type::Planet, 5.97219e24, 6371, 3);
 
-        m_Earth = std::make_shared<Visualization::CentralRenderBody>(earth, 5, "../../Resources/Textures/earthDay.jpg");
+        m_Earth = std::make_shared<Visualization::Body>(earth, 5, "../../Resources/Textures/earthDay.jpg");
 
-        OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Planet, 7.34767309e22)
+        OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Moon, 7.34767309e22)
                                  .setSemiMajorAxis(384400.0)
                                  .setEccentricity(0.0549)
                                  .setInclination(5.145)
                                  .setLongitudeOfAscendingNode(125.08)
                                  .setCentralBody(earth)
                                  .build();
+
+
+        //TODO link this with the orbit and make oribtal object
+        CentralBody moonBody("Moon", Type::Moon, 7.34767309e22, 1737.4, 3);
+        m_Moon = std::make_shared<Visualization::Body>(moonBody, 5, "../../Resources/Textures/moon.jpg");
 
         m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
     }
@@ -47,17 +53,20 @@ namespace Visualization
 
     void OrbitViewer::OnUpdate(float ts)
     {
+        Walnut::Timer timer;
         m_Camera->OnUpdate(ts);
 
         Clear();
         Draw();
         UpdateImage();
+
+        m_LastRenderTime = timer.ElapsedMillis();
     }
 
-    void OrbitViewer::OnUIRender(std::vector<ImFont*>& fonts)
+    void OrbitViewer::OnUIRender(std::vector<ImFont *> &fonts)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        //Set this window to take up 3/4 of the screen
+        // Set this window to take up 3/4 of the screen
         ImGui::Begin("OrbitViewer", nullptr, ImGuiWindowFlags_NoScrollbar);
 
         uint32_t windowWidth = (uint32_t)ImGui::GetWindowWidth();
@@ -75,8 +84,8 @@ namespace Visualization
         windowWidth = (uint32_t)ImGui::GetWindowWidth();
         windowHeight = (uint32_t)ImGui::GetWindowHeight();
 
-        //Set background color theme
-        ImGuiStyle& style = ImGui::GetStyle();
+        // Set background color theme
+        ImGuiStyle &style = ImGui::GetStyle();
 
         ImGui::SetCursorPos(ImVec2(10, 10));
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.906f, 0.608f, 1.0f);
@@ -107,9 +116,6 @@ namespace Visualization
         constexpr float RAD_TO_DEG = 180.0f / 3.14159265358979323846f;
         ImGui::Text("Pitch: %.2f Yaw: %.2f", cameraInfo.pitch * RAD_TO_DEG, cameraInfo.yaw * RAD_TO_DEG);
 
-        ImGui::SetCursorPos(ImVec2(10, 195));
-        ImGui::Text("Zoom Speed");
-        ImGui::SetCursorPos(ImVec2(120, 190));
         ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.867f, 0.863f, 0.859f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(1.0f, 0.906f, 0.608f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(1.0f, 0.906f, 0.608f, 1.0f));
@@ -117,28 +123,104 @@ namespace Visualization
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.333f, 0.333f, 0.333f, 1.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 5.0f));
 
+        ImVec2 cursorPos;
+        std::vector<std::string> labels = {"Zoom", "Rotation", "Pan"};
+        std::vector<float *> values = {&m_Camera->m_zoomSpeed, &m_Camera->m_rotationSpeed, &m_Camera->m_movementSpeed};
+
+        for (int i = 0; i < labels.size(); i++)
+        {
+            cursorPos = ImVec2(10, 195 + i * 35);
+            ImGui::SetCursorPos(cursorPos);
+            ImGui::Text(labels[i].c_str());
+            cursorPos = ImVec2(120, 190 + i * 35);
+            ImGui::SetCursorPos(cursorPos);
+            style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+            ImGui::SliderFloat((labels[i] + " Speed").c_str(), values[i], 1.0f, 10.0f, "%.0f");
+            style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        ImGui::PopFont();
+
+        ImGui::SetCursorPos(ImVec2(10, 315));
+        ImGui::Separator();
+
+        ImGui::SetCursorPos(ImVec2(10, 325));
+        style.Colors[ImGuiCol_Text] = ImVec4(0.867f, 0.345f, 0.839f, 1.0f);
+        ImGui::PushFont(fonts[3]);
+        ImGui::Text(m_Earth->GetCentralBody().getName().c_str());
+        ImGui::PopFont();
+
+        std::vector<std::string> centralRenderBodyInfo = getBodyGUIItems(m_Earth);
+
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImGui::PushFont(fonts[4]);
+
+        for (int i = 0; i < centralRenderBodyInfo.size(); i++)
+        {
+            ImGui::SetCursorPos(ImVec2(10, 365 + i * 25));
+            ImGui::Text(centralRenderBodyInfo[i].c_str());
+        }
+
+        ImGui::SetCursorPos(ImVec2(10, 450));
+        ImGui::Text("Resolution");
+        ImGui::SetCursorPos(ImVec2(120, 445));
         style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-        ImGui::SliderFloat("Zoom", &m_Camera->m_zoomSpeed, 1.0f, 10.0f, "%.0f");
+        int newResolution = m_Earth->GetSubdivisionLevel();
+        ImGui::SliderInt("Resolution", &newResolution, 2, 7, "%d");
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-        ImGui::SetCursorPos(ImVec2(10, 235));
-        ImGui::Text("Rotation");
-        ImGui::SetCursorPos(ImVec2(120, 230));
-        style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-        ImGui::SliderFloat("Rotation Speed", &m_Camera->m_rotationSpeed, 0.1f, 1.0f, "%.1f");
+        m_Earth->changeSubdivisionLevel(newResolution);
+
+        ImGui::PopFont();
+
+        ImGui::SetCursorPos(ImVec2(10, 485));
+        ImGui::Separator();
+
+        ImGui::SetCursorPos(ImVec2(10, 495));
+        style.Colors[ImGuiCol_Text] = ImVec4(0.867f, 0.345f, 0.839f, 1.0f);
+        ImGui::PushFont(fonts[3]);
+        std::string targetOrbitText = "Target Orbit: " + m_Orbit->GetOrbitalObject().getName();
+        ImGui::Text(targetOrbitText.c_str());
+        ImGui::PopFont();
+
+        ImGui::SetCursorPos(ImVec2(10, 535));
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImGui::PushFont(fonts[4]);
+
+        std::vector<std::string> targetInfo = getOrbitGUIItems(m_Orbit);
+        for (int i = 0; i < targetInfo.size(); i++)
+        {
+            ImGui::SetCursorPos(ImVec2(10, 535 + i * 25));
+            ImGui::Text(targetInfo[i].c_str());
+        }
+
+        ImVec4 defaultButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+        ImVec4 defaultHoverColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
+        ImVec4 defaultBackgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+
+        // Set custom button and hover colors
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.906f, 0.608f, 0.8f));
+
+        // Set custom button border properties
+        style.FrameBorderSize = 1.0f; // Set border thickness
+        style.Colors[ImGuiCol_Border] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        // Set custom text color
         style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-        ImGui::SetCursorPos(ImVec2(10, 270));
-        ImGui::Text("Pan");
-        ImGui::SetCursorPos(ImVec2(120, 265));
-        style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-        ImGui::SliderFloat("Pan Speed", &m_Camera->m_movementSpeed, 1.0f, 10.0f, "%.0f");
-        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImGui::SetCursorPos(ImVec2(10, 720));
+        if (ImGui::Button("View Object"))
+        {
+            m_Commands.m_ViewObject = true;
+            m_Commands.m_Object = m_Moon;
+        }
+
+        ImGui::PopStyleColor(2);
+        ImGui::PopFont();
 
         ImGui::PopStyleColor(5);
         ImGui::PopStyleVar();
-
-        ImGui::PopFont();
 
         ImGui::End();
 
@@ -177,12 +259,11 @@ namespace Visualization
             glm::vec3 position = m_Orbit->GetVertexPositions()[i];
 
             CameraInfo cameraInfo = m_Camera->GetCameraInfo();
-            
+
             position *= cameraInfo.scale * (float)m_Orbit->GetOrbitalObject().calculateApogee();
+            position *= 0.01f; // so orbit is not too big relative to the earth
             position = glm::rotateX(position, m_Camera->GetPitch());
             position = glm::rotateY(position, m_Camera->GetYaw());
-
-            position *= 0.01f; //so orbit is not too big relative to the earth
 
             position += cameraInfo.position;
 
@@ -220,4 +301,65 @@ namespace Visualization
             }
         }
     }
+
+    std::vector<std::string> OrbitViewer::getOrbitGUIItems(std::shared_ptr<Ellipse> orbit)
+    {
+        std::vector<std::string> items;
+
+        std::string line;
+
+        line = "Type: " + orbit->GetOrbitalObject().getTypeString();
+        items.push_back(line);
+
+        line = "Mass: " + orbit->GetOrbitalObject().getMassScientific(2) + " kg";
+        items.push_back(line);
+
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << orbit->GetOrbitalObject().getSemiMajorAxis();
+        line = "Semi-Major Axis: " + ss.str() + " km";
+        items.push_back(line);
+
+        ss.str("");
+        ss << std::fixed << std::setprecision(2) << orbit->GetOrbitalObject().getEccentricity();
+        line = "Eccentricity: " + ss.str();
+        items.push_back(line);
+
+        ss.str("");
+        ss << std::fixed << std::setprecision(2) << orbit->GetOrbitalObject().getInclination();
+        line = "Inclination: " + ss.str() + " deg";
+        items.push_back(line);
+
+        ss.str("");
+        ss << std::fixed << std::setprecision(2) << orbit->GetOrbitalObject().calculateApogee();
+        line = "Apoapsis: " + ss.str() + " km";
+        items.push_back(line);
+
+        ss.str("");
+        ss << std::fixed << std::setprecision(2) << orbit->GetOrbitalObject().calculatePerigee();
+        line = "Periapsis: " + ss.str() + " km";
+        items.push_back(line);
+
+        return items;
+    }
+
+    std::vector<std::string> OrbitViewer::getBodyGUIItems(std::shared_ptr<Body> body)
+    {
+        std::vector<std::string> items;
+
+        std::string line;
+
+        line = "Type: " + body->GetCentralBody().getTypeString();
+        items.push_back(line);
+
+        line = "Mass: " + body->GetCentralBody().getMassScientific(2) + " kg";
+        items.push_back(line);
+
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << body->GetCentralBody().getRadius();
+        line = "Radius: " + ss.str() + " km";
+        items.push_back(line);
+
+        return items;
+    }
+
 }

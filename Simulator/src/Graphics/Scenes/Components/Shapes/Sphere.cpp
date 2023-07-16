@@ -26,7 +26,10 @@ namespace Visualization
 
     void Sphere::generateSphere()
     {
-        std::cout << "Generating sphere. Subdivision level: " << m_subdivisionLevel << std::endl;
+        m_positions.clear();
+        m_normals.clear();
+        m_indices.clear();
+        
         // Create an icosahedron (a 20-sided polyhedron) as the base mesh
         const float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 
@@ -125,6 +128,10 @@ namespace Visualization
 
     void Sphere::changeSubdivisionLevel(int subdivisionLevel)
     {
+        if (subdivisionLevel < 0)
+            return;
+        else if (subdivisionLevel == m_subdivisionLevel)
+            return;
         m_subdivisionLevel = subdivisionLevel;
         generateSphere();
         computeTextureCoordinates();

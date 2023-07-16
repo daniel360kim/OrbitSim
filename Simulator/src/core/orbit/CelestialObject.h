@@ -36,8 +36,10 @@ public:
     CelestialObject(const std::string& name, const Type& type, double mass);
 
     double getMass() const { return m_mass; }
+    std::string getMassScientific(int precision) const;
     std::string getName() const { return m_name; }
     Type getType() const { return m_type; }
+    std::string getTypeString() const;
 
     void setMass(const double mass) { m_mass = mass;}
     void setName(const std::string& name) { m_name = name;}

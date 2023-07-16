@@ -14,6 +14,7 @@
 
 #include <imgui.h>
 #include <glm/gtx/rotate_vector.hpp>
+#include <Walnut/Timer.h>
 
 namespace Visualization
 {
@@ -26,7 +27,7 @@ namespace Visualization
 
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
-        m_Mars = std::make_shared<Visualization::CentralRenderBody>(mars, 6, "../../Resources/Textures/mars.jpg");
+        m_Mars = std::make_shared<Visualization::Body>(mars, 6, "../../Resources/Textures/mars.jpg");
     }
 
     OpeningScene::~OpeningScene()
@@ -35,10 +36,13 @@ namespace Visualization
 
     void OpeningScene::OnUpdate(float ts)
     {
+        Walnut::Timer timer;
         m_Camera->OnUpdate(ts);
         Clear();
         Draw();
-        UpdateImage();
+        UpdateImage(); 
+
+        m_LastRenderTime = timer.ElapsedMillis();
     }
 
     void OpeningScene::OnUIRender(std::vector<ImFont *> &fonts)

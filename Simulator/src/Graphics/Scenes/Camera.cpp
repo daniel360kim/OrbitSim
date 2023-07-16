@@ -78,8 +78,8 @@ namespace Visualization
             if (deltaMousePosition.x != 0.0f || deltaMousePosition.y != 0.0f)
             {
                 // Calculate new yaw and pitch
-                m_yaw += -deltaMousePosition.x * m_rotationSpeed;
-                m_pitch += -deltaMousePosition.y * m_rotationSpeed;
+                m_yaw += -deltaMousePosition.x * m_rotationSpeed / 2.0f;
+                m_pitch += -deltaMousePosition.y * m_rotationSpeed / 2.0f;
 
                 // Clamp pitch
                 if (m_pitch > 89.0f)
