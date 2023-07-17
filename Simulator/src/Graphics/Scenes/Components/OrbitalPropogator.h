@@ -18,17 +18,21 @@
 #include "orbit/OrbitalObject.h"
 #include "math/vectorOps.h"
 #include "csv2.h"
-
+#include "SimulationTime.h"
 const std::vector<std::string> headers = {"Time", "True Anomaly", "X", "Y", "Z", "VX", "VY", "VZ"};
 
 class OrbitalPropogator
 {
 public:
     OrbitalPropogator(const OrbitalObject &orbitalObject) : m_orbitalObject(orbitalObject) {}
+
+    double getTrueAnomalyAtTime(SimulationTime::Time time) const;
                                                                               
 
     void runTimeStep(double currentTimeStep);
-    virtual void propogateOrbit(double duration);
+    void propogateOrbit(double duration);
+    void propogateOrbit(SimulationTime::Time start, SimulationTime::Time end);
+    
 
     const std::vector<Vector<double, 3>> &getPositions() const { return m_positions; }
 

@@ -17,14 +17,14 @@
 //Gives the true anomaly of all the planets on January 1, 2000 at 12:00:00 UTC
 namespace REFERENCE_TA_PLANETS
 {
-    constexpr double M_PI = 3.14159265358979323846;
     constexpr double degrees_arcmin_to_radians(double degrees, double arcmin)
     {
-        return (degrees + (arcmin / 60.0)) * (M_PI / 180.0);
+        return (degrees + (arcmin / 60.0)) * (3.1415926535897932384626 / 180.0);;
     }
     constexpr double MERCURY = degrees_arcmin_to_radians(175, 55.36);
     constexpr double VENUS = degrees_arcmin_to_radians(50, 24.98);
     constexpr double EARTH = degrees_arcmin_to_radians(50, 24.98);
+    constexpr double MOON = degrees_arcmin_to_radians(129, 20.15);
     constexpr double MARS = degrees_arcmin_to_radians(23, 13.01);
     //TODO add the rest of the planets
 }
@@ -32,6 +32,17 @@ namespace REFERENCE_TA_PLANETS
 class SimulationTime
 {
 public:
+    struct Time
+    {
+        int years;
+        int months;
+        int days;
+        int hours;
+        int minutes;
+        int seconds;
+        int milliseconds;
+    };
+
     SimulationTime(double initialTime = 0.0, double timeScale = 1.0) : m_currentTime(initialTime), m_timeScale(timeScale), m_paused(false) {}
     ~SimulationTime();
 
@@ -49,6 +60,10 @@ public:
     int getSeconds() const;
     int getMilliseconds() const;
 
+    Time getTime() const;
+
+    unsigned long long getElapsedMs(Time end, Time start) const;
+
     std::string getFormattedTime();
 
     void setTimeScale(double timeScale) { m_timeScale = timeScale; }
@@ -57,6 +72,7 @@ public:
     void pause() { m_paused = true; }
     void resume() { m_paused = false; }
     void setTime(double time) { m_currentTime = time; }
+    void setTime(Time time);
     void accelerateTime(double factor) { m_timeScale *= factor; }
     void decelerateTime(double factor) { m_timeScale /= factor; }
     void resetTime() { m_currentTime = 0.0; }
@@ -73,4 +89,6 @@ private:
     unsigned int m_iterations = 0;
 
     std::chrono::system_clock::time_point getEpoch() const;
+
+    static unsigned long long timeToMs(Time time);
 };

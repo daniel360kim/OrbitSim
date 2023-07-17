@@ -11,6 +11,8 @@
 #include "SimulationTime.h"
 
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 
 SimulationTime::~SimulationTime()
 {
@@ -109,6 +111,28 @@ int SimulationTime::getMilliseconds() const
     return m_currentTime % 1000;
 }
 
+SimulationTime::Time SimulationTime::getTime() const
+{
+    Time time;
+    time.years = getYears();
+    time.months = getMonths();
+    time.days = getDays();
+    time.hours = getHours();
+    time.minutes = getMinutes();
+    time.seconds = getSeconds();
+    time.milliseconds = getMilliseconds();
+
+    return time;
+}
+
+unsigned long long SimulationTime::getElapsedMs(Time end, Time start) const
+{
+    unsigned long long elapsedMsStart = timeToMs(start);
+    unsigned long long elapsedMsEnd = timeToMs(end);
+
+    return elapsedMsEnd - elapsedMsStart;
+}
+
 std::string SimulationTime::getFormattedTime()
 {
 
@@ -120,9 +144,17 @@ std::string SimulationTime::getFormattedTime()
     int seconds = getSeconds();
     int milliseconds = getMilliseconds();
 
-    std::string formattedTime = std::to_string(months) + "/" + std::to_string(days) + "/" + std::to_string(years) + " " + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds) + ":" + std::to_string(milliseconds);
+    std::ostringstream formattedTimeStream;
+    formattedTimeStream << std::setfill('0');
+    formattedTimeStream << std::setw(4) << years << "-";
+    formattedTimeStream << std::setw(2) << months << "-";
+    formattedTimeStream << std::setw(2) << days << " ";
+    formattedTimeStream << std::setw(2) << hours << ":";
+    formattedTimeStream << std::setw(2) << minutes << ":";
+    formattedTimeStream << std::setw(2) << seconds << ".";
+    formattedTimeStream << std::setw(3) << milliseconds;
 
-    return formattedTime;
+    return formattedTimeStream.str();
 }
 
 void SimulationTime::incrementTime(double deltaTime)
@@ -174,6 +206,12 @@ void SimulationTime::incrementTimeReal()
     }
 }
 
+void SimulationTime::setTime(Time time)
+{
+    unsigned long long newTime = timeToMs(time);
+    m_currentTime = newTime;
+}
+
 void SimulationTime::resetTimeLog()
 {
     std::ofstream timeFile("../../out/logs/time.log");
@@ -186,4 +224,18 @@ void SimulationTime::logTime()
     std::ofstream timeFile("../../out/logs/time.log");
     timeFile << m_currentTime;
     timeFile.close();
+}
+
+unsigned long long SimulationTime::timeToMs(Time time)
+{
+    unsigned long long ms = 0;
+    ms += time.years * 31536000000;
+    ms += time.months * 2592000000;
+    ms += time.days * 86400000;
+    ms += time.hours * 3600000;
+    ms += time.minutes * 60000;
+    ms += time.seconds * 1000;
+    ms += time.milliseconds;
+
+    return ms;
 }

@@ -25,11 +25,11 @@ namespace Visualization
     {
         m_Camera = std::make_shared<Camera>();
 
-        m_SpaceBackground = std::make_shared<Visualization::Image>("../../Resources/Textures/milkyway.jpg");
+        m_SpaceBackground = std::make_shared<Visualization::Image>("../../assets/Textures/milkyway.jpg");
 
         CentralBody earth("Earth", Type::Planet, 5.97219e24, 6371, 3);
 
-        m_Earth = std::make_shared<Visualization::Body>(earth, 5, "../../Resources/Textures/earthDay.jpg");
+        m_Earth = std::make_shared<Visualization::Body>(earth, 5, "../../assets/Textures/earthDay.jpg");
 
         OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Moon, 7.34767309e22)
                                  .setSemiMajorAxis(384400.0)
@@ -42,7 +42,7 @@ namespace Visualization
 
         //TODO link this with the orbit and make oribtal object
         CentralBody moonBody("Moon", Type::Moon, 7.34767309e22, 1737.4, 3);
-        m_Moon = std::make_shared<Visualization::Body>(moonBody, 5, "../../Resources/Textures/moon.jpg");
+        m_Moon = std::make_shared<Visualization::Body>(moonBody, 5, "../../assets/Textures/moon.jpg");
 
         m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
     }
@@ -163,7 +163,8 @@ namespace Visualization
 
         ImGui::SetCursorPos(ImVec2(10, 440));
         //Print year, month, day, hour, minute, second
-        ImGui::Text("Date: %d/%d/%d %d:%d:%d", simulationTime.getYears(), simulationTime.getMonths(), simulationTime.getDays(), simulationTime.getHours(), simulationTime.getMinutes(), simulationTime.getSeconds());
+        std::string date = simulationTime.getFormattedTime();
+        ImGui::Text(date.c_str());
 
         ImGui::SetCursorPos(ImVec2(10, 470));
         ImGui::Text("Resolution");
@@ -220,6 +221,21 @@ namespace Visualization
             m_Commands.m_ViewObject = true;
             m_Commands.m_Object = m_Moon;
         }
+
+        ImGui::SetCursorPos(ImVec2(10, 795));
+        ImGui::Separator();
+
+        ImGui::SetCursorPos(ImVec2(10, 805));
+        style.Colors[ImGuiCol_Text] = ImVec4(0.867f, 0.345f, 0.839f, 1.0f);
+        ImGui::PushFont(fonts[3]);
+        ImGui::Text("Performance");
+        ImGui::PopFont();
+
+        ImGui::SetCursorPos(ImVec2(10, 845));
+        style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImGui::PushFont(fonts[4]);
+        ImGui::Text("Last Render Time: %.3f ms", m_LastRenderTime);
+        ImGui::PopFont();
 
         ImGui::PopStyleColor(2);
         ImGui::PopFont();

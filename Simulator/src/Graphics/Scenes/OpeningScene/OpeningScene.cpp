@@ -22,12 +22,12 @@ namespace Visualization
         : Scene(width, height)
     {
 
-        m_SpaceBackground = std::make_shared<Image>("../../Resources/Textures/milkyway.jpg");
+        m_SpaceBackground = std::make_shared<Image>("../../assets/Textures/milkyway.jpg");
         m_Camera = std::make_shared<OpeningSceneCamera>();
 
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
-        m_Mars = std::make_shared<Visualization::Body>(mars, 6, "../../Resources/Textures/mars.jpg");
+        m_Mars = std::make_shared<Visualization::Body>(mars, 6, "../../assets/Textures/mars.jpg");
     }
 
     OpeningScene::~OpeningScene()

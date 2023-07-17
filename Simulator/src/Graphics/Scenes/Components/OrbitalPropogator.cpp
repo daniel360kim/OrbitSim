@@ -24,6 +24,11 @@
 #include "csv2.h"
 #include "util/ProgressBar.h"
 
+double OrbitalPropogator::getTrueAnomalyAtTime(SimulationTime::Time time) const
+{
+    return 0.0;
+}
+
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const
 {
     return m_orbitalObject.getMeanMotion() * timeSincePeriapsis;
