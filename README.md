@@ -4,6 +4,8 @@
   Simulates orbits of objects about a central body. 
 </p>
 
+![CoverImage](Resources/Application/OrbitPage.png)
+
 ## Table of Contents
 
 - [About](#about)
