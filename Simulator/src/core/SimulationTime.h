@@ -15,19 +15,14 @@
 
 
 //Gives the true anomaly of all the planets on January 1, 2000 at 12:00:00 UTC
-namespace REFERENCE_TA_PLANETS
-{
-    constexpr double degrees_arcmin_to_radians(double degrees, double arcmin)
-    {
-        return (degrees + (arcmin / 60.0)) * (3.1415926535897932384626 / 180.0);;
-    }
+/*
     constexpr double MERCURY = degrees_arcmin_to_radians(175, 55.36);
     constexpr double VENUS = degrees_arcmin_to_radians(50, 24.98);
     constexpr double EARTH = degrees_arcmin_to_radians(50, 24.98);
     constexpr double MOON = degrees_arcmin_to_radians(129, 20.15);
     constexpr double MARS = degrees_arcmin_to_radians(23, 13.01);
     //TODO add the rest of the planets
-}
+*/
 
 class SimulationTime
 {

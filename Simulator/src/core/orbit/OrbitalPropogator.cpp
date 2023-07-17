@@ -26,7 +26,7 @@
 
 double OrbitalPropogator::getTrueAnomalyAtTime(SimulationTime::Time time) const
 {
-    return 0.0;
+    
 }
 
 double OrbitalPropogator::calculateMeanAnomaly(double timeSincePeriapsis) const

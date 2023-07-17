@@ -28,7 +28,6 @@ public:
 
     double getTrueAnomalyAtTime(SimulationTime::Time time) const;
                                                                               
-
     void runTimeStep(double currentTimeStep);
     void propogateOrbit(double duration);
     void propogateOrbit(SimulationTime::Time start, SimulationTime::Time end);
