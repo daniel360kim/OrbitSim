@@ -15,7 +15,7 @@
 #include <glm/glm.hpp>
 
 #include "math/vectorOps.h"
-#include "../OrbitalPropogator.h"
+#include "orbit/OrbitalPropogator.h"
 
 namespace Visualization
 {

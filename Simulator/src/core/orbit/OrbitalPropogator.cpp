@@ -18,8 +18,8 @@
 #include <chrono>
 
 #include "OrbitalPropogator.h"
-#include "orbit/OrbitalInvariants.h"
-#include "orbit/constants.h"
+#include "OrbitalInvariants.h"
+#include "constants.h"
 #include "util/FileNamer.h"
 #include "csv2.h"
 #include "util/ProgressBar.h"
