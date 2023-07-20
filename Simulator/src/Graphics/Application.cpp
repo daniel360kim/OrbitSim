@@ -13,12 +13,20 @@ namespace Visualization
         m_ObjectViewer = std::make_shared<ObjectViewer>(1280, 720);
         m_CurrentScene = Scene::OpeningScene;
         m_Fonts = std::make_shared<std::vector<ImFont *>>(fonts);
+
+        SimulationTime::Time time;
+        time.years = 2021;
+        time.months = 1;
+        time.days = 12;
+        time.hours = 6;
+        time.minutes = 0;
+        time.seconds = 24;
+        time.milliseconds = 0;
     }
 
     void Application::OnUpdate(float ts)
     {
         m_SimulationTime.incrementTimeReal();
-        std::cout << m_SimulationTime.getFormattedTime() << std::endl;
 
         switch (m_CurrentScene)
         {

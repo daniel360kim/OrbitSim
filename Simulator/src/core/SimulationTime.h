@@ -29,6 +29,9 @@ class SimulationTime
 public:
     struct Time
     {
+        Time(int years, int months, int days, int hours, int minutes, int seconds, int milliseconds) 
+            : years(years), months(months), days(days), hours(hours), minutes(minutes), seconds(seconds), milliseconds(milliseconds) {}
+        Time () : years(0), months(0), days(0), hours(0), minutes(0), seconds(0), milliseconds(0) {}
         int years;
         int months;
         int days;
@@ -36,6 +39,8 @@ public:
         int minutes;
         int seconds;
         int milliseconds;
+
+        unsigned long long dateTimeToMs();
     };
 
     SimulationTime(double initialTime = 0.0, double timeScale = 1.0) : m_currentTime(initialTime), m_timeScale(timeScale), m_paused(false) {}
@@ -43,10 +48,12 @@ public:
 
     void loadTimeFromFile();
 
-    double getCurrentTime() const { return m_currentTime; }
+    unsigned long long getCurrentTime() const { return m_currentTime; }
     double getTimeScale() const { return m_timeScale; }
     
     // Gets years, momths etc. since January 1, 2000 at 12:00:00 UTC
+
+
     int getYears() const;
     int getMonths() const;
     int getDays() const;
@@ -54,12 +61,13 @@ public:
     int getMinutes() const;
     int getSeconds() const;
     int getMilliseconds() const;
-
     Time getTime() const;
 
     unsigned long long getElapsedMs(Time end, Time start) const;
 
-    std::string getFormattedTime();
+    std::string getFormattedDateTime() const;
+    std::string getFormattedTime() const;
+    std::string getFormattedDate() const;
 
     void setTimeScale(double timeScale) { m_timeScale = timeScale; }
     void incrementTime(double deltaTime);
@@ -81,7 +89,6 @@ private:
     bool m_paused;
 
     std::chrono::time_point<std::chrono::steady_clock> m_lastTime;
-    unsigned int m_iterations = 0;
 
     std::chrono::system_clock::time_point getEpoch() const;
 

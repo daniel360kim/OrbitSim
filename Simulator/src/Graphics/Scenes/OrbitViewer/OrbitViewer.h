@@ -55,5 +55,6 @@ namespace Visualization
 
         static std::vector<std::string> getBodyGUIItems(std::shared_ptr<Body> body);
         static std::vector<std::string> getOrbitGUIItems(std::shared_ptr<Ellipse> orbit);
+
     };
 };

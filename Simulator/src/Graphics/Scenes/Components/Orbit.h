@@ -24,6 +24,8 @@ namespace Visualization
 
         void setBody(const std::shared_ptr<Body> &body);
         const std::shared_ptr<Body> &GetBody() const;
+
+        
     
     private:
         std::shared_ptr<Body> m_body; //for planets or moons that have orbits
