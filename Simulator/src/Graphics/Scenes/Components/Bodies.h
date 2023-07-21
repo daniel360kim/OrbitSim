@@ -17,6 +17,7 @@
 #include "Shapes/Sphere.h"
 #include "orbit/CentralBody.h"
 #include "../Camera.h"
+#include "TriangleRenderer.h"
 
 namespace Visualization
 {
@@ -40,12 +41,6 @@ namespace Visualization
 
         uint32_t m_Width;
         uint32_t m_Height;
-
-        template <typename T>
-        struct Triangle
-        {
-            T v1, v2, v3; // three vertices
-        };
 
         inline glm::vec2 transformToPixelCoords(glm::vec3 positionCoords, glm::vec2 &offset);
         void transformToPixelCoords(Triangle<glm::vec3> &trianglePositions, glm::vec2 &offset, Triangle<glm::vec2> &trianglePixels);

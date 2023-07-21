@@ -13,6 +13,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "Bodies.h"
+#include "TriangleRenderer.h"
 
 namespace Visualization
 {
@@ -28,61 +29,54 @@ namespace Visualization
         const std::vector<glm::vec3> &positions = GetPositions();
         const std::vector<glm::vec2> &texCoords = GetTexCoords();
 
+        TriangleRenderer triangleRenderer(m_Width, m_Height);
+
         for (size_t i = 0; i < indices.size(); i += 3)
         {
             Triangle<glm::vec3> trianglePosition;
-            trianglePosition = {positions[indices[i]], positions[indices[i + 1]], positions[indices[i + 2]]};
+            trianglePosition = {positions[indices[i + 0]], positions[indices[i + 1]], positions[indices[i + 2]]};
 
             // Apply transformations using the Camera properties
-            applyTransformation(trianglePosition, cameraInfo.yaw, cameraInfo.pitch, cameraInfo.position, m_radius * m_Scaling * cameraInfo.scale);
-
+            glm::vec3 offset3D = glm::vec3(offset.x, offset.y, 0.0f);
+            triangleRenderer.applyTransformation(trianglePosition, cameraInfo.yaw, cameraInfo.pitch, cameraInfo.position + offset3D, m_radius * m_Scaling * cameraInfo.scale);
             // Check if the positions are in front of the camera - only render what the camera can see
             Triangle<glm::vec3> cameraPositionDistance;
             cameraPositionDistance.v1 = trianglePosition.v1 - cameraInfo.position;
             cameraPositionDistance.v2 = trianglePosition.v2 - cameraInfo.position;
             cameraPositionDistance.v3 = trianglePosition.v3 - cameraInfo.position;
 
-            if (isInFrontOfCamera(cameraPositionDistance, cameraInfo.forwardDirection))
+            if (triangleRenderer.isInFrontOfCamera(cameraPositionDistance, cameraInfo.forwardDirection))
             {
                 // Transform to pixel coordinates
                 Triangle<glm::vec2> pixelCoords;
-                transformToPixelCoords(trianglePosition, offset, pixelCoords);
+                triangleRenderer.transformToPixelCoords(trianglePosition, pixelCoords);
 
-                // Convert the pixel coordinates to array indices
-                int x1 = static_cast<int>(pixelCoords.v1.x);
-                int y1 = static_cast<int>(pixelCoords.v1.y);
-                int index1 = y1 * m_Width + x1;
+                Triangle<int> x;
+                Triangle<int> y;
+                Triangle<int> index;
 
-                int x2 = static_cast<int>(pixelCoords.v2.x);
-                int y2 = static_cast<int>(pixelCoords.v2.y);
-                int index2 = y2 * m_Width + x2;
-
-                int x3 = static_cast<int>(pixelCoords.v3.x);
-                int y3 = static_cast<int>(pixelCoords.v3.y);
-                int index3 = y3 * m_Width + x3;
+                triangleRenderer.getArrayIndices(x, y, index, pixelCoords);
 
                 // Check if the pixels are within the bounds of the m_Image image
-                if (isWithinImageBounds(x1, y1) &&
-                    isWithinImageBounds(x2, y2) &&
-                    isWithinImageBounds(x3, y3))
+                if (triangleRenderer.isWithinBounds(x, y))
                 {
                     // Map texture coordinates to the triangle vertices
-                    glm::vec2 texCoords1 = texCoords[indices[i]];
+                    glm::vec2 texCoords1 = texCoords[indices[i + 0]];
                     glm::vec2 texCoords2 = texCoords[indices[i + 1]];
                     glm::vec2 texCoords3 = texCoords[indices[i + 2]];
 
                     // Sample the texture colors
-                    glm::vec4 color1 = GetTexture()->getPixel(glm::vec2(texCoords1.x, texCoords1.y));
-                    glm::vec4 color2 = GetTexture()->getPixel(glm::vec2(texCoords2.x, texCoords2.y));
-                    glm::vec4 color3 = GetTexture()->getPixel(glm::vec2(texCoords3.x, texCoords3.y));
+                    Triangle<glm::vec4> color;
+                    color.v1 = GetTexture()->getPixel(glm::vec2(texCoords1.x, texCoords1.y));
+                    color.v2 = GetTexture()->getPixel(glm::vec2(texCoords2.x, texCoords2.y));
+                    color.v3 = GetTexture()->getPixel(glm::vec2(texCoords3.x, texCoords3.y));
 
                     // Convert the colors to 32-bit integers
-                    uint32_t colorInt1 = convertColors(color1);
-                    uint32_t colorInt2 = convertColors(color2);
-                    uint32_t colorInt3 = convertColors(color3);
+                    Triangle<uint32_t> colorInt;
+                    triangleRenderer.colorToInt(color, colorInt);
 
                     // Fill the triangle with the corresponding colors
-                    fillTriangle(index1, index2, index3, colorInt1, colorInt2, colorInt3, pixels);
+                    triangleRenderer.fillTriangle(index, colorInt, pixels);
                 }
             }
         }
