@@ -11,6 +11,7 @@
 #include "Section.h"
 
 #include <cmath>
+#include <stdexcept>
 
 Section::Section(ImVec2 initialPosition, std::vector<ImFont *> fonts)
     : m_initialPosition(initialPosition), m_currentPosition(initialPosition), m_fonts(fonts), m_justAddedSeparator(false)
@@ -167,6 +168,41 @@ bool Section::InlineButton(const char* label, const ImVec2& size)
     m_previousButtonWidth += ImGui::GetItemRectSize().x;
 
     ImGui::PopFont();
+
+    return result;
+}
+
+std::vector<bool> Section::DropDown(const char* label, const char* previewText, std::vector<std::string> selectionLabels, ImGuiComboFlags flags)
+{
+    incrementPosition(35.0f);
+
+    ImGui::PushFont(m_fonts[4]);
+
+    m_style.Colors[ImGuiCol_Text] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    std::vector<bool> result;
+    if (ImGui::BeginCombo(label, previewText, flags))
+    {
+        m_style.Colors[ImGuiCol_Text] = m_textColor;
+        for (size_t i = 0; i < selectionLabels.size(); i++)
+        {
+            bool isSelected = false;
+            if (ImGui::Selectable(selectionLabels[i].c_str(), &isSelected))
+            {
+                result.push_back(isSelected);
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+
+    m_style.Colors[ImGuiCol_Text] = m_textColor;
+    ImGui::PopStyleColor();
+
+    ImGui::PopFont();
+
+    m_currentPosition.y += 10.0f;
 
     return result;
 }

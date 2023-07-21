@@ -27,12 +27,14 @@ namespace Visualization
     {
         m_Camera = std::make_shared<Camera>();
 
+        // Load the space background
         m_SpaceBackground = std::make_shared<Visualization::Image>("../../assets/Textures/milkyway.jpg");
 
+        // Load the earth, set as the central body
         CentralBody earth("Earth", Type::Planet, 5.97219e24, 6371, 3);
-
         m_Earth = std::make_shared<Body>(earth, 5, width, height, "../../assets/Textures/earthDay.jpg");
 
+        // Load orbits
         OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Moon, 7.34767309e22)
                                  .setSemiMajorAxis(384400.0)
                                  .setEccentricity(0.0549)
@@ -40,17 +42,49 @@ namespace Visualization
                                  .setLongitudeOfAscendingNode(125.08)
                                  .setCentralBody(earth)
                                  .build();
+        
+        OrbitalObject satelliteA = OrbitalObjectBuilder("SatelliteA", Type::Satellite, 34)
+                                .setSemiMajorAxis(150000.0)
+                                .setEccentricity(0.0)
+                                .setInclination(0.0)
+                                .setLongitudeOfAscendingNode(0.0)
+                                .setCentralBody(earth)
+                                .build();
 
-        // TODO link this with the orbit and make oribtal object
-        CentralBody moonBody("Moon", Type::Moon, 7.34767309e22, 1737.4, 3);
-        m_Moon = std::make_shared<Body>(moonBody, 5, width, height, "../../assets/Textures/moon.jpg");
+        OrbitalObject satelliteB = OrbitalObjectBuilder("SatelliteB", Type::Satellite, 150)
+                                .setSemiMajorAxis(200000.0)
+                                .setEccentricity(0.3)
+                                .setInclination(45.0)
+                                .setCentralBody(earth)
+                                .build();
 
-        uint32_t color = 0xFFFFFF00;
-        m_Orbit = std::make_shared<Orbit>(moon, 0xFFFFFFFF, color, width, height);
+
+        m_Orbits.insert(std::make_pair(moon.getName(), std::make_shared<Orbit>(moon, m_baseOrbitColor, m_baseIconColor, width, height)));
+        m_Orbits.insert(std::make_pair(satelliteA.getName(), std::make_shared<Orbit>(satelliteA, m_baseOrbitColor, m_baseIconColor, width, height)));
+        m_Orbits.insert(std::make_pair(satelliteB.getName(), std::make_shared<Orbit>(satelliteB, m_baseOrbitColor, m_baseIconColor, width, height)));
+
+        setTargetOrbit("Moon");
+
     }
 
     OrbitViewer::~OrbitViewer()
     {
+    }
+
+    void OrbitViewer::setTargetOrbit(const std::string& name)
+    {
+        m_targetOrbit = m_Orbits[name];
+
+        for (const auto& pair : m_Orbits)
+        {
+            const std::string& key = pair.first;
+            const std::shared_ptr<Orbit>& orbit = pair.second;
+            orbit->setOrbitColor(m_baseOrbitColor);
+            orbit->setIconColor(m_baseIconColor);
+        }
+
+        m_targetOrbit->setOrbitColor(m_targetOrbitColor);
+        m_targetOrbit->setIconColor(m_targetOrbitColor);
     }
 
     void OrbitViewer::OnUpdate(float ts, SimulationTime &simulationTime)
@@ -67,7 +101,6 @@ namespace Visualization
 
     void OrbitViewer::OnUIRender(std::vector<ImFont*> &fonts, SimulationTime &simulationTime)
     {
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         // Set this window to take up 3/4 of the screen
         ImGui::Begin("OrbitViewer", nullptr, ImGuiWindowFlags_NoScrollbar);
@@ -175,17 +208,28 @@ namespace Visualization
         propertiesSection.Separator();
 
         // Target orbit
-        std::string targetOrbitText = "Target Orbit: " + m_Orbit->GetOrbitalObject().getName();
+        std::string targetOrbitText = "Target Orbit: " + m_targetOrbit->GetOrbitalObject().getName();
         propertiesSection.Heading(targetOrbitText.c_str());
 
-        std::vector<std::string> targetInfo = getOrbitGUIItems(m_Orbit);
+
+        std::vector<bool> results = propertiesSection.DropDown("##Target", "Select a new target orbit", getBaseOrbitNames());
+
+        for (size_t i = 0; i < results.size(); i++)
+        {
+            if (results[i])
+            {
+                setTargetOrbit(getBaseOrbitNames()[i]);
+            }
+        }
+
+        std::vector<std::string> targetInfo = getOrbitGUIItems(m_targetOrbit);
         for (auto &item : targetInfo)
             propertiesSection.Text(item.c_str());
 
         if (propertiesSection.Button("View Object"))
         {
             m_Commands.m_ViewObject = true;
-            m_Commands.m_Object = m_Moon;
+           // m_Commands.m_Object = m_targetOrbit->GetOrbitalObject().getCentralBody();
         }
 
         propertiesSection.Separator();
@@ -218,7 +262,13 @@ namespace Visualization
         m_imageBuffer.resize(width * height);
 
         m_Earth->onResize(width, height);
-        m_Orbit->onResize(width, height);
+        
+        for (const auto& pair : m_Orbits)
+        {
+            const std::string& key = pair.first;
+            const std::shared_ptr<Orbit>& orbit = pair.second;
+            orbit->onResize(width, height);
+        }
     }
 
     void OrbitViewer::Draw(SimulationTime &simulationTime)
@@ -227,8 +277,13 @@ namespace Visualization
 
         m_Earth->Draw(m_Camera->GetCameraInfo(), glm::vec2(m_Width / 2, m_Height / 2), m_imageBuffer);
 
-        m_Orbit->DrawOrbit(m_Camera->GetCameraInfo(), glm::vec2(m_Width / 2, m_Height / 2), m_imageBuffer, simulationTime.getTime());
-        m_Orbit->DrawIcon(m_Camera->GetCameraInfo(), m_imageBuffer);
+        for (const auto& pair : m_Orbits)
+        {
+            const std::string& key = pair.first;
+            const std::shared_ptr<Orbit>& orbit = pair.second;
+            orbit->DrawOrbit(m_Camera->GetCameraInfo(), glm::vec2(m_Width / 2, m_Height / 2), m_imageBuffer, simulationTime.getTime());
+            orbit->DrawIcon(m_Camera->GetCameraInfo(), m_imageBuffer);
+        }
     }
 
     void OrbitViewer::DrawBackground(std::shared_ptr<Image> background)
@@ -251,6 +306,23 @@ namespace Visualization
                 m_imageBuffer[y * m_Width + x] = backgroundData[backgroundIndex];
             }
         }
+    }
+
+    /**
+     * @brief Gets the names of all the orbits, except the target orbit, Used in the dropdown
+     * 
+     * @return std::vector<std::string> 
+     */
+    std::vector<std::string> OrbitViewer::getBaseOrbitNames()
+    {
+        std::vector<std::string> names;
+        for (const auto& pair : m_Orbits)
+        {
+            const std::string& key = pair.first;
+            if (key != m_targetOrbit->GetOrbitalObject().getName())
+                names.push_back(key);
+        }
+        return names;
     }
 
     std::vector<std::string> OrbitViewer::getOrbitGUIItems(std::shared_ptr<Ellipse> orbit)

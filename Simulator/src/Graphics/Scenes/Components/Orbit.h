@@ -23,10 +23,12 @@ namespace Visualization
         Orbit(const OrbitalObject &orbitalObject, uint32_t orbitColor, uint32_t iconColor, uint32_t width, uint32_t height);
 
         void onResize(uint32_t width, uint32_t height);
-
-        void setOrbitColor(uint32_t color) { m_orbitColor = color; }
+        
         void DrawOrbit(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t> &pixels, SimulationTime::Time &simulationTime);
         void DrawIcon(CameraInfo &cameraInfo, std::vector<uint32_t> &pixels);
+
+        void setOrbitColor(uint32_t color) { m_orbitColor = color; }
+        void setIconColor(uint32_t color) { m_iconColor = color; }
 
     private:
         uint32_t m_orbitColor;

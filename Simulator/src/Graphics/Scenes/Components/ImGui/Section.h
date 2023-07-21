@@ -29,6 +29,9 @@ public:
     void SliderInt(const char* label, int* v, int v_min, int v_max, const char* format = "%d", ImGuiSliderFlags flags = 0);
     bool Button(const char* label, const ImVec2& size = ImVec2(0, 0));
     bool InlineButton(const char* label, const ImVec2& size = ImVec2(0, 0));
+    std::vector<bool> DropDown(const char* label, const char* previewText, std::vector<std::string> selectionLabels, ImGuiComboFlags flags = 0);
+    
+
     void Separator();
     void Spacer(float height = 10.0f);
 private:
