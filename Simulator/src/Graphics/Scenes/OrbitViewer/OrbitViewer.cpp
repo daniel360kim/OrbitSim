@@ -31,7 +31,7 @@ namespace Visualization
 
         CentralBody earth("Earth", Type::Planet, 5.97219e24, 6371, 3);
 
-        m_Earth = std::make_shared<Visualization::Body>(earth, 5, "../../assets/Textures/earthDay.jpg");
+        m_Earth = std::make_shared<Body>(earth, 5, width, height, "../../assets/Textures/earthDay.jpg");
 
         OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Moon, 7.34767309e22)
                                  .setSemiMajorAxis(384400.0)
@@ -43,9 +43,10 @@ namespace Visualization
 
         // TODO link this with the orbit and make oribtal object
         CentralBody moonBody("Moon", Type::Moon, 7.34767309e22, 1737.4, 3);
-        m_Moon = std::make_shared<Visualization::Body>(moonBody, 5, "../../assets/Textures/moon.jpg");
+        m_Moon = std::make_shared<Body>(moonBody, 5, width, height, "../../assets/Textures/moon.jpg");
 
-        m_Orbit = std::make_shared<Visualization::Ellipse>(moon);
+        uint32_t color = 0xFFFFFF00;
+        m_Orbit = std::make_shared<Orbit>(moon, 0xFFFFFFFF, color, width, height);
     }
 
     OrbitViewer::~OrbitViewer()
@@ -58,7 +59,7 @@ namespace Visualization
         m_Camera->OnUpdate(ts);
 
         Clear();
-        Draw();
+        Draw(simulationTime);
         UpdateImage();
 
         m_LastRenderTime = timer.ElapsedMillis();
@@ -206,8 +207,9 @@ namespace Visualization
     void OrbitViewer::ResizeIfNeeded(uint32_t width, uint32_t height)
     {
         if (m_Width == width && m_Height == height)
+        {
             return;
-
+        }
         m_Width = width;
         m_Height = height;
 
@@ -216,43 +218,17 @@ namespace Visualization
         m_imageBuffer.resize(width * height);
 
         m_Earth->onResize(width, height);
+        m_Orbit->onResize(width, height);
     }
 
-    void OrbitViewer::Draw()
+    void OrbitViewer::Draw(SimulationTime &simulationTime)
     {
         DrawBackground(m_SpaceBackground);
 
         m_Earth->Draw(m_Camera->GetCameraInfo(), glm::vec2(m_Width / 2, m_Height / 2), m_imageBuffer);
 
-        float offsetX = m_Width / 2;
-        float offsetY = m_Height / 2;
-
-        std::vector<uint32_t> ellipseImage(m_Width * m_Height, 0);
-
-        for (size_t i = 0; i < m_Orbit->GetVertexPositions().size(); i++)
-        {
-            glm::vec3 position = m_Orbit->GetVertexPositions()[i];
-
-            CameraInfo cameraInfo = m_Camera->GetCameraInfo();
-
-            position *= cameraInfo.scale * (float)m_Orbit->GetOrbitalObject().calculateApogee();
-            position *= 0.01f; // so orbit is not too big relative to the earth
-            position = glm::rotateX(position, m_Camera->GetPitch());
-            position = glm::rotateY(position, m_Camera->GetYaw());
-
-            position += cameraInfo.position;
-
-            glm::vec2 pixelCoords = glm::vec2(position.x, position.y) + glm::vec2(offsetX, offsetY);
-
-            int x = static_cast<int>(pixelCoords.x);
-            int y = static_cast<int>(pixelCoords.y);
-            int index = y * m_Width + x;
-
-            if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
-            {
-                m_imageBuffer[index] = 0xffffffff;
-            }
-        }
+        m_Orbit->DrawOrbit(m_Camera->GetCameraInfo(), glm::vec2(m_Width / 2, m_Height / 2), m_imageBuffer, simulationTime.getTime());
+        m_Orbit->DrawIcon(m_Camera->GetCameraInfo(), m_imageBuffer);
     }
 
     void OrbitViewer::DrawBackground(std::shared_ptr<Image> background)

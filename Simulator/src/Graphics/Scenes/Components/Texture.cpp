@@ -11,6 +11,7 @@
 #include "Texture.h"
 
 #include <iostream>
+#include <stdexcept>
 #include <stb_image.h>
 #include <glm/glm.hpp>
 
@@ -23,7 +24,7 @@ namespace Visualization
         m_imageData = stbi_load(path.c_str(), &m_width, &m_height, &m_channels, 0);
         if (m_imageData == nullptr)
         {
-            std::cout << "Failed to load texture: " << path << std::endl;
+            throw std::runtime_error("Failed to load texture: " + path);
         }
     }
 

@@ -119,7 +119,7 @@ namespace Visualization
             movementType = MovementType::Zoom;
 
             // Calculate new scale, prevent from going negative so scroll direction doesnt flip
-            m_scale -= -scrollOffset * m_zoomSpeed * ts;
+            m_scale -= -scrollOffset * m_zoomSpeed * ts * 0.1f;
             if (m_scale < 0.0f)
             {
                 m_scale = 0.0f;

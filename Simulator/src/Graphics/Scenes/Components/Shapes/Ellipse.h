@@ -26,10 +26,12 @@ namespace Visualization
         ~Ellipse();
 
         const std::vector<glm::vec3> &GetVertexPositions() const { return m_vertexPositions; }
+        const std::vector<glm::vec3> &GetVertexNormals() const { return m_vertexNormals; }
         const OrbitalObject &GetOrbitalObject() const { return m_orbitalObject; }
 
     protected:
         std::vector<glm::vec3> m_vertexPositions;
+        std::vector<glm::vec3> m_vertexNormals;
         OrbitalObject m_orbitalObject;
         void generateVertexPositions();
     };

@@ -15,7 +15,7 @@
 #include "../Scene.h"
 #include "../Components/Image.h"
 #include "../Components/Bodies.h"
-#include "../Components/Shapes/Ellipse.h"
+#include "../Components/Orbit.h"
 #include "SimulationTime.h"
 #include "../Camera.h"
 
@@ -37,7 +37,7 @@ namespace Visualization
 
         void ResizeIfNeeded(uint32_t width, uint32_t height) override;
 
-        void Draw();
+        void Draw(SimulationTime &simulationTime);
         void DrawBackground(std::shared_ptr<Image> background);
 
         Commands &GetCommands() { return m_Commands; }
@@ -48,7 +48,7 @@ namespace Visualization
         std::shared_ptr<Image> m_SpaceBackground;
         std::shared_ptr<Body> m_Earth;
         std::shared_ptr<Body> m_Moon;
-        std::shared_ptr<Ellipse> m_Orbit;
+        std::shared_ptr<Orbit> m_Orbit;
         std::shared_ptr<Camera> m_Camera;
 
         float m_LastRenderTime = 0.0f;

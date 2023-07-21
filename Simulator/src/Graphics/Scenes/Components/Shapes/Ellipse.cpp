@@ -41,8 +41,9 @@ namespace Visualization
             
             glm::vec3 vertexPosition = glm::vec3(x, y, z);
             
-            vertexPosition = glm::normalize(vertexPosition);
             m_vertexPositions.push_back(vertexPosition);
+
+            m_vertexNormals.push_back(glm::normalize(vertexPosition));
         }
     }
 

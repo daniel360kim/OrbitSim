@@ -27,7 +27,7 @@ namespace Visualization
 
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
-        m_Mars = std::make_shared<Visualization::Body>(mars, 6, "../../assets/Textures/mars.jpg");
+        m_Mars = std::make_shared<Visualization::Body>(mars, 6, width, height, "../../assets/Textures/mars.jpg");
     }
 
     OpeningScene::~OpeningScene()

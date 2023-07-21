@@ -23,8 +23,8 @@ namespace Visualization
     class Body : public Sphere
     {
     public:
-        Body(CentralBody &centralBody, int subdivisionlevel, const std::string &texturePath)
-            : Sphere(centralBody.getRadius(), subdivisionlevel, texturePath), m_centralBody(centralBody) {}
+        Body(CentralBody &centralBody, int subdivisionlevel, uint32_t width, uint32_t height, const std::string &texturePath)
+            : Sphere(centralBody.getRadius(), subdivisionlevel, texturePath), m_centralBody(centralBody), m_Width(width), m_Height(height) {}
 
         CentralBody GetCentralBody() const { return m_centralBody; }
 
