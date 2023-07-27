@@ -4,21 +4,17 @@
 
 #include "Walnut/Layer.h"
 #include "Scenes/OpeningScene/OpeningScene.h"
-#include "Scenes/OrbitViewer/OrbitViewer.h"
+#include "Scenes/EarthOrbitViewer/EarthOrbitViewer.h"
 #include "SimulationTime.h"
 #include "Scenes/ObjectViewer/ObjectViewer.h"
+#include "Scenes/SatelliteSearch/SatelliteSearch.h"
+#include "Scenes/SceneSelection.h"
 
 namespace Visualization
 {
     class Application : public Walnut::Layer
     {
     public:
-        enum class Scene
-        {
-            OpeningScene,
-            OrbitViewer,
-            ObjectViewer
-        };
 
         Application(std::vector<ImFont*> fonts);
 
@@ -28,11 +24,12 @@ namespace Visualization
         virtual void OnUIRender() override;
     
     private:
-        Scene m_CurrentScene;
+        SceneSelection m_CurrentScene;
         SimulationTime m_SimulationTime;
         std::shared_ptr<OpeningScene> m_OpeningScene;
-        std::shared_ptr<OrbitViewer> m_OrbitViewer;
+        std::shared_ptr<EarthOrbitViewer> m_EarthOrbitViewer;
         std::shared_ptr<ObjectViewer> m_ObjectViewer;
+        std::shared_ptr<SatelliteSearch> m_SatelliteSearch;
 
         std::shared_ptr<std::vector<ImFont*>> m_Fonts;
     };

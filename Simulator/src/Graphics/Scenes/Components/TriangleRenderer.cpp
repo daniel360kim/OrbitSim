@@ -152,21 +152,11 @@ namespace Visualization
         trianglePixels.v3 = transformToPixelCoords(trianglePositions.v3);
     }
 
-    uint32_t TriangleRenderer::colorToInt(glm::vec4 color)
-    {
-        uint32_t colorInt = (static_cast<uint32_t>(color.a * 255.0f) << 24) |
-                            (static_cast<uint32_t>(color.b * 255.0f) << 16) |
-                            (static_cast<uint32_t>(color.g * 255.0f) << 8) |
-                            (static_cast<uint32_t>(color.r * 255.0f));
-
-        return colorInt;
-    }
-
     void TriangleRenderer::colorToInt(Triangle<glm::vec4> colors, Triangle<uint32_t> &intColors)
     {
-        intColors.v1 = colorToInt(colors.v1);
-        intColors.v2 = colorToInt(colors.v2);
-        intColors.v3 = colorToInt(colors.v3);
+        intColors.v1 = ColorConversion::colorToInt(colors.v1);
+        intColors.v2 = ColorConversion::colorToInt(colors.v2);
+        intColors.v3 = ColorConversion::colorToInt(colors.v3);
     }
 
     uint32_t TriangleRenderer::interpolateComponent(uint32_t component1, uint32_t component2, float t)

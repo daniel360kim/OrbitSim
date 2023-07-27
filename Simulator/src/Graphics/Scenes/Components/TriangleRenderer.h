@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <glm/glm.hpp>
 
+#include "util/ColorConversion.h"
+
 namespace Visualization
 {
     template <typename T>
@@ -40,7 +42,6 @@ namespace Visualization
         glm::vec2 transformToPixelCoords(glm::vec3 positionCoords);
         void transformToPixelCoords(Triangle<glm::vec3> trianglePositions, Triangle<glm::vec2>& trianglePixels);
 
-        uint32_t colorToInt(glm::vec4 color);
         void colorToInt(Triangle<glm::vec4> colors, Triangle<uint32_t>& intColors);
 
     private:

@@ -87,5 +87,3 @@ target_link_libraries(${PROJECT_NAME}
     glew32s
     opengl32
 )
-
-

@@ -22,7 +22,7 @@ namespace Visualization
         : Scene(width, height)
     {
 
-        m_SpaceBackground = std::make_shared<Image>("../../assets/Textures/milkyway.jpg");
+        m_SpaceBackground = std::make_shared<Image>("../../assets/Images/milkyway.jpg");
         m_Camera = std::make_shared<OpeningSceneCamera>();
 
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
@@ -88,7 +88,7 @@ namespace Visualization
 
         if (ImGui::Button("Start", ImVec2(150, 75)))
         {
-            m_Commands.m_Exit = true;
+            m_Commands.m_NextScene = SceneSelection::EarthOrbitViewer;
         }
         // Restore the default button and hover colors
         ImGui::PopStyleColor(2);

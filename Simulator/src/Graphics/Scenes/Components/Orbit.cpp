@@ -17,7 +17,7 @@
 
 namespace Visualization
 {
-    Orbit::Orbit(const OrbitalObject &orbitalObject, uint32_t orbitColor, uint32_t iconColor, uint32_t width, uint32_t height)
+    Orbit::Orbit(const OrbitalObject &orbitalObject, glm::vec4 orbitColor, glm::vec4 iconColor, uint32_t width, uint32_t height)
         : Ellipse(orbitalObject), m_orbitColor(orbitColor), m_iconColor(iconColor), m_Width(width), m_Height(height)
     {
         m_icon = std::make_shared<Circle>(10, 5000);
@@ -40,7 +40,8 @@ namespace Visualization
             glm::vec3 position = GetVertexNormals()[i];
 
             position *= cameraInfo.scale * (float)GetOrbitalObject().calculateApogee(); // account for zoom, and convert back from normalized
-            position *= 0.01f;                                                          // so orbit isnt huge compared to earth. TODO dynamically scale based on size of orbit
+            float positionScaleFactor = 1.0f / std::log10f(float(GetOrbitalObject().calculateApogee())); // scale factor for position so orbit isnt huge compared to earth. 
+            position *= positionScaleFactor;                                                
             position = glm::rotateX(position, cameraInfo.pitch);
             position = glm::rotateY(position, cameraInfo.yaw);
             position += cameraInfo.position;
@@ -58,7 +59,7 @@ namespace Visualization
 
             if (x >= 0 && x < m_Width && y >= 0 && y < m_Height)
             {
-                pixels[index] = m_orbitColor;
+                pixels[index] = ColorConversion::colorToInt(m_orbitColor);
             }
         }
     }
@@ -97,9 +98,9 @@ namespace Visualization
             if (triangleRenderer.isWithinBounds(x, y))
             {
                 Triangle<uint32_t> color;
-                color.v1 = m_iconColor;
-                color.v2 = m_iconColor;
-                color.v3 = m_iconColor;
+                color.v1 = ColorConversion::colorToInt(m_iconColor);
+                color.v2 = ColorConversion::colorToInt(m_iconColor);
+                color.v3 = ColorConversion::colorToInt(m_iconColor);
 
                 triangleRenderer.fillTriangle(index, color, pixels);
             }

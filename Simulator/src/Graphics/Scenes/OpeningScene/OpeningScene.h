@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../Scene.h"
+#include "../SceneSelection.h"
 #include "OpeningSceneCamera.h"
 #include "../Components/Image.h"
 #include <glm/glm.hpp>
@@ -24,7 +25,7 @@ namespace Visualization
     public:
         struct Commands
         {
-            bool m_Exit = false;
+            SceneSelection m_NextScene = SceneSelection::OpeningScene;
         };
 
         OpeningScene(uint32_t width, uint32_t height);

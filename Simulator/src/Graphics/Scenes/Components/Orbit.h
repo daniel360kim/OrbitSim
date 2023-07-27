@@ -14,25 +14,26 @@
 #include "Shapes/Circle.h"
 #include "Shapes/Ellipse.h"
 #include "Bodies.h"
+#include "util/ColorConversion.h"
 
 namespace Visualization
 {
     class Orbit : public Ellipse
     {
     public:
-        Orbit(const OrbitalObject &orbitalObject, uint32_t orbitColor, uint32_t iconColor, uint32_t width, uint32_t height);
+        Orbit(const OrbitalObject &orbitalObject, glm::vec4 orbitColor, glm::vec4 iconColor, uint32_t width, uint32_t height);
 
         void onResize(uint32_t width, uint32_t height);
-        
+
         void DrawOrbit(CameraInfo &cameraInfo, glm::vec2 &offset, std::vector<uint32_t> &pixels, SimulationTime::Time &simulationTime);
         void DrawIcon(CameraInfo &cameraInfo, std::vector<uint32_t> &pixels);
 
-        void setOrbitColor(uint32_t color) { m_orbitColor = color; }
-        void setIconColor(uint32_t color) { m_iconColor = color; }
+        void setOrbitColor(glm::vec4 color) { m_orbitColor = color; }
+        void setIconColor(glm::vec4 color) { m_iconColor = color; }
 
     private:
-        uint32_t m_orbitColor;
-        uint32_t m_iconColor;
+        glm::vec4 m_orbitColor;
+        glm::vec4 m_iconColor;
 
         uint32_t m_Width;
         uint32_t m_Height;

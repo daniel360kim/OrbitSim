@@ -52,8 +52,8 @@ void OrbitalPropogator::runTimeStep(double currentTimeStep)
  */
 void OrbitalPropogator::propogateOrbit(double duration)
 {
-    std::ofstream logFile = generateLogFile();
-    csv2::Writer<csv2::delimiter<','>> csvWriter(logFile);
+    //std::ofstream logFile = generateLogFile();
+    //csv2::Writer<csv2::delimiter<','>> csvWriter(logFile);
 
     double currentTime = 0.0;
 
@@ -66,14 +66,14 @@ void OrbitalPropogator::propogateOrbit(double duration)
     while (currentTime <= duration)
     {
         runTimeStep(currentTime);
-        logData(csvWriter, currentTime);
+        //logData(csvWriter, currentTime);
 
         m_positions.push_back(m_position);
 
         currentTime += timestep;
     }
 
-    logFile.close();
+    //logFile.close();
 }
 
 

@@ -5,6 +5,7 @@ https://celestrak.org/NORAD/documentation/tle-fmt.php
 
 import json
 import math
+from datetime import datetime, timedelta
 
 FILE_PATH = "celestrak.txt"
 
@@ -15,6 +16,47 @@ def convertName(line):
         "name": name
     }
 
+def convertYear(year):
+    if int(year) < 57: # Sputnik 1 was launched in 1957
+        return "20" + year
+    else:
+        return "19" + year
+
+def isLeapYear(year):
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    
+def convertEpoch(epoch, year):
+    # epoch is the day and the fraction of the day
+    # epochYear is the last two digits of the year
+
+    day_of_year = int(epoch)
+    fraction_of_day = epoch - day_of_year
+
+    days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+
+    if isLeapYear(year):
+        days_in_month[1] = 29
+
+    month = 0
+    day = 0
+    for i in range(12):
+        if day_of_year - days_in_month[i] < 0:
+            month = i
+            day = day_of_year
+            break
+        else:
+            day_of_year -= days_in_month[i]
+    
+
+    
+
+
+    hour = int(fraction_of_day * 24)
+    minute = int((fraction_of_day * 24 - hour) * 60)
+
+    return month + 1, day, hour, minute
+    
+
 def convertLine1(line):
     columns = line.strip()
 
@@ -24,7 +66,9 @@ def convertLine1(line):
     internationalDesignatorLaunchNumber = columns[11:14]
     internationalDesignatorPieceOfLaunch = columns[14:17]
     epochYear = columns[18:20]
+    year = convertYear(epochYear)
     epoch = columns[20:32]
+    datetime= convertEpoch(float(epoch), int(year))
     checksum1 = columns[68]
 
 
@@ -36,6 +80,11 @@ def convertLine1(line):
         "internationalDesignatorPieceOfLaunch": internationalDesignatorPieceOfLaunch,
         "epochYear": epochYear,
         "epoch": epoch,
+        "year": int(year),
+        "month": datetime[0],
+        "day": datetime[1],
+        "hour": datetime[2],
+        "minute": datetime[3],
     }
 
 def convertLine2(line):
