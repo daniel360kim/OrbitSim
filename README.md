@@ -11,6 +11,7 @@
 - [About](#about)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
+- [Controls](#controls)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -40,6 +41,11 @@ This command will invoke the build system to compile the source files and genera
 
 3. If you download the release binaries, the ImGui windows will be set
 4. If you build yourself, the ImGui windows will have to be set after running
+
+## Controls
+- Middle Mouse Button: Pan
+- Shift + Middle Mouse Button: Rotate
+- Scroll Wheel: Zoom
 
 ## Contributing
 

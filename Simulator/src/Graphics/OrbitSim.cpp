@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "Application.h"
+#include "Scenes/SceneSelection.h"
 
 namespace Visualization
 {
@@ -29,6 +30,31 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     std::shared_ptr<Visualization::Application> layer = std::make_shared<Visualization::Application>(app->GetFonts());
     app->PushLayer(layer);
+    	app->SetMenubarCallback([app]()
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit"))
+			{
+				app->Close();
+			}
+			ImGui::EndMenu();
+		}
+
+        if (ImGui::BeginMenu("View"))
+        {
+            if (ImGui::MenuItem("Earth Orbit Viewer"))
+            {
+                Visualization::Application::Get()->SetScene(SceneSelection::EarthOrbitViewer);
+            }
+            if (ImGui::MenuItem("Satellite Search"))
+            {
+                Visualization::Application::Get()->SetScene(SceneSelection::SatelliteSearch);
+            }
+            ImGui::EndMenu();
+        }
+	});
+
 
     Visualization::s_Application = layer;
 

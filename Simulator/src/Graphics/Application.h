@@ -20,6 +20,8 @@ namespace Visualization
 
         static std::shared_ptr<Application> Get();
 
+        void SetScene(SceneSelection scene) { m_CurrentScene = scene; }
+
         virtual void OnUpdate(float ts) override;
         virtual void OnUIRender() override;
     
