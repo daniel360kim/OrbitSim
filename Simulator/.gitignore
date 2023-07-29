@@ -1,5 +1,4 @@
-# CMake Build Files
+
 build
- 
-out/*.csv
-out/logs/time.log
+
+

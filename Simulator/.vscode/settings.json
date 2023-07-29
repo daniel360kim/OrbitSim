@@ -79,5 +79,8 @@
         "ranges": "cpp",
         "span": "cpp",
         "valarray": "cpp"
+    },
+    "cmake.debugConfig": {
+        "console": "integratedTerminal"
     }
 }

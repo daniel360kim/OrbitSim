@@ -231,10 +231,10 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
     else
     {
         std::vector<std::string> firstRow = rows[0];
-        for (auto column : firstRow)
+        for (auto& column : firstRow)
         {
             float width = ImGui::CalcTextSize(column.c_str()).x;
-            for (auto row : rows)
+            for (auto& row : rows)
             {
                 float rowWidth = ImGui::CalcTextSize(row[std::distance(firstRow.begin(), std::find(firstRow.begin(), firstRow.end(), column))].c_str()).x + 20.0f;
                 if (rowWidth > width)
@@ -252,7 +252,7 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
     // Print table headings
     m_currentPosition.y += 10.0f;
     ImVec2 originalPosition = m_currentPosition;
-    for (auto heading : headings)
+    for (auto& heading : headings)
     {
         ImGui::SetCursorPos(m_currentPosition);
         ImGui::Text(heading.c_str());
@@ -286,7 +286,7 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
 
     if (selectedRows.size() != rows.size())
     {
-        selectedRows.resize(rows.size());
+        selectedRows.resize(rows.size(), false);
     }
 
     for (size_t i = 0; i < rows.size(); i++)
@@ -318,7 +318,7 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
 
             ImGui::PopStyleColor();
         }
-        else
+        else 
         {
             m_currentPosition.x += 10.0f;
             ImGui::SetCursorPos(m_currentPosition);
@@ -326,10 +326,11 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
 
             std::string label = deselectButtonLabel;
             label += "##" + std::to_string(i);
-            if (ImGui::Button(deselectButtonLabel))
+            if (ImGui::Button(label.c_str()))
             {
                 selectedRows[i] = false;
             }
+
             ImGui::PopStyleColor();
         }
 

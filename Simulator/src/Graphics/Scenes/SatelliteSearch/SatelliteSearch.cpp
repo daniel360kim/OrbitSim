@@ -3,6 +3,8 @@
 #include "../Components/ImGui/Section.h"
 #include "SatelliteDatabase.h"
 
+#include "util/Timer.h"
+
 #include <iostream>
 
 namespace Visualization
@@ -38,40 +40,40 @@ namespace Visualization
 
         const std::vector<std::string> heading = {
             "Name",
-            "ID",
-            "Launch Date",
+            "ID"
         };
 
         section.TextInput("Search", m_SearchQuery, sizeof(m_SearchQuery));
-        std::vector<SatelliteData> searchResults = m_Database.search(m_SearchQuery);
+
+        std::vector<SatelliteData> searchResults = m_Database.search(m_SearchQuery); // search the database
 
         section.Spacer(15.0f);
         section.Text("Found %d results", searchResults.size());
         section.Text("Selected: %d", m_NumSelected);
 
 
-        const int resultsMap[5] = { 10, 20, 50, 100 }; // [0] = 10, [1] = 50, [2] = 100, [3] = 300, [4] = 500
+        const int resultsMap[5] = { 10, 20, 50, 100 }; // map for results per page dropdown
         std::string resultsText;
         resultsText += "Results per page: ";
         resultsText += std::to_string(m_NumResults);
-        std::vector<bool> resultsFlags = section.DropDown("##Resultspp", resultsText.c_str(), { "10", "20", "50", "100" });
-        std::cout << resultsFlags.size() << std::endl;
+        std::vector<bool> resultsFlags = section.DropDown("##Resultspp", resultsText.c_str(), { "10", "20", "50", "100" }); // results per page dropdown
         for (size_t i = 0; i < resultsFlags.size(); i++)
         {
             if (resultsFlags[i])
             {
-                m_NumResults = resultsMap[i];
+                m_NumResults = resultsMap[i]; // use the results map to see which option was selected
             }
         }
 
         m_NumSelected = 0;
 
-        if (section.Button("Back to OrbitView", ImVec2(150, 40), ImVec4(0.867f, 0.345f, 0.839f, 1.0f)))
+        if (section.Button("Add to Sim", ImVec2(150, 40), ImVec4(0.867f, 0.345f, 0.839f, 1.0f)))
         {
             m_Commands.m_NextScene = SceneSelection::EarthOrbitViewer;
             m_Commands.m_SelectedSatellites.clear();
 
-            for (auto satellite : searchResults)
+            // Search which satellite was selected using the ID and add it to the selected satellites vector
+            for (auto& satellite : searchResults)
             {
                 if (m_Database.m_selectionMap[std::stoi(satellite.number)])
                 {
@@ -147,17 +149,11 @@ namespace Visualization
 
     void SatelliteSearch::getTableData(const std::vector<SatelliteData>& data, std::vector<std::vector<std::string>>& rows)
     {
-        for (auto satellite : data)
+        rows.reserve(data.size());
+
+        for (const auto& satellite : data)
         {
-            std::vector<std::string> row;
-            row.push_back(satellite.name);
-            row.push_back(satellite.number);
-            int launchYear = satellite.year;
-            int launchMonth = satellite.month;
-            int launchDay = satellite.day;
-            std::string launchDateFormatted = std::to_string(launchYear) + "-" + std::to_string(launchMonth) + "-" + std::to_string(launchDay);
-            row.push_back(launchDateFormatted);
-            rows.push_back(row);
+            rows.emplace_back(std::vector<std::string>{ satellite.name, satellite.number });
         }
     }
 
