@@ -25,8 +25,8 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/Dependencies/glmsm/glm
 
     #Walnut
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut
 
     # Glew
     ${PROJECT_SOURCE_DIR}/Dependencies/glew/include
@@ -68,12 +68,12 @@ file(GLOB IMGUI_SRCS
 
 # Walnut
 file(GLOB WALNUT_SRCS
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/*.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/ImGui/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/ImGui/*.h
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/Input/*.cpp
-    ${PROJECT_SOURCE_DIR}/Dependencies/myWalnut/Walnut/Input/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/ImGui/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/ImGui/*.h
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/Input/*.cpp
+    ${PROJECT_SOURCE_DIR}/Dependencies/devWalnut/Walnut/Input/*.h
 )
 
 # Statically link GLEW
