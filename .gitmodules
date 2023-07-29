@@ -8,3 +8,6 @@
 [submodule "Simulator/Dependencies/devWalnut"]
 	path = Simulator/Dependencies/devWalnut
 	url = https://github.com/daniel360kim/Walnut.git
+[submodule "Simulator/Dependencies/mainWalnut"]
+	path = Simulator/Dependencies/mainWalnut
+	url = https://github.com/daniel360kim/Walnut.git
