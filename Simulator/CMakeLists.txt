@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 project(OrbitSim)
 
 # Set the build type ("Debug" or "Dist")
-set(BUILD_SETTING "Dist")
+set(BUILD_SETTING "Debug")
 set(CMAKE_INSTALL_CONFIG_NAME Debug)
 
 # Ensure that the project is only supported on Windows and MSVC
@@ -83,7 +83,7 @@ add_definitions(-DWL_PLATFORM_WINDOWS)
 
 # Conditionally set the target based on the build setting
 if (BUILD_SETTING STREQUAL "Debug")
-    add_executable(${PROJECT_NAME} ${all_SRCS} ${GLM_SRCS} ${IMGUI_SRCS} ${WALNUT_SRCS})
+    add_executable(${PROJECT_NAME} ${all_SRCS} ${GLM_SRCS} ${IMGUI_SRCS} ${WALNUT_SRCS} ${ICON_SRCS})
     message("Debug Build")
 elseif (BUILD_SETTING STREQUAL "Dist")
     add_definitions(-DWL_DIST)
