@@ -104,7 +104,7 @@ set(ASSETS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/assets")
 set(ASSETS_DEST_DIR "${CMAKE_BINARY_DIR}/Debug/assets")
 set(OUT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/out")
 set(OUT_DEST_DIR "${CMAKE_BINARY_DIR}/Debug/out")
-set(IMGUI_INI_SOURCE_FILE "${PROJECT_BINARY_DIR}/Debug/imgui.ini")
+set(IMGUI_INI_SOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/imgui.ini")
 
 
 # Copy assets to the build directory
@@ -126,6 +126,7 @@ install(DIRECTORY ${ASSETS_SOURCE_DIR} DESTINATION bin)
 install(DIRECTORY ${OUT_SOURCE_DIR} DESTINATION bin)
 install(FILES ${IMGUI_INI_SOURCE_FILE} DESTINATION bin)
 
+
 # Include required system libraries in the CPack package
 include(InstallRequiredSystemLibraries)
 
@@ -141,5 +142,3 @@ set(CPACK_OUTPUT_FILE_PREFIX "../bin")
 # Include CPack for generating the package
 set(CMAKE_INSTALL_CONFIG_NAME "Debug")
 include(CPack)
-
-

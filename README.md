@@ -11,7 +11,6 @@
 - [About](#about)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -31,46 +30,16 @@ Follow these steps to get the project up and running on your local machine.
 
 1. Clone the repository and enter the directory
    ```shell
-   git clone https://github.com/daniel360kim/OrbitSim.git
+   git clone https://github.com/daniel360kim/OrbitSim.git --recursive
    cd OrbitSim/Simulator
    ```
-2. Create a build directory and enter it
-   ```shell
-    mkdir build
-    cd build
-    ```
-
-3. Run CMake
-    ```shell
-    cmake ..
-    ```
-
-4. Build the project
-    ```shell
-    cmake --build .
-    ```
+2. Build
+    Go to Scripts and run setup.bat
 
 This command will invoke the build system to compile the source files and generate the executable.
 
-5. Once the build process completes successfully, you can find the executable in the build directory.
-An example of the moon is already loaded. You can run the executable or run the project. 
-
-6. A csv file will be generated in the build directory. This file contains the position and velocity of the object at each time step. You can use this file to plot the orbit of the object using the Python visualization.
-
-7. Within visualization.py, specify the path to the csv file. Then run the script.
-    ```shell
-    python visualization.py
-    ```
-
-## Project Structure
-
-- `CMakeLists.txt`: The CMake build script for the project.
-- `src/`: The source code directory.
-- `include/`: The header file directory.
-
-The `file(GLOB ...)` command in the CMakeLists.txt file is used to collect all the source and header files within the `src` and `include` directories recursively.
-
-The `add_executable` command creates the executable named "OrbitOps" using all the collected source files.
+3. If you download the release binaries, the ImGui windows will be set
+4. If you build yourself, the ImGui windows will have to be set after running
 
 ## Contributing
 
