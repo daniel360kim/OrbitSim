@@ -8,6 +8,7 @@
  *
  */
 
+#undef max
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>

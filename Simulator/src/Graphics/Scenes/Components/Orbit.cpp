@@ -20,7 +20,7 @@ namespace Visualization
     Orbit::Orbit(const OrbitalObject &orbitalObject, glm::vec4 orbitColor, glm::vec4 iconColor, uint32_t width, uint32_t height)
         : Ellipse(orbitalObject), m_orbitColor(orbitColor), m_iconColor(iconColor), m_Width(width), m_Height(height)
     {
-        m_icon = std::make_shared<Circle>(10, 5000);
+        m_icon = std::make_shared<Circle>(10.0f, 5000);
     }
 
     void Orbit::onResize(uint32_t width, uint32_t height)

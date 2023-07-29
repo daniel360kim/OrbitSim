@@ -22,12 +22,12 @@ namespace Visualization
         : Scene(width, height)
     {
 
-        m_SpaceBackground = std::make_shared<Image>("../../assets/Images/milkyway.jpg");
+        m_SpaceBackground = std::make_shared<Image>("assets/Images/milkyway.jpg");
         m_Camera = std::make_shared<OpeningSceneCamera>();
 
         CentralBody mars("mars", Type::Planet, 6.4171e23, 3389.5, 3);
 
-        m_Mars = std::make_shared<Visualization::Body>(mars, 6, width, height, "../../assets/Textures/mars.jpg");
+        m_Mars = std::make_shared<Visualization::Body>(mars, 6, width, height, "assets/Textures/mars.jpg");
     }
 
     OpeningScene::~OpeningScene()
@@ -50,6 +50,7 @@ namespace Visualization
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
         ImGui::SetNextWindowSize(ImVec2(m_Width, m_Height));
+
         ImGui::Begin("OrbitSim", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize);
         ImGuiStyle &style = ImGui::GetStyle();
 

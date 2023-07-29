@@ -12,7 +12,7 @@ namespace Visualization
     SatelliteSearch::SatelliteSearch(uint32_t width, uint32_t height)
         : Scene(width, height)
     {
-        m_Database.load("../../assets/Data/satellites.json");
+        m_Database.load("assets/Data/satellites.json");
     }
 
     SatelliteSearch::~SatelliteSearch()

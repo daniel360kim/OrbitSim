@@ -39,7 +39,7 @@ namespace Visualization
 
         for (int i = 0; i < m_numVertices; i++)
         {
-            float angle = i * angleStep;
+            float angle = (float)i * angleStep;
             float x = m_radius * std::cos(angle);
             float y = m_radius * std::sin(angle);
             float z = 0.0f;
@@ -70,8 +70,8 @@ namespace Visualization
     {
         for (unsigned int i = 0; i < m_numVertices; i++)
         {
-            float u = 0.5f + 0.5f * std::cos(i * 2.0f * M_PI / m_numVertices);
-            float v = 0.5f + 0.5f * std::sin(i * 2.0f * M_PI / m_numVertices);
+            float u = 0.5f + 0.5f * std::cos((float)i * 2.0f * M_PI / (float)m_numVertices);
+            float v = 0.5f + 0.5f * std::sin((float)i * 2.0f * M_PI / (float)m_numVertices);
             m_textureCoords.push_back(glm::vec2(u, v));
         }
 

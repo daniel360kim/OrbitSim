@@ -57,7 +57,7 @@ SimulationTime::~SimulationTime()
 
 void SimulationTime::loadTimeFromFile()
 {
-    std::ifstream timeFile("../../out/logs/time.log");
+    std::ifstream timeFile("../out/logs/time.log");
     timeFile >> m_currentTime;
     timeFile.close();
 }
@@ -272,14 +272,14 @@ void SimulationTime::setTime(Time time)
 
 void SimulationTime::resetTimeLog()
 {
-    std::ofstream timeFile("../../out/logs/time.log");
+    std::ofstream timeFile("../out/logs/time.log");
     timeFile << 0;
     timeFile.close();
 }
 
 void SimulationTime::logTime()
 {
-    std::ofstream timeFile("../../out/logs/time.log");
+    std::ofstream timeFile("../out/logs/time.log");
     timeFile << m_currentTime;
     timeFile.close();
 }

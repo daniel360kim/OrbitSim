@@ -28,11 +28,11 @@ namespace Visualization
         m_Camera = std::make_shared<Camera>();
 
         // Load the space background
-        m_SpaceBackground = std::make_shared<Visualization::Image>("../../assets/Images/milkyway.jpg");
+        m_SpaceBackground = std::make_shared<Visualization::Image>("assets/Images/milkyway.jpg");
 
         // Load the earth, set as the central body
         CentralBody earth("Earth", Type::Planet, 5.97219e24, 6371, 3);
-        m_Earth = std::make_shared<Body>(earth, 5, width, height, "../../assets/Textures/earthDay.jpg");
+        m_Earth = std::make_shared<Body>(earth, 5, width, height, "assets/Textures/earthDay.jpg");
 
         // Load orbits
         OrbitalObject moon = OrbitalObjectBuilder("Moon", Type::Moon, 7.34767309e22)

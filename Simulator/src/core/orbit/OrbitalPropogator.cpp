@@ -111,7 +111,7 @@ Vector<double, 3> OrbitalPropogator::getVelocityAtTime(SimulationTime::Time &tim
 
 std::ofstream OrbitalPropogator::generateLogFile() const
 {
-    FileNamer fileNamer("../../out/prop_data.csv");
+    FileNamer fileNamer("../out/prop_data.csv");
 
     std::string filename = fileNamer.getAvailableFilename();
     std::ofstream logFile(filename);
