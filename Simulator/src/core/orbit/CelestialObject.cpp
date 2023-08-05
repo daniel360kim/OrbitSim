@@ -35,9 +35,6 @@ std::string CelestialObject::getTypeString() const
     case Type::Planet:
         return "Planet";
         break;
-    case Type::Exoplanet:
-        return "Exoplanet";
-        break;
     case Type::Star:
         return "Star";
         break;

@@ -17,10 +17,36 @@
 
 SatelliteDatabase::SatelliteDatabase()
 {
+    m_Root = std::make_unique<TrieNode>();
+
 }
 SatelliteDatabase::~SatelliteDatabase()
 {
 
+}
+
+std::vector<SatelliteData> SatelliteDatabase::search(const std::string &key)
+{
+    std::vector<SatelliteData> results;
+    TrieNode *current = m_Root.get();
+
+    for (size_t i = 0; i < key.length(); i++)
+    {
+        char character = key[i];
+        character = std::tolower(character);
+        if (current->children.find(character) == current->children.end())
+        {
+            return results;
+        }
+        current = current->children[character].get();
+    }
+
+    if (current->children.find('\0') != current->children.end())
+    {
+        results = current->children['\0']->data;
+    }
+
+    return results;
 }
 
 void SatelliteDatabase::load(const std::string &databasePath)
@@ -71,4 +97,29 @@ void SatelliteDatabase::load(const std::string &databasePath)
     {
         throw std::runtime_error("Database is not an array");
     }
+}
+
+void SatelliteDatabase::insert(const std::string &key, const SatelliteData &data)
+{
+    TrieNode *current = m_Root.get();
+
+    for (size_t i = 0; i < key.length(); i++)
+    {
+        char character = key[i];
+        character = std::tolower(character);
+        if (current->children.find(character) == current->children.end())
+        {
+            current->children[character] = std::make_unique<TrieNode>();
+        }
+        current = current->children[character].get();
+
+        std::string substring = key.substr(0, i + 1);
+        if (current->children.find('\0') == current->children.end())
+        {
+            current->children['\0'] = std::make_unique<TrieNode>();
+        }
+        current->children['\0']->data.push_back(data);
+    }
+    current->isEndOfWord = true;
+    current->data.push_back(data);
 }

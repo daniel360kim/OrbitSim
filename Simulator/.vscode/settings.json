@@ -78,9 +78,7 @@
         "numeric": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "valarray": "cpp",
-        "deque": "cpp",
-        "queue": "cpp"
+        "valarray": "cpp"
     },
     "cmake.debugConfig": {
         "console": "integratedTerminal"

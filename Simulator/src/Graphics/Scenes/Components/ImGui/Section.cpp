@@ -14,8 +14,6 @@
 #include <stdexcept>
 #include <iostream>
 
-int Section::m_numSections = 0;
-
 Section::Section(ImVec2 initialPosition, std::vector<ImFont *> fonts)
     : m_initialPosition(initialPosition), m_currentPosition(initialPosition), m_fonts(fonts), m_justAddedSeparator(false)
 {
@@ -36,12 +34,6 @@ Section::Section(ImVec2 initialPosition, std::vector<ImFont *> fonts)
     // Set custom button border properties
     m_style.FrameBorderSize = 1.0f; // Set border thickness
     m_style.Colors[ImGuiCol_Border] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-    m_numSections++;
-}
-
-Section::~Section()
-{
 }
 
 void Section::End()
@@ -203,7 +195,7 @@ std::vector<bool> Section::DropDown(const char *label, const char *previewText, 
             {
                 ImGui::SetItemDefaultFocus();
             }
-            else
+            else 
             {
                 result.push_back(false);
             }
@@ -221,7 +213,7 @@ std::vector<bool> Section::DropDown(const char *label, const char *previewText, 
     return result;
 }
 
-void Section::Table(int numCols, std::vector<std::string> headings, std::vector<std::vector<std::string>> rows, const char *buttonLabel, const char *deselectButtonLabel, std::vector<bool> &selectedRows, int maxRows)
+void Section::Table(int numCols, std::vector<std::string> headings, std::vector<std::vector<std::string>> rows, const char *buttonLabel, const char* deselectButtonLabel, std::vector<bool> &selectedRows, int maxRows)
 {
     incrementPosition(30.0f);
 
@@ -239,10 +231,10 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
     else
     {
         std::vector<std::string> firstRow = rows[0];
-        for (auto &column : firstRow)
+        for (auto& column : firstRow)
         {
             float width = ImGui::CalcTextSize(column.c_str()).x;
-            for (auto &row : rows)
+            for (auto& row : rows)
             {
                 float rowWidth = ImGui::CalcTextSize(row[std::distance(firstRow.begin(), std::find(firstRow.begin(), firstRow.end(), column))].c_str()).x + 20.0f;
                 if (rowWidth > width)
@@ -260,7 +252,7 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
     // Print table headings
     m_currentPosition.y += 10.0f;
     ImVec2 originalPosition = m_currentPosition;
-    for (auto &heading : headings)
+    for (auto& heading : headings)
     {
         ImGui::SetCursorPos(m_currentPosition);
         ImGui::Text(heading.c_str());
@@ -318,7 +310,7 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3490, 0.8431, 0.6039, 1.0f));
 
             std::string label = buttonLabel;
-            label += "##" + std::to_string(i) + std::to_string(m_numSections);
+            label += "##" + std::to_string(i);
             if (ImGui::Button(label.c_str()))
             {
                 selectedRows[i] = true;
@@ -326,152 +318,14 @@ void Section::Table(int numCols, std::vector<std::string> headings, std::vector<
 
             ImGui::PopStyleColor();
         }
-        else
+        else 
         {
             m_currentPosition.x += 10.0f;
             ImGui::SetCursorPos(m_currentPosition);
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8235, 0.1216f, 0.2353f, 1.0f));
 
             std::string label = deselectButtonLabel;
-            label += "##" + std::to_string(i) + std::to_string(m_numSections);
-            if (ImGui::Button(label.c_str()))
-            {
-                selectedRows[i] = false;
-            }
-
-            ImGui::PopStyleColor();
-        }
-
-        m_currentPosition.x = originalPosition.x;
-        m_currentPosition.y += 30.0f;
-    }
-
-    ImGui::PopFont();
-
-    m_currentPosition.y += 10.0f;
-}
-
-void Section::SingleSelectTable(int numCols, std::vector<std::string> headings, std::vector<std::vector<std::string>> rows, const char *buttonLabel, const char *deselectButtonLabel, std::vector<bool> &selectedRows, int maxRows)
-{
-    incrementPosition(30.0f);
-
-    ImGui::PushFont(m_fonts[5]);
-
-    // Calculate column widths based on the longest string in each column of the first row
-    std::vector<float> columnWidths;
-    if (rows.size() == 0)
-    {
-        for (int i = 0; i < numCols; i++)
-        {
-            columnWidths.push_back(70.0f);
-        }
-    }
-    else
-    {
-        std::vector<std::string> firstRow = rows[0];
-        for (auto &column : firstRow)
-        {
-            float width = ImGui::CalcTextSize(column.c_str()).x;
-            for (auto &row : rows)
-            {
-                float rowWidth = ImGui::CalcTextSize(row[std::distance(firstRow.begin(), std::find(firstRow.begin(), firstRow.end(), column))].c_str()).x + 20.0f;
-                if (rowWidth > width)
-                {
-                    width = rowWidth;
-                }
-            }
-            columnWidths.push_back(width);
-        }
-    }
-
-    ImGui::SetCursorPos(m_currentPosition);
-    ImGui::Separator();
-
-    // Print table headings
-    m_currentPosition.y += 10.0f;
-    ImVec2 originalPosition = m_currentPosition;
-    for (auto &heading : headings)
-    {
-        ImGui::SetCursorPos(m_currentPosition);
-        ImGui::Text(heading.c_str());
-        // increment position by the width of the heading
-        m_currentPosition.x += columnWidths[std::distance(headings.begin(), std::find(headings.begin(), headings.end(), heading))] + 10.0f;
-    }
-
-    m_currentPosition = originalPosition;
-    m_currentPosition.y += 30.0f;
-
-    ImGui::SetCursorPos(m_currentPosition);
-    ImGui::Separator();
-
-    // Print table rows
-    ImGui::PopFont();
-
-    if (rows.size() == 0)
-    {
-        ImGui::PushFont(m_fonts[4]);
-        m_currentPosition.y += 10.0f;
-        ImGui::SetCursorPos(m_currentPosition);
-        ImGui::Text("No results found.");
-        ImGui::PopFont();
-        m_currentPosition.y += 30.0f;
-        return;
-    }
-
-    ImGui::PushFont(m_fonts[4]);
-    m_currentPosition.y += 10.0f;
-    originalPosition = m_currentPosition;
-
-    if (selectedRows.size() != rows.size())
-    {
-        selectedRows.resize(rows.size(), false);
-    }
-
-    for (size_t i = 0; i < rows.size(); i++)
-    {
-        if (i >= maxRows)
-        {
-            break;
-        }
-
-        for (size_t j = 0; j < rows[i].size(); j++)
-        {
-            ImGui::SetCursorPos(m_currentPosition);
-            ImGui::Text(rows[i][j].c_str());
-            m_currentPosition.x += columnWidths[j] + 10.0f;
-        }
-
-        if (!selectedRows[i])
-        {
-            m_currentPosition.x += 10.0f;
-            ImGui::SetCursorPos(m_currentPosition);
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3490, 0.8431, 0.6039, 1.0f));
-
-            std::string label = buttonLabel;
-            label += "##" + std::to_string(i) + std::to_string(m_numSections);
-            if (ImGui::Button(label.c_str()))
-            {
-                selectedRows[i] = true;
-                // deselect all other rows
-                for (size_t j = 0; j < selectedRows.size(); j++)
-                {
-                    if (j != i)
-                    {
-                        selectedRows[j] = false;
-                    }
-                }
-            }
-
-            ImGui::PopStyleColor();
-        }
-        else
-        {
-            m_currentPosition.x += 10.0f;
-            ImGui::SetCursorPos(m_currentPosition);
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8235, 0.1216f, 0.2353f, 1.0f));
-
-            std::string label = deselectButtonLabel;
-            label += "##" + std::to_string(i) + std::to_string(m_numSections);
+            label += "##" + std::to_string(i);
             if (ImGui::Button(label.c_str()))
             {
                 selectedRows[i] = false;

@@ -4,11 +4,10 @@
 
 #include "Walnut/Layer.h"
 #include "Scenes/OpeningScene/OpeningScene.h"
-#include "Scenes/OrbitViewer/OrbitViewer.h"
+#include "Scenes/EarthOrbitViewer/EarthOrbitViewer.h"
 #include "SimulationTime.h"
 #include "Scenes/ObjectViewer/ObjectViewer.h"
 #include "Scenes/SatelliteSearch/SatelliteSearch.h"
-#include "Scenes/PlanetSearch/PlanetSearch.h"
 #include "Scenes/SceneSelection.h"
 
 namespace Visualization
@@ -30,10 +29,9 @@ namespace Visualization
         SceneSelection m_CurrentScene;
         SimulationTime m_SimulationTime;
         std::shared_ptr<OpeningScene> m_OpeningScene;
-        std::shared_ptr<OrbitViewer> m_OrbitViewer;
+        std::shared_ptr<EarthOrbitViewer> m_EarthOrbitViewer;
         std::shared_ptr<ObjectViewer> m_ObjectViewer;
         std::shared_ptr<SatelliteSearch> m_SatelliteSearch;
-        std::shared_ptr<PlanetSearch> m_PlanetSearch;
 
         std::shared_ptr<std::vector<ImFont*>> m_Fonts;
     };
