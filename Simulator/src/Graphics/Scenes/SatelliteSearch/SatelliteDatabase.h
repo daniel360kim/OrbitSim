@@ -32,6 +32,7 @@ public:
 
     std::vector<SatelliteData> search(const std::string &key);
     std::unordered_map<int, bool> m_selectionMap; // holds which IDs are selected within the search results
+    std::vector<SatelliteData> m_allSatellites; // holds all satellites in the database
 
     void load(const std::string &databasePath);
 

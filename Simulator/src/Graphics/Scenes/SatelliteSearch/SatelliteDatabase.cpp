@@ -91,6 +91,7 @@ void SatelliteDatabase::load(const std::string &databasePath)
              
             // Push back the number into the selection map
             m_selectionMap.insert(std::make_pair(std::stoi(data.number), false));
+            m_allSatellites.push_back(data);
         }
     }
     else

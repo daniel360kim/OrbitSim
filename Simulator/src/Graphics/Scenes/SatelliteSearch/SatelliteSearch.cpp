@@ -51,29 +51,13 @@ namespace Visualization
         section.Text("Found %d results", searchResults.size());
         section.Text("Selected: %d", m_NumSelected);
 
-
-        const int resultsMap[5] = { 10, 20, 50, 100 }; // map for results per page dropdown
-        std::string resultsText;
-        resultsText += "Results per page: ";
-        resultsText += std::to_string(m_NumResults);
-        std::vector<bool> resultsFlags = section.DropDown("##Resultsss", resultsText.c_str(), { "10", "20", "50", "100" }); // results per page dropdown
-        for (size_t i = 0; i < resultsFlags.size(); i++)
-        {
-            if (resultsFlags[i])
-            {
-                m_NumResults = resultsMap[i]; // use the results map to see which option was selected
-            }
-        }
-
-        m_NumSelected = 0;
-
         if (section.Button("Add to Sim", ImVec2(150, 40), ImVec4(0.867f, 0.345f, 0.839f, 1.0f)))
         {
             m_Commands.m_NextScene = SceneSelection::EarthOrbitViewer;
             m_Commands.m_SelectedSatellites.clear();
 
             // Search which satellite was selected using the ID and add it to the selected satellites vector
-            for (auto& satellite : searchResults)
+            for (auto& satellite : m_Database.m_allSatellites)
             {
                 if (m_Database.m_selectionMap[std::stoi(satellite.number)])
                 {
@@ -115,20 +99,44 @@ namespace Visualization
             }
         }
 
+        int trueCount = 0;
+        for (bool value : selectedRows)
+        {
+            if (value)
+            {
+                trueCount++;
+            }
+        }
+
         std::vector<std::vector<std::string>> rows;
         getTableData(searchResults, rows);
 
-        section.Table(heading.size(), heading, rows, "Select", "Deselect", selectedRows, m_NumResults);
+        section.Table(heading.size(), heading, rows, "Select", "Deselect", selectedRows, 10000);
 
-        // Update the selection map based on the table selections
+        trueCount = 0;
+        for (bool value : selectedRows)
+        {
+            if (value)
+            {
+                trueCount++;
+            }
+        }
+
+        // Update the selection map based on the table selections'
+        m_NumSelected = m_Database.m_selectionMap.size();
+        for (size_t i = 0; i < m_Database.m_selectionMap.size(); i++)
+        {
+            if (!m_Database.m_selectionMap[i])
+            {
+                m_NumSelected--;
+            }
+        }
         for (size_t i = 0; i < searchResults.size(); i++)
         {
-            if (selectedRows[i])
-            {
-                m_NumSelected++;
-            }
             m_Database.m_selectionMap[std::stoi(searchResults[i].number)] = selectedRows[i];
         }
+
+        
 
         section.End();
        

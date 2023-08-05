@@ -44,7 +44,6 @@ namespace Visualization
 
         char m_SearchQuery[256] = "";
         int m_NumSelected = 0;
-        int m_NumResults = 50;
 
         void getTableData(const std::vector<SatelliteData>& data, std::vector<std::vector<std::string>>& rows);
     };
