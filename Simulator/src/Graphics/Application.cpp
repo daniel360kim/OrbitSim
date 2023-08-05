@@ -47,6 +47,7 @@ namespace Visualization
 
     void Application::OnUIRender()
     {
+        std::cout << "Current Scene: " << static_cast<int>(m_CurrentScene) << std::endl;
         switch (m_CurrentScene)
         {
         case SceneSelection::OpeningScene:
