@@ -19,7 +19,7 @@ OrbitSim only supports Windows.
 
 ## About
 
-This project was created to simulate orbits of objects about a central body. The project is written in C++ and uses the Python for graphics. The project is currently in development.
+This project was created to simulate orbits of objects about a central body. It is built off of (Walnut)[https://github.com/StudioCherno/Walnut].
 
 ## Prerequisites
 
