@@ -21,9 +21,10 @@ This project was created to simulate orbits of objects about a central body. The
 
 ## Prerequisites
 
-- Python 3.11 or higher
+- Python 3.11 or higher (for ETL scripts)
 - C++ 17 or higher
-- CMake 3.15 or higher
+- CMake
+- Vulkan SDK
 
 ## Getting Started
 
