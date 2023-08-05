@@ -19,7 +19,7 @@ OrbitSim only supports Windows.
 
 ## About
 
-This project was created to simulate orbits of objects about a central body. It is built off of (Walnut)[https://github.com/StudioCherno/Walnut].
+This project was created to simulate orbits of objects about a central body. It is built off of [Walnut](https://github.com/StudioCherno/Walnut).
 
 ## Prerequisites
 
