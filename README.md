@@ -1,10 +1,12 @@
 <h1 align="center">OrbitSim</h1>
 
-<p align="center">
-  Simulates orbits of objects about a central body. 
-</p>
+Simulates orbits of objects about a central body. Allows for simulation of any satellite on the [Celestrak](https://celestrak.org/) database. This initial version only supports satellites around Earth, but the plan is to expand its functionality to solar system and other custom systems as well.
 
-![CoverImage](Resources/Application/OrbitPage.png)
+The satellites are static, meaning that no orbital manuevers can be executed and their orbits are set to the specifications gathered from celestrak. Hopefully, in the future, orbital manuevers will be able to be executed. 
+
+OrbitSim only supports Windows. 
+
+![CoverImageOpening](Resources/Application/OrbitPage.png)
 
 ## Table of Contents
 
@@ -17,7 +19,7 @@
 
 ## About
 
-This project was created to simulate orbits of objects about a central body. The project is written in C++ and uses the Python for graphics. The project is currently in development.
+This project was created to simulate orbits of objects about a central body. It is built off of [Walnut](https://github.com/StudioCherno/Walnut).
 
 ## Prerequisites
 
