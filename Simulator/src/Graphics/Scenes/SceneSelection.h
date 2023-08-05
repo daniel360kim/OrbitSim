@@ -3,7 +3,8 @@
 enum class SceneSelection
 {
     OpeningScene,
-    EarthOrbitViewer,
+    OrbitViewer,
     SatelliteSearch,
+    PlanetSearch,
     ObjectViewer
 };

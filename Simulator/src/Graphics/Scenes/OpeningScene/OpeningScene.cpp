@@ -89,7 +89,7 @@ namespace Visualization
 
         if (ImGui::Button("Start", ImVec2(150, 75)))
         {
-            m_Commands.m_NextScene = SceneSelection::EarthOrbitViewer;
+            m_Commands.m_NextScene = SceneSelection::OrbitViewer;
         }
         // Restore the default button and hover colors
         ImGui::PopStyleColor(2);

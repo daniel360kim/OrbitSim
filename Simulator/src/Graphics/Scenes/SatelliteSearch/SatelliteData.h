@@ -33,6 +33,4 @@ struct SatelliteData
     double argumentOfPerigee;
     double semiMajorAxis;
     double longitudeOfAscendingNode;
-
-    bool selected = false;
 };

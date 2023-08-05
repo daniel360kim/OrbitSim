@@ -15,6 +15,7 @@
 enum class Type
 {
     Planet,
+    Exoplanet,
     Star,
     Satellite,
     Moon,
@@ -22,7 +23,7 @@ enum class Type
     Cloud,
     BlackHole,
     Asteroid,
-    Comet,
+    Comet
 };
 
 /**

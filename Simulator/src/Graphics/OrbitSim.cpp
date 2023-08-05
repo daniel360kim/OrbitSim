@@ -45,11 +45,15 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
         {
             if (ImGui::MenuItem("Earth Orbit Viewer"))
             {
-                Visualization::Application::Get()->SetScene(SceneSelection::EarthOrbitViewer);
+                Visualization::Application::Get()->SetScene(SceneSelection::OrbitViewer);
             }
             if (ImGui::MenuItem("Satellite Search"))
             {
                 Visualization::Application::Get()->SetScene(SceneSelection::SatelliteSearch);
+            }
+            if (ImGui::MenuItem("Planet Search"))
+            {
+                Visualization::Application::Get()->SetScene(SceneSelection::PlanetSearch);
             }
             ImGui::EndMenu();
         }
