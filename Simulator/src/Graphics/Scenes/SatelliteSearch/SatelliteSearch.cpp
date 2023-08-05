@@ -56,7 +56,7 @@ namespace Visualization
         std::string resultsText;
         resultsText += "Results per page: ";
         resultsText += std::to_string(m_NumResults);
-        std::vector<bool> resultsFlags = section.DropDown("##Resultspp", resultsText.c_str(), { "10", "20", "50", "100" }); // results per page dropdown
+        std::vector<bool> resultsFlags = section.DropDown("##Resultsss", resultsText.c_str(), { "10", "20", "50", "100" }); // results per page dropdown
         for (size_t i = 0; i < resultsFlags.size(); i++)
         {
             if (resultsFlags[i])

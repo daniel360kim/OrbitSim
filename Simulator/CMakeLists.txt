@@ -104,7 +104,8 @@ set(ASSETS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/assets")
 set(ASSETS_DEST_DIR "${CMAKE_BINARY_DIR}/Debug/assets")
 set(OUT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/out")
 set(OUT_DEST_DIR "${CMAKE_BINARY_DIR}/Debug/out")
-set(IMGUI_INI_SOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/imgui.ini")
+set(IMGUI_INI_SOURCE_FILE "${PROJECT_SOURCE_DIR}/assets/ImGui/imgui.ini")
+set(IMGUI_INI_DEST_FILE "${CMAKE_BINARY_DIR}/Debug/imgui.ini")
 
 
 # Copy assets to the build directory
@@ -118,6 +119,12 @@ add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${ASSETS_SOURCE_DIR} ${ASSETS_DEST_DIR}
+)
+
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${IMGUI_INI_SOURCE_FILE} ${IMGUI_INI_DEST_FILE}
 )
 
 # Install commands for distributing the project
