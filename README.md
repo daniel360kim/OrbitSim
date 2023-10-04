@@ -7,6 +7,7 @@ The satellites are static, meaning that no orbital manuevers can be executed and
 OrbitSim only supports Windows. 
 
 ![CoverImageOpening](Resources/Application/OrbitPage.png)
+![Gif](Resources/Application/gif.gif)
 
 ## Table of Contents
 
