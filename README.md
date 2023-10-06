@@ -1,5 +1,6 @@
 <h1 align="center">OrbitSim</h1>
 
+Go to 'Releases' to download executable without building. 
 Simulates orbits of objects about a central body. Allows for simulation of any satellite on the [Celestrak](https://celestrak.org/) database. This initial version only supports satellites around Earth, but the plan is to expand its functionality to solar system and other custom systems as well.
 
 The satellites are static, meaning that no orbital manuevers can be executed and their orbits are set to the specifications gathered from celestrak. Hopefully, in the future, orbital manuevers will be able to be executed. 
